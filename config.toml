@@ -2,14 +2,13 @@ baseURL = 'https://shioriblog.github.io/'
 languageCode = 'en-us'
 title = 'Shiori'
 theme = "paper"
-disqusShortname = 'Hello World!'
 
 [params]
 
   color = 'linen'                           
 
-  avatar = 'GRAVATAR_EMAIL'                 
+  avatar = 'https://hips.hearstapps.com/hmg-prod/images/editorial-entertainment-moomins-113023-eg-longform-2500x1406-65678e6767b8b.jpeg'                 
   name = 'Shiori'
-  bio = 'Hi'
+  bio = 'Welcome to SHIORI’s tiny little world☕.'
 
   
