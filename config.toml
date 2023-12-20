@@ -11,4 +11,6 @@ theme = "paper"
   name = 'Shiori'
   bio = 'Welcome to SHIORI’s tiny little world☕.'
 
-  
+[taxonomies]
+   tag = "tags"
+   category = "categories"
