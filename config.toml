@@ -1,16 +1,38 @@
 baseURL = 'https://shioriblog.github.io/'
 languageCode = 'en-us'
 title = 'Shiori'
-theme = "paper"
+theme = "anubis"
 
 [params]
+author = "Shiori"
+avatar = "https://64.media.tumblr.com/daea7f42ac9012731cae6c0aa33c0fba/175fc7d380df5f7a-1a/s540x810/12c1425cabd42c35b51432f0477ddc1a00ce13c6.gif"
+description = "Welcome to SHIORI’s tiny little world☕."
 
-  color = 'linen'                           
-
-  avatar = 'https://64.media.tumblr.com/daea7f42ac9012731cae6c0aa33c0fba/175fc7d380df5f7a-1a/s540x810/12c1425cabd42c35b51432f0477ddc1a00ce13c6.gif'                 
-  name = 'Shiori'
-  bio = 'Welcome to SHIORI’s tiny little world☕.'
+dateFormat = "2006-01-02"
+paginationSinglePost = true
+style = "light-without-switcher"
+mainSections = [ "posts" ]
+sectionsWithFullContentOnListPage = [ "notes" ]
+readMore = false
+readNextPosts = 5
+disableSummary = false
+toc = true
+tocWordCount = 300
+copyCodeButton = true
+rssAsSocialIcon = true
+mathjax = false
 
 [taxonomies]
    tag = "tags"
    category = "categories"
+
+[[menu.main]]
+identifier = "archive"
+name = "Archive"
+title = "Archive"
+url = "/posts/"
+weight = 0
+[[menu.main]]
+  name = "About"
+  url = "/about/"
+  weight = 1
