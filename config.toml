@@ -5,15 +5,11 @@ theme = "minos"
 
 [params]
 author = "Shiori"
-avatar = "https://64.media.tumblr.com/daea7f42ac9012731cae6c0aa33c0fba/175fc7d380df5f7a-1a/s540x810/12c1425cabd42c35b51432f0477ddc1a00ce13c6.gif"
-description = "Welcome to SHIORI’s tiny little world☕."
-noPostNavigation = true
-customCss = ["css/foo.css"]
+paginate = 10
 
 
 [taxonomies]
    tag = "tags"
-   category = "categories"
 
 [[menu.main]]
 identifier = "archive"
