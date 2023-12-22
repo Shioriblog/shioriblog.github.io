@@ -1,6 +1,6 @@
 ---
 title: "About"
-date: 2000-12-21T21:38:03-05:00
+date: 1900-12-21T22:14:14-05:00
 draft: false
 ---
 
@@ -12,4 +12,4 @@ draft: false
 
 一般读者。又宅又腐。
 
-🎤 播客：[普通读者](https://www.notion.so/HP-e10530f89126447db8464e30f41cdc9c?pvs=21)
+🎤 播客：[普通读者](https://open.spotify.com/show/6hUUlQ8zkJkx2CzdLXiI0F)
