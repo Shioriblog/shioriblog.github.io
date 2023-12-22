@@ -6,6 +6,8 @@ theme = "minos"
 [params]
 author = "Shiori"
 paginate = 10
+noPostNavigation = true
+
 
 
 [taxonomies]
