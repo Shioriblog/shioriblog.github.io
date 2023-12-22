@@ -13,12 +13,6 @@ noPostNavigation = true
 [taxonomies]
    tag = "tags"
 
-[[menu.main]]
-identifier = "archive"
-name = "Archive"
-title = "Archive"
-url = "/posts/"
-weight = 0
 
 [[menu.main]]
   name = "About"
