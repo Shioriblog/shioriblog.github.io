@@ -10,19 +10,6 @@ description = "Welcome to SHIORI’s tiny little world☕."
 noPostNavigation = true
 customCss = ["css/foo.css"]
 
-dateFormat = "2006-01-02"
-paginationSinglePost = true
-style = "light-without-switcher"
-mainSections = [ "posts" ]
-sectionsWithFullContentOnListPage = [ "notes" ]
-readMore = false
-readNextPosts = 5
-disableSummary = false
-toc = true
-tocWordCount = 300
-copyCodeButton = true
-rssAsSocialIcon = true
-mathjax = false
 
 [taxonomies]
    tag = "tags"
@@ -34,7 +21,20 @@ name = "Archive"
 title = "Archive"
 url = "/posts/"
 weight = 0
+
 [[menu.main]]
   name = "About"
   url = "/about/"
   weight = 1
+
+[[menu.main]]
+  name = "Friends"
+  url = "/friends/"
+  weight = 2
+
+[[menu.main]]
+identifier = "tags"
+name = "Tags"
+title = "Tags"
+url = "/tags/"
+weight = 3
