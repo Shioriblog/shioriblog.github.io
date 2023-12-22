@@ -46,7 +46,7 @@ featuredImage: "/images/img_6423.webp"
 
 ## 7月
 
-![img_6422.webp](2022%20in%2020%20photos%207faa14808def4cf694232a3f4d597653/img_6422.webp)
+![img_6422.webp](/images/img_6422.webp)
 
 从一直工作多年的公司正式离职了，收到了鲜花和贺卡。
 
