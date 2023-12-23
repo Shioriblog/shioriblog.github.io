@@ -25,14 +25,14 @@ tags: [随便写写]
 
 ## 最初建站的一些心得
 1. 因为我没有用Github桌面版，全程推送都是靠Terminal，所以需要把我本地的blog文件和我自己的Github账户连上，方法是[邓布利多教授](https://pensieve.wangxindi.org/)告诉我的，现在我忘记怎么设定了，似乎是用Go。
-2. 根据上述教程可以选择不同的theme，注意点是，有些theme的config文件是yaml，有些是toml，使用的code的格式不一样，hugo自动生成的blog的config是toml格式的，所以需要用[Yaml to Toml](https://transform.tools/yaml-to-toml) 转换网站来转换，或者在开始见hugo blog的时候就注明使用yaml，有一个code可以用，可以自行google或者问chatgpt。
+2. 根据上述教程可以选择不同的theme，注意点是，有些theme的config文件是yaml，有些是toml，使用的code的格式不一样，hugo自动生成的blog的config是toml格式的，所以需要用[Yaml to Toml](https://transform.tools/yaml-to-toml) 转换网站来转换，或者在开始建hugo blog的时候就注明使用yaml，有一个code可以用，可以自行google或者问chatgpt。
 3. 根据上面的教程得到的是一个非常简陋的blog，没有tag，没有category，没有about，archives，friends link page，RSS，上面的教程也没有教怎么给post里添加图片，这些图片应该放在哪个文件夹里等等，这些需要自己研究怎么做。
 
 ---
 
 ## 在Post里添加图片
 1. 在 **static** folder里建一个文件夹叫 **images**
-2. 把所有用到的图片都放在 **image** 这个文件夹中
+2. 把所有用到的图片都放在 **images** 这个文件夹中
 3. 在post里插入图片的时候用markdown:
 
 {{< code language="markdown" >}} 
@@ -62,7 +62,7 @@ $ hugo new about.md
 
 添加归档page的方法也依据使用模板不同而不同（可能），我参考的[这个教程](https://huweim.github.io/post/blog_hugo_%E5%BD%92%E6%A1%A3%E9%A1%B5%E9%9D%A2%E5%88%B6%E4%BD%9C/)，但有几个步骤需要更改，所以我的方法如下：
 
-1. 在**layouts** 文件夹下面添加 **_default** 文件夹，然后在terminal中利用以下code，添加一个**archives.html**文件
+1. 在**layouts** 文件夹下面，而非theme中的layouts下，添加 **_default** 文件夹，然后在terminal中利用以下code，添加一个**archives.html**文件
 
 {{< code language="git" >}} 
 $ touch layouts/_default/archives.html
