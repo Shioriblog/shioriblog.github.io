@@ -24,7 +24,7 @@ tags: [随便写写]
 [How to Create a Simple, Free Blog with Hugo and GitHub Pages](https://chrisjhart.com/Creating-A-Simple-Free-Blog-Hugo/)
 
 ## 最初建站的一些心得
-1. 因为我没有用Github桌面版，全程推送都是靠Terminal，所以需要把我本地的blog文件和我自己的Github账户连上，方法是[邓布利多教授](https://pensieve.wangxindi.org/)告诉我的，现在我忘记怎么设定了，似乎是用Go。
+1. 因为我没有用Github桌面版，全程推送都是靠Terminal，所以需要把我本地的blog文件和我自己的Github账户连上，方法是[邓布利多教授](https://pensieve.wangxindi.org/)告诉我的，现在我忘记怎么设定了，似乎是用gh。
 2. 根据上述教程可以选择不同的theme，注意点是，有些theme的config文件是yaml，有些是toml，使用的code的格式不一样，hugo自动生成的blog的config是toml格式的，所以需要用[Yaml to Toml](https://transform.tools/yaml-to-toml) 转换网站来转换，或者在开始建hugo blog的时候就注明使用yaml，有一个code可以用，可以自行google或者问chatgpt。
 3. 根据上面的教程得到的是一个非常简陋的blog，没有tag，没有category，没有about，archives，friends link page，RSS，上面的教程也没有教怎么给post里添加图片，这些图片应该放在哪个文件夹里等等，这些需要自己研究怎么做。
 
