@@ -31,11 +31,6 @@ title = "Tags"
 url = "/tags/"
 weight = 3
 
-[[menu.main]]
-  name = "RSS"
-  url = "/index.xml/"
-  weight = 4
-
 
 [outputs]
   home = ['html', 'rss']
