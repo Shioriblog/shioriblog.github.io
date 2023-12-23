@@ -2,6 +2,7 @@
 title: "Friends"
 date: 1900-12-21T22:29:21-05:00
 draft: false
+hidden: true
 ---
 
 ![image](https://images.gr-assets.com/hostedimages/1631096736ra/31893787.gif)
