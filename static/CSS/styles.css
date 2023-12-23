@@ -7,6 +7,12 @@ body {
   /* Add more styles as needed */
 }
 
+h2 {
+  font-size: 32px;
+  color: #cc338a;
+  /* Add more styles for h3 as needed */
+}
+
 h3 {
   font-size: 24px;
   color: #cc6633;
@@ -30,4 +36,8 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+strong {
+  color: #54cc33;
 }

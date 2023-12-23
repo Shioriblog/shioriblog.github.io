@@ -1,6 +1,5 @@
 ---
 title: "Friends"
-date: 1900-12-21T22:29:21-05:00
 draft: false
 hidden: true
 ---
