@@ -33,7 +33,7 @@ weight = 3
 
 [[menu.main]]
   name = "Archives"
-  url = "/archives/"
+  url = "https://shioriblog.github.io/archives/"
   weight = 4
 
 [[menu.main]]
