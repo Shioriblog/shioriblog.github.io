@@ -2,6 +2,7 @@
 title: "Friends"
 draft: false
 hidden: true
+omitdate: true
 ---
 
 ![image](https://images.gr-assets.com/hostedimages/1631096736ra/31893787.gif)

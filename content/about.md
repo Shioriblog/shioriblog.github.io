@@ -2,6 +2,7 @@
 title: "About"
 draft: false
 hidden: true
+omitdate: true
 ---
 
 ![image](https://i.pinimg.com/originals/57/6b/71/576b717df6d2e658834ee2243cf03fef.gif)
