@@ -31,6 +31,10 @@ title = "Tags"
 url = "/tags/"
 weight = 3
 
+[[menu.main]]
+  name = "RSS"
+  url = "https://shioriblog.github.io/index.xml"
+  weight = 4
 
 [outputs]
   home = ['html', 'rss']
