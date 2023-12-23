@@ -9,19 +9,16 @@ theme = "minos"
   noPostNavigation = true
   subtitle = 'Welcome to SHIORI’s tiny little world☕.'
 
+rssLimit = 10  # 限制 RSS 文章输出的数量
+languageCode = "en-us"
+copyright = "This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License."
+
+[author]
+    name = "Shiori"
 
 [taxonomies]
    tag = "tags"
 
-[outputs]
-  home = ['html']
-
-[mediaTypes]
-  [mediaTypes."application/rss+xml"]
-    suffixes = ["rss"]
-    delimiter = "."
-
-  
 [[menu.main]]
   name = "About"
   url = "/about/"
@@ -39,4 +36,7 @@ title = "Tags"
 url = "/tags/"
 weight = 3
 
-
+[[menu.main]]
+  name = "RSS"
+  url = "/index.xml/"
+  weight = 4
