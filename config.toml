@@ -1,20 +1,14 @@
 baseURL = 'https://shioriblog.github.io/'
 languageCode = 'en-us'
-title = 'Shiori'
-theme = "minos"
+title = 'Shiori ʕ•ᴥ•ʔ '
+theme = 'minos'
+
 
 [params]
   author = "Shiori"
   paginate = 10
   noPostNavigation = true
   subtitle = 'Welcome to SHIORI’s tiny little world☕.'
-
-rssLimit = 10  # 限制 RSS 文章输出的数量
-languageCode = "en-us"
-copyright = "This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License."
-
-[author]
-    name = "Shiori"
 
 [taxonomies]
    tag = "tags"
