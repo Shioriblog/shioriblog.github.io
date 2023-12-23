@@ -5,10 +5,11 @@ theme = 'minos'
 
 
 [params]
-  author = "Shiori"
   paginate = 10
   noPostNavigation = true
-  subtitle = 'Welcome to SHIORI’s tiny little world☕.'
+    [params.author]
+    name = 'Shiori'
+    email = 'shiorizh2021@gmail.com'
 
 [taxonomies]
    tag = "tags"
@@ -29,6 +30,20 @@ name = "Tags"
 title = "Tags"
 url = "/tags/"
 weight = 3
+
+[[menu.main]]
+  name = "RSS"
+  url = "/index.xml/"
+  weight = 4
+
+
+[outputs]
+  home = ['html', 'rss']
+  section = ['html', 'rss']
+  taxonomy = ['html']
+  term = ['html']
+
+copyright = '© 2023 Shiori ʕ•ᴥ•ʔ'
 
 
 
