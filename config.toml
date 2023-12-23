@@ -4,16 +4,24 @@ title = 'Shiori'
 theme = "minos"
 
 [params]
-author = "Shiori"
-paginate = 10
-noPostNavigation = true
-
+  author = "Shiori"
+  paginate = 10
+  noPostNavigation = true
+  subtitle = 'Welcome to SHIORI’s tiny little world☕.'
 
 
 [taxonomies]
    tag = "tags"
 
+[outputs]
+  home = ['html']
 
+[mediaTypes]
+  [mediaTypes."application/rss+xml"]
+    suffixes = ["rss"]
+    delimiter = "."
+
+  
 [[menu.main]]
   name = "About"
   url = "/about/"
@@ -30,4 +38,5 @@ name = "Tags"
 title = "Tags"
 url = "/tags/"
 weight = 3
+
 

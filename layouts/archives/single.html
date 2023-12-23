@@ -1,0 +1,30 @@
+{{ define "main" }}
+  <h1>{{ .Title }}</h1>
+
+  <ul>
+    {{ $sortedPages := .Data.Pages.ByDate }}
+    {{ $currentYear := "" }}
+    {{ $currentMonth := "" }}
+
+    {{ range $sortedPages }}
+      {{ $year := .Date.Year }}
+      {{ $month := .Date.Month }}
+
+      {{ if ne $year $currentYear }}
+        {{ if ne $currentYear "" }}</ul>{{ end }}
+        <li>{{ $year }}</li>
+        <ul>
+          {{ $currentYear = $year }}
+          {{ $currentMonth = "" }}
+      {{ end }}
+
+      {{ if and (ne $month $currentMonth) (ne $year $currentYear) }}
+        <li>{{ $month }}</li>
+        {{ $currentMonth = $month }}
+      {{ end }}
+
+      <li><a href="{{ .Permalink }}">{{ .Title }}</a></li>
+    {{ end }}
+    </ul>
+  </ul>
+{{ end }}
