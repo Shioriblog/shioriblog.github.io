@@ -1,0 +1,33 @@
+/* static/styles.css */
+
+body {
+  font-family: 'YDM Sans', sans-serif;
+  font-size: 16px;
+  color: #333;
+  /* Add more styles as needed */
+}
+
+h3 {
+  font-size: 24px;
+  color: #0066cc;
+  /* Add more styles for h3 as needed */
+}
+
+ul.archive-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 10px;
+  /* Add more styles for li as needed */
+}
+
+a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
