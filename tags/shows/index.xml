@@ -1,1 +1,19 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Shows on Shiori</title><link>https://shioriblog.github.io/tags/shows/</link><description>Recent content in Shows on Shiori</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 22 Dec 2023 09:53:50 -0500</lastBuildDate><atom:link href="https://shioriblog.github.io/tags/shows/index.xml" rel="self" type="application/rss+xml"/><item><title>2023电影剧集动画总结</title><link>https://shioriblog.github.io/posts/2023-shows/</link><pubDate>Fri, 22 Dec 2023 09:53:50 -0500</pubDate><guid>https://shioriblog.github.io/posts/2023-shows/</guid><description>&lt;p>今年各种电影剧集动画算下来看了45部。并且开始把看过的shows都放在obsidian中记录。于是就想来盘点一下今年都看了什么，也是一种每年惯例了。&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Shows on Shiori</title>
+    <link>https://shioriblog.github.io/tags/shows/</link>
+    <description>Recent content in Shows on Shiori</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 22 Dec 2023 09:53:50 -0500</lastBuildDate>
+    <atom:link href="https://shioriblog.github.io/tags/shows/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>2023电影剧集动画总结</title>
+      <link>https://shioriblog.github.io/posts/2023-shows/</link>
+      <pubDate>Fri, 22 Dec 2023 09:53:50 -0500</pubDate>
+      <guid>https://shioriblog.github.io/posts/2023-shows/</guid>
+      <description>&lt;p&gt;今年各种电影剧集动画算下来看了45部。并且开始把看过的shows都放在obsidian中记录。于是就想来盘点一下今年都看了什么，也是一种每年惯例了。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
