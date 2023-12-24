@@ -3,7 +3,7 @@ title: "2023电影剧集动画总结"
 date: 2023-12-22T09:53:50-05:00
 draft: false
 author: "Shiori"
-tags: [Shows, Yearly]
+tags: [观影总结]
 featuredImage: "/images/p2890594884.webp"
 ---
 
