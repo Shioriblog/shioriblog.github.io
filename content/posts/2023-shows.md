@@ -4,7 +4,7 @@ date: 2023-12-22T09:53:50-05:00
 draft: false
 author: "Shiori"
 categories: [Yearly]
-tags: [TVShows, Movies]
+tags: [TVShows, Movies, Anime]
 featuredImage: "/images/p2890594884.webp"
 ---
 
