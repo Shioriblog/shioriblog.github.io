@@ -46,8 +46,8 @@ featuredImage: "/images/topsters2.png"
 
 ---
 
-更多今年听过的喜欢的歌见：我的[Top Songs 2023](https://open.spotify.com/playlist/37i9dQZF1Fa1IIVtEpGUcU?si=39080022b3954f80)
+更多今年听过的喜欢的歌见：我的[Top Songs 2023](https://open.spotify.com/playlist/6sZHMra6RFYh7O5hyPyoDB?si=360d174ff2e24fdf)
 
-回顾一下觉得今年的听歌都很令人开心，基本喜欢的是R&B，说唱或者一些慵懒的歌曲。另外平时还会开youtube上的那些长时间的学习放松音乐视频当背景音，这时候一般多听的是Jazz，睡前也会听Spotify上[这个](https://open.spotify.com/playlist/37i9dQZF1DXa1rZf8gLhyz?si=4e79c9da0ea24eec)伴我入睡。
+回顾一下觉得今年的听歌都很令人开心，基本喜欢的是R&B，说唱或者一些慵懒的歌曲。另外平时还会开youtube上的那些长时间的学习放松音乐视频当背景音，这时候一般多听的是Jazz，睡前也会听Spotify上[这个](https://open.spotify.com/playlist/37i9dQZF1DXa1rZf8gLhyz?si=4e79c9da0ea24eec)歌单伴我入睡。
 
-最后要说的是，发现一些日本新的音乐人，乐队，出了Spotify上的playlist外，主要依赖[関ジャム 完全燃SHOW](https://www.tv-asahi.co.jp/kanjam/)这个节目，1月14日又到了每年惯例音乐制作人/音乐人推荐自己的一年Top10了，准备一边看一边打开Spotify记录歌单～
+最后要说的是，发现一些日本新的音乐人，乐队，除了Spotify上的playlist外，主要依赖[関ジャム 完全燃SHOW](https://www.tv-asahi.co.jp/kanjam/)这个节目，1月14日又到了每年惯例音乐制作人/音乐人推荐自己的一年Top10了，准备一边看一边打开Spotify记录歌单～
