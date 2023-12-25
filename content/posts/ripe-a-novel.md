@@ -2,6 +2,7 @@
 title: "Ripe: a Novel"
 date: 2023-09-12T23:25:18-05:00
 draft: false
+categories: [Reviews]
 tags: [Books]
 ---
 

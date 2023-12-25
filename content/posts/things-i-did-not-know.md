@@ -2,7 +2,8 @@
 title: "Things I didn’t know when I was young"
 date: 2022-06-22T18:15:19-05:00
 draft: false
-tags: [随便写写]
+categories: [随便写写]
+tags: [Thoughts]
 ---
 
 小时候我是一个非常性急的人，这个应该是遗传自我外公。他就是干事儿着急，走路飞快的人。即便现在我也是一个手上有活儿就想赶快赶完，然后躺尸的人。心里也不能有太多事儿，否则会焦虑的人。

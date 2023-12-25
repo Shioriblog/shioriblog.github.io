@@ -2,7 +2,8 @@
 title: "Fight for a better world!：わたしの自由について～SEALDs 2015～"
 date: 2017-05-03T22:11:10-05:00
 draft: false
-tags: [电影]
+categories: [Reviews]
+tags: [Movies]
 featuredImage: "/images/SEALDsposter.jpeg"
 ---
 

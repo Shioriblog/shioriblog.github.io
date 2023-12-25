@@ -2,7 +2,8 @@
 title: "Moving Is Frustrating"
 date: 2022-07-15T18:18:56-05:00
 draft: false
-tags: [随便写写]
+categories: [随便写写]
+tags: [日常生活]
 ---
 
 签证材料就绪，租好了房子，买好了机票之后，这几天就在家里打包

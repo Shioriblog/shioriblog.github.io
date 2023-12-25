@@ -2,7 +2,8 @@
 title: "2023听歌总结🎵"
 date: 2023-12-24T22:19:12-05:00
 draft: false
-tags: [Music, Yearly]
+categories: [Yearly]
+tags: [Music]
 featuredImage: "/images/topsters2.png"
 ---
 

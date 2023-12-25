@@ -2,6 +2,7 @@
 title: "How to Be Both, by Ali Smith"
 date: 2020-02-29T20:10:24-05:00
 draft: false
+categories: [Reviews]
 tags: [Books]
 ---
 

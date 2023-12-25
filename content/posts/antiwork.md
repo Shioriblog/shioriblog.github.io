@@ -2,7 +2,8 @@
 title: "Darling, I have no dream job. I don’t dream of labor."
 date: 2022-06-12T18:07:03-05:00
 draft: false
-tags: [随便写写]
+categories: [随便写写]
+tags: [Thoughts]
 featuredImage: "/images/blog_images_1-.png"
 ---
 

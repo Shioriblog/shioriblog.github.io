@@ -2,6 +2,7 @@
 title: "That Mad Ache, by Françoise Sagan"
 date: 2019-07-13T20:20:41-05:00
 draft: false
+categories: [Reviews]
 tags: [Books]
 ---
 

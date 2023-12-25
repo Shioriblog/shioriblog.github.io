@@ -2,6 +2,7 @@
 title: "【布道用】即便是一般读者（非腐/不那么腐）也值得一读的BL漫画推荐"
 date: 2022-05-22T17:23:17-05:00
 draft: false
+categories: [随便写写]
 tags: [Books]
 featuredImage: "/images/x88582800.jpeg"
 ---
