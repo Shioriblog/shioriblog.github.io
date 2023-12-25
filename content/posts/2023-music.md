@@ -20,7 +20,7 @@ featuredImage: "/images/topsters2.png"
 
 {{< spotify type="track" id="3v5o91PrUtf0nmO6j8J7dZ" width="100%" height="180" >}}
 
-开车时候还喜欢听日本说唱，今天最喜欢的，循环好多遍（包括MV）的必须是**Awich**等一众女性rapper+女搞笑艺人的这首《Bad Bitch美学》，我愿称谓日本的女性赋权说唱！
+开车时候还喜欢听日本说唱，今年最喜欢的，循环好多遍（包括MV）的必须是**Awich**等一众女性rapper+女搞笑艺人的这首《Bad Bitch美学》，我愿称谓日本的女性赋权说唱！
 
 {{< spotify type="track" id="7HBhfTW2zcldEs0qsXuvT2" width="100%" height="180" >}}
 
