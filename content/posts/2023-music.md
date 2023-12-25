@@ -6,7 +6,7 @@ tags: [Music, Yearly]
 featuredImage: "/images/topsters2.png"
 ---
 
-今年重新开始重新听Jpop，会在Spotify上每天check关注的音乐人的新歌，也发现了一些喜欢的歌手，这些歌称为我的生活的背景音，融入到生活之中。因为看到象友的[2023听歌总结](https://changxiawushi.github.io/posts/2023-music/)，所以也来配合Spotify的年末总结来回顾一下。
+今年重新开始听Jpop，会在Spotify上每天check关注的音乐人的新歌，也发现了一些喜欢的歌手，这些歌称为我的生活的背景音，融入到生活之中。因为看到象友的[2023听歌总结](https://changxiawushi.github.io/posts/2023-music/)，所以也来配合Spotify的年末总结来回顾一下。
 <!--more-->
 今年听的最多的音乐人之一是**藤井風**，1月开始一直在循环他的这张2022年的专辑。
 
