@@ -40,7 +40,7 @@ featuredImage: "/images/topsters2.png"
 
 {{< spotify type="album" id="54OOd6x03hdIYeHWYajNyP" width="100%" height="180" >}}
 
-最后今年的动画音乐也都很优秀，比如**King Gnu**的[SPECIALZ](https://open.spotify.com/track/0GWNtMohuYUEHVZ40tcnHF?si=b28980c782854734)，**Kroi**的[Fire Brain](https://open.spotify.com/track/6L6HWN8Z5RQy3L9tbFmABc?si=5992264a0bb04555)，**椎名林檎**和**常田大樹**的[WORK](https://open.spotify.com/track/1L50ymp25Vmu7VnPRx5TWf?si=e28c393b9dbf47e0)。而今年沉迷《昨日的美食》的我，听的最多的可能就是第一季的主题曲「[帰り道](https://open.spotify.com/track/03kstmFHwUOnYneTvnC2V7?si=98667b59a3084010)」，而最喜欢的是**Spitz**唱的电影版片尾曲：
+最后今年的动画音乐也都很优秀，比如**King Gnu**的[SPECIALZ](https://open.spotify.com/track/0GWNtMohuYUEHVZ40tcnHF?si=b28980c782854734)，**Kroi**的[Fire Brain](https://open.spotify.com/track/6L6HWN8Z5RQy3L9tbFmABc?si=5992264a0bb04555)，**椎名林檎**和**常田大樹**的[WORK](https://open.spotify.com/track/1L50ymp25Vmu7VnPRx5TWf?si=e28c393b9dbf47e0), **Kvi Baba**的[TOMBI](https://open.spotify.com/track/7nnACrn6f6JsKskLYKq1Cl?si=d1cb846172e842b8)。而今年沉迷《昨日的美食》的我，听的最多的可能就是第一季的主题曲「[帰り道](https://open.spotify.com/track/03kstmFHwUOnYneTvnC2V7?si=98667b59a3084010)」，而最喜欢的是**Spitz**唱的电影版片尾曲：
 
 {{< spotify type="track" id="2SYpzPtYzpYjgIVHg3YpbT" width="100%" height="180" >}}
 
