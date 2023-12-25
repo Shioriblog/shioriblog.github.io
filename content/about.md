@@ -11,9 +11,7 @@ omitdate: true
 
 **堂本栞 (Shiori)**
 
-坐标北美。平成废物。
-
-一般读者。又宅又腐。
+坐标北美。平成废物。一般读者。又宅又腐。
 
 🎤 播客：[普通读者](https://open.spotify.com/show/6hUUlQ8zkJkx2CzdLXiI0F)，[女巫茶话会](https://open.spotify.com/show/5PTSZVqJLNWShHWcBCFJye?si=56dc3831a64d41b0)
 
