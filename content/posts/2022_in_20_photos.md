@@ -3,7 +3,7 @@ title: "2022 in 20 photos"
 date: 2022-12-31T01:09:51-05:00
 draft: false
 categories: [Yearly]
-tags: [年终总结]
+tags: [年终总结, 日常生活]
 featuredImage: "/images/img_6423.webp"
 ---
 
