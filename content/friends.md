@@ -31,3 +31,4 @@ omitdate: true
 - [长夏无事](https://changxiawushi.github.io/)
 - [晷影空间站](https://kageji.blog/)
 - [Faze not Fazed](https://faze2ezaf.github.io/blog/)
+- [ねぎまぐろ軍艦](https://negimagurogunkan.github.io/index.html)
