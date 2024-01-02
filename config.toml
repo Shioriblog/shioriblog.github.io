@@ -45,9 +45,15 @@ weight = 4
   weight = 5
 
 [[menu.main]]
+  name = "种草拔草"
+  url = "https://shioriblog.notion.site/9e0b6b43d28a4e0ebd2e1086e6b6f59a?v=07089d97d1814ad3904adc3220d49968"
+  weight = 6
+
+
+[[menu.main]]
   name = "RSS"
   url = "https://shioriblog.github.io/index.xml"
-  weight = 6
+  weight = 7
 
 [outputs]
   home = ['html', 'rss']
