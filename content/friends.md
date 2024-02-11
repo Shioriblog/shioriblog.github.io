@@ -33,3 +33,4 @@ omitdate: true
 - [Faze not Fazed](https://faze2ezaf.github.io/blog/)
 - [ねぎまぐろ軍艦](https://negimagurogunkan.github.io/index.html)
 - [蘑菇蹲](https://qtdot.github.io/blog/)
+- [第三夏尔](https://thirdshire.com/)
