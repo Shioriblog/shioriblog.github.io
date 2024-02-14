@@ -34,3 +34,4 @@ omitdate: true
 - [ねぎまぐろ軍艦](https://negimagurogunkan.github.io/index.html)
 - [蘑菇蹲](https://qtdot.github.io/blog/)
 - [第三夏尔](https://thirdshire.com/)
+- [Blah Blah Booooom](https://zhuzi.dev/)
