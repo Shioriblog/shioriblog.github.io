@@ -1,0 +1,67 @@
+baseURL = 'https://shioriblog.github.io/'
+languageCode = 'en-us'
+title = 'Shiori ʕ•ᴥ•ʔ '
+theme = 'minos'
+
+
+[params]
+  paginate = 10
+  noPostNavigation = true
+    [params.author]
+    name = 'Shiori'
+    email = 'shiorizh2021@gmail.com'
+
+[taxonomies]
+   tag = "tags"
+   category = "categories"
+
+[[menu.main]]
+  name = "About"
+  url = "/about/"
+  weight = 1
+
+[[menu.main]]
+  name = "Friends"
+  url = "/friends/"
+  weight = 2
+
+[[menu.main]]
+identifier = "categories"
+name = "Categories"
+title = "Categories"
+url = "/categories/"
+weight = 3
+
+[[menu.main]]
+identifier = "tags"
+name = "Tags"
+title = "Tags"
+url = "/tags/"
+weight = 4
+
+[[menu.main]]
+  name = "Archives"
+  url = "/archives/"
+  weight = 5
+
+[[menu.main]]
+  name = "种草拔草"
+  url = "https://shioriblog.notion.site/9e0b6b43d28a4e0ebd2e1086e6b6f59a?v=07089d97d1814ad3904adc3220d49968"
+  weight = 6
+
+
+[[menu.main]]
+  name = "RSS"
+  url = "https://shioriblog.github.io/index.xml"
+  weight = 7
+
+[outputs]
+  home = ['html', 'rss']
+  section = ['html', 'rss']
+  taxonomy = ['html']
+  term = ['html']
+
+copyright = '© 2023 Shiori ʕ•ᴥ•ʔ'
+
+
+

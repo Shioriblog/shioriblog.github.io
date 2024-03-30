@@ -1,0 +1,6 @@
+<!-- layouts/shortcodes/code.html -->
+<pre>
+  <code class="{{ .Get "language" }}">
+    {{ .Inner | safeHTML }}
+  </code>
+</pre>

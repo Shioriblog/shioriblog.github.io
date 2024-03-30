@@ -1,0 +1,43 @@
+/* static/styles.css */
+
+body {
+  font-family: 'Rubik', sans-serif;
+  font-size: 16px;
+  color: #333;
+  /* Add more styles as needed */
+}
+
+h2 {
+  font-size: 32px;
+  color: #cc338a;
+  /* Add more styles for h3 as needed */
+}
+
+h3 {
+  font-size: 24px;
+  color: #cc6633;
+  /* Add more styles for h3 as needed */
+}
+
+ul.archive-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 10px;
+  /* Add more styles for li as needed */
+}
+
+a {
+  color: #cc8a33;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+strong {
+  color: #54cc33;
+}
