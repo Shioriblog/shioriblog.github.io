@@ -6,7 +6,6 @@ nav: archive
 ---
 <main class="simple-page" id="content">
   <h1>按时间翻阅</h1>
-  <p class="lede">文章不必被算法推回眼前，也可以安静地留在原来的季节里。</p>
 
   {% assign posts_by_year = site.posts | group_by_exp: 'post', 'post.date | date: "%Y"' %}
   {% for year in posts_by_year %}
@@ -24,4 +23,3 @@ nav: archive
     <p class="empty-state">文章迁移完成后，会在这里按年份归档。</p>
   {% endfor %}
 </main>
-
