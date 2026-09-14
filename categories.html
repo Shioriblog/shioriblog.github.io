@@ -6,7 +6,6 @@ nav: categories
 ---
 <main class="simple-page" id="content">
   <h1>Categories</h1>
-  <p class="lede">从一种生活的线索，重新走进过去的文章。</p>
 
   {% assign sorted_categories = site.categories | sort %}
   {% for category in sorted_categories %}
@@ -22,4 +21,3 @@ nav: categories
     <p class="empty-state">文章迁移完成后，分类会自动出现在这里。</p>
   {% endfor %}
 </main>
-
