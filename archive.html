@@ -5,7 +5,7 @@ permalink: /archive/
 nav: archive
 ---
 <main class="simple-page" id="content">
-  <h1>按时间翻阅</h1>
+  <h1>Archives</h1>
 
   {% assign posts_by_year = site.posts | group_by_exp: 'post', 'post.date | date: "%Y"' %}
   {% for year in posts_by_year %}
