@@ -11,6 +11,12 @@ nav: categories
   {% for category in sorted_categories %}
     <section class="category-section" id="{{ category[0] | slugify }}">
       <h2>{{ category[0] }}</h2>
+      {% case category[0] %}
+        {% when '日記の練習' %}
+          <p class="category-description">日常随笔</p>
+        {% when '言葉と歩く日記' %}
+          <p class="category-description">旅行随笔</p>
+      {% endcase %}
       <ul class="category-posts">
         {% for post in category[1] %}
           <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
