@@ -6,7 +6,7 @@ layout: default
     <header>
       {% if page.categories.size > 0 %}<p class="eyebrow">{{ page.categories | join: ' · ' }}</p>{% endif %}
       <h1>{{ page.title }}</h1>
-      <p class="article-info"><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%Y年%m月%d日' }}</time></p>
+      <p class="article-info"><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%Y.%m.%d' }}</time></p>
     </header>
     <div class="article-content">{{ content }}</div>
   </article>
@@ -18,4 +18,3 @@ layout: default
 
   {% include comments.html %}
 </main>
-
