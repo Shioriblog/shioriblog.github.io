@@ -13,7 +13,6 @@ nav: about
 
 - [日記の練習]({{ '/categories/' | relative_url }}) - 日常随笔
 - [言葉と歩く日記]({{ '/categories/' | relative_url }}) - 旅行随笔
-- 食べたり、歩いたり - 旅游流水账
 
 为什么开始写blog：[生活的基石]({{ '/2025/02/25/2月：生活的基石/' | relative_url }})
 
