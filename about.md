@@ -9,15 +9,6 @@ nav: about
 
 所见所思所感以及日常生活
 
-### Categories
-
-- [日記の練習]({{ '/categories/' | relative_url }}) - 日常随笔
-- [言葉と歩く日記]({{ '/categories/' | relative_url }}) - 旅行随笔
-
-为什么开始写blog：[生活的基石]({{ '/2025/02/25/2月：生活的基石/' | relative_url }})
-
-为什么写的post夹杂不同的语言：[语言的无政府主义]({{ '/2025/03/24/3月：语言的无政府主义/' | relative_url }})
-
 ---
 
 ### 关于作者
