@@ -25,7 +25,7 @@ nav: about
 
 **Shiori**
 
-<img class="about-photo" src="https://shioriblog.org/wp-content/uploads/2024/11/read_hour_ig_mymble-960x1200-1.jpg?w=819" alt="Shiori 的作者头像">
+<img class="about-photo" src="{{ '/assets/images/about-shiori.jpg' | relative_url }}" alt="Shiori 的作者头像">
 
 本とお酒を楽しめる女子🍷
 
@@ -36,6 +36,6 @@ nav: about
 ---
 
 <div class="about-support">
-  <img src="https://shioriblogorg.wordpress.com/wp-content/uploads/2026/09/logomarklogo.webp?w=161" alt="Ko-fi">
+  <img src="{{ '/assets/images/kofi-logo.png' | relative_url }}" alt="Ko-fi">
   <p>如果喜欢我的博客<br><a href="https://ko-fi.com/shioriblog">欢迎请我喝一杯咖啡 ☕️</a></p>
 </div>
