@@ -17,7 +17,9 @@ a:hover { color: #666; }
 .skip-link:focus { left: 1rem; top: 1rem; z-index: 50; padding: .5rem .75rem; background: #fff; border: 1px solid var(--line); }
 
 .site-header { width: min(820px, calc(100% - 3rem)); margin: 0 auto; padding: 3.4rem 0 2rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; border-bottom: 1px solid var(--line); }
-.brand { display: block; text-decoration: none; }
+.brand { display: flex; align-items: center; gap: .85rem; text-decoration: none; }
+.brand-icon { width: 48px; height: 48px; flex: 0 0 48px; border-radius: 50%; object-fit: cover; object-position: center; }
+.brand-text { display: block; }
 .brand-name { display: block; font-size: 1.7rem; line-height: 1.25; letter-spacing: .04em; }
 .brand-subtitle { display: block; margin-top: .25rem; color: var(--muted); font-family: var(--sans); font-size: .76rem; letter-spacing: .08em; }
 nav ul { margin: 0; padding: 0; display: flex; gap: 1.5rem; list-style: none; }
@@ -74,6 +76,7 @@ button:hover { background: #555; }
 @media (max-width: 640px) {
   body { font-size: 16px; }
   .site-header { width: min(100% - 2rem, 820px); padding-top: 2rem; display: block; }
+  .brand-icon { width: 44px; height: 44px; flex-basis: 44px; }
   nav { margin-top: 1.4rem; }
   nav ul { gap: 1.2rem; }
   .home-main, .simple-page, .article-shell, .site-footer { width: min(100% - 2rem, 820px); }
