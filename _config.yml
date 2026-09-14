@@ -4,8 +4,7 @@ description: 独居、食物、语言、旅行，以及与世界保持联系的�
 author: Shiori 栞
 lang: zh-CN
 timezone: America/Chicago
-# 测试阶段使用 GitHub 地址；连接自定义域名时改成 https://shioriblog.org
-url: https://shioriblog.github.io
+url: https://shioriblog.org
 baseurl: ""
 
 permalink: /:year/:month/:day/:title/
