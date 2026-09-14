@@ -57,6 +57,9 @@ nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 
 .about-support { display: flex; align-items: center; gap: 1.25rem; }
 .about-support img { width: 90px; height: auto; }
 .about-support p { margin: 0; }
+.friends-list { margin: 0; padding-left: 1.2rem; }
+.friends-list li { margin: .45rem 0; }
+.friends-image { display: block; width: 100%; max-width: 700px; height: auto; margin: 3rem 0 0; }
 .lede, .empty-state, .service-note { color: var(--muted); }
 .archive-year { margin: 3.5rem 0 0; font-family: var(--sans); font-size: .82rem; letter-spacing: .1em; }
 .archive-list, .category-posts { margin: 1rem 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
