@@ -1,0 +1,21 @@
+---
+layout: default
+---
+<main class="article-shell" id="content">
+  <article>
+    <header>
+      {% if page.categories.size > 0 %}<p class="eyebrow">{{ page.categories | join: ' · ' }}</p>{% endif %}
+      <h1>{{ page.title }}</h1>
+      <p class="article-info"><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%Y年%m月%d日' }}</time></p>
+    </header>
+    <div class="article-content">{{ content }}</div>
+  </article>
+
+  <nav class="article-nav" aria-label="相邻文章">
+    {% if page.previous %}<a href="{{ page.previous.url | relative_url }}">← {{ page.previous.title }}</a>{% else %}<span></span>{% endif %}
+    {% if page.next %}<a href="{{ page.next.url | relative_url }}">{{ page.next.title }} →</a>{% endif %}
+  </nav>
+
+  {% include comments.html %}
+</main>
+

@@ -1,0 +1,25 @@
+---
+layout: default
+title: Categories
+permalink: /categories/
+nav: categories
+---
+<main class="simple-page" id="content">
+  <h1>Categories</h1>
+  <p class="lede">从一种生活的线索，重新走进过去的文章。</p>
+
+  {% assign sorted_categories = site.categories | sort %}
+  {% for category in sorted_categories %}
+    <section class="category-section" id="{{ category[0] | slugify }}">
+      <h2>{{ category[0] }}</h2>
+      <ul class="category-posts">
+        {% for post in category[1] %}
+          <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% else %}
+    <p class="empty-state">文章迁移完成后，分类会自动出现在这里。</p>
+  {% endfor %}
+</main>
+

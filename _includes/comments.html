@@ -1,0 +1,10 @@
+<section class="comments" aria-labelledby="comments-title">
+  <h2 id="comments-title">Comments</h2>
+  {% if site.hyvor_website_id != '' %}
+    <script async src="https://talk.hyvor.com/embed/embed.js" type="module"></script>
+    <hyvor-talk-comments website-id="{{ site.hyvor_website_id }}" page-id="{{ page.id | default: page.url }}"></hyvor-talk-comments>
+  {% else %}
+    <p class="service-note">留言区正在准备中。接入后可以访客留言，并由博主审核。</p>
+  {% endif %}
+</section>
+

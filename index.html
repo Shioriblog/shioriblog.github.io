@@ -1,0 +1,44 @@
+---
+layout: default
+title: 独居日记
+nav: home
+---
+<main class="home-main" id="content">
+  <h1 class="page-title">Latest Posts</h1>
+
+  {% if site.categories.size > 0 %}
+    <div class="category-strip" aria-label="文章分类">
+      <span>Categories</span>
+      {% assign sorted_categories = site.categories | sort %}
+      {% for category in sorted_categories %}
+        <a href="{{ '/categories/' | relative_url }}#{{ category[0] | slugify }}">{{ category[0] }}</a>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="post-list" aria-label="最近文章">
+    {% for post in paginator.posts %}
+      <article class="post-preview">
+        <div class="post-body">
+          <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+          <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 150 }}</p>
+          {% if post.categories.size > 0 %}<div class="post-meta">{{ post.categories | join: ' · ' }}</div>{% endif %}
+        </div>
+        <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>
+      </article>
+    {% else %}
+      <p class="empty-state">文章迁移完成后，会从这里开始排列。</p>
+    {% endfor %}
+  </div>
+
+  {% if paginator.total_pages > 1 %}
+    <nav class="pagination" aria-label="文章分页">
+      {% if paginator.previous_page %}<a href="{{ paginator.previous_page_path | relative_url }}">← 更新</a>{% endif %}
+      <span>{{ paginator.page }} / {{ paginator.total_pages }}</span>
+      {% if paginator.next_page %}<a href="{{ paginator.next_page_path | relative_url }}">更早 →</a>{% endif %}
+    </nav>
+  {% endif %}
+
+  {% include subscription.html %}
+</main>
+

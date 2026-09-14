@@ -1,0 +1,16 @@
+<section class="subscription" aria-labelledby="subscribe-title">
+  <h2 id="subscribe-title">订阅新文章</h2>
+  <p>新文章发布时收到一封邮件，或者使用 <a href="{{ '/feed.xml' | relative_url }}">RSS</a> 阅读。</p>
+  {% if site.buttondown_username != '' %}
+    <form action="https://buttondown.com/api/emails/embed-subscribe/{{ site.buttondown_username }}" method="post" target="popupwindow" class="embeddable-buttondown-form">
+      <label class="sr-only" for="bd-email">Email address</label>
+      <div class="inline-form">
+        <input id="bd-email" type="email" name="email" placeholder="Email address" required>
+        <button type="submit">Subscription</button>
+      </div>
+    </form>
+  {% else %}
+    <p class="service-note">邮件订阅正在准备中。</p>
+  {% endif %}
+</section>
+

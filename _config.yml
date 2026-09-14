@@ -1,0 +1,30 @@
+title: 独居日记
+tagline: 好好吃饭，随时摆烂
+description: 独居、食物、语言、旅行，以及与世界保持联系的日记。
+author: Shiori 栞
+lang: zh-CN
+timezone: America/Chicago
+# 测试阶段使用 GitHub 地址；连接自定义域名时改成 https://shioriblog.org
+url: https://shioriblog.github.io
+baseurl: ""
+
+permalink: /:year/:month/:day/:title/
+paginate: 8
+paginate_path: /page/:num/
+
+plugins:
+  - jekyll-feed
+  - jekyll-paginate
+  - jekyll-seo-tag
+
+feed:
+  path: feed.xml
+
+# 申请服务后填入；留空时网站会显示准备中的说明。
+buttondown_username: ""
+hyvor_website_id: ""
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock

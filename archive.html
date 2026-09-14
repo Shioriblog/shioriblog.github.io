@@ -1,0 +1,27 @@
+---
+layout: default
+title: 归档
+permalink: /archive/
+nav: archive
+---
+<main class="simple-page" id="content">
+  <h1>按时间翻阅</h1>
+  <p class="lede">文章不必被算法推回眼前，也可以安静地留在原来的季节里。</p>
+
+  {% assign posts_by_year = site.posts | group_by_exp: 'post', 'post.date | date: "%Y"' %}
+  {% for year in posts_by_year %}
+    <h2 class="archive-year">{{ year.name }}</h2>
+    <ul class="archive-list">
+      {% for post in year.items %}
+        <li>
+          <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%m月%d日' }}</time>
+          <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+          <small>{{ post.categories | join: ' · ' }}</small>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="empty-state">文章迁移完成后，会在这里按年份归档。</p>
+  {% endfor %}
+</main>
+

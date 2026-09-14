@@ -1,0 +1,16 @@
+<a class="skip-link" href="#content">跳到正文</a>
+<header class="site-header">
+  <a class="brand" href="{{ '/' | relative_url }}" aria-label="{{ site.title }}首页">
+    <span class="brand-name">{{ site.title }}</span>
+    <span class="brand-subtitle">{{ site.tagline }}</span>
+  </a>
+  <nav aria-label="主导航">
+    <ul>
+      <li><a href="{{ '/' | relative_url }}"{% if page.nav == 'home' %} aria-current="page"{% endif %}>近日</a></li>
+      <li><a href="{{ '/categories/' | relative_url }}"{% if page.nav == 'categories' %} aria-current="page"{% endif %}>分类</a></li>
+      <li><a href="{{ '/archive/' | relative_url }}"{% if page.nav == 'archive' %} aria-current="page"{% endif %}>归档</a></li>
+      <li><a href="{{ '/about/' | relative_url }}"{% if page.nav == 'about' %} aria-current="page"{% endif %}>关于</a></li>
+    </ul>
+  </nav>
+</header>
+
