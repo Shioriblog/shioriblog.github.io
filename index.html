@@ -45,12 +45,12 @@ nav: home
   <div class="post-list" aria-label="最近文章">
     {% for post in paginator.posts %}
       <article class="post-preview">
-        <div class="post-body">
-          <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-          <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 150 }}</p>
-          {% if post.categories.size > 0 %}<div class="post-meta">{{ post.categories | join: ' · ' }}</div>{% endif %}
+        <div class="post-meta">
+          <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>
+          {% if post.categories.size > 0 %}<span> · {{ post.categories | join: ' · ' }}</span>{% endif %}
         </div>
-        <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>
+        <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+        <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 150 }}</p>
       </article>
     {% else %}
       <p class="empty-state">文章迁移完成后，会从这里开始排列。</p>
