@@ -64,6 +64,8 @@ nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 
 .archive-list time, .archive-list small, .category-posts time { color: var(--muted); font-family: var(--sans); font-size: .74rem; }
 .category-section { margin-top: 4rem; scroll-margin-top: 2rem; }
 .category-section h2 { margin: 0 0 .2rem; font-size: 1.5rem; font-weight: 400; }
+.category-description { margin: 0 0 .65rem; color: var(--muted); font-family: var(--sans); font-size: .76rem; }
+.category-description + .category-posts { margin-top: 0; }
 .category-posts li { display: flex; justify-content: space-between; gap: 1rem; padding: .8rem 0; border-bottom: 1px solid var(--line); }
 
 .subscription, .comments { margin-top: 4.5rem; padding: 2rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
