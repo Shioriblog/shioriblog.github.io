@@ -4,7 +4,7 @@ title: Categories
 permalink: /categories/
 nav: categories
 ---
-<main class="simple-page" id="content">
+<main class="simple-page category-page" id="content">
   <h1>Categories</h1>
 
   {% assign daily_posts = site.categories['日記の練習'] %}
@@ -24,7 +24,7 @@ nav: categories
     <p class="category-description">日常随笔</p>
     <ul class="category-posts">
       {% for post in daily_posts %}
-        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
+        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%m.%d' }}</time></li>
       {% endfor %}
     </ul>
   </section>
@@ -34,7 +34,7 @@ nav: categories
     <p class="category-description">旅行随笔</p>
     <ul class="category-posts">
       {% for post in travel_posts %}
-        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
+        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%m.%d' }}</time></li>
       {% endfor %}
     </ul>
   </section>
