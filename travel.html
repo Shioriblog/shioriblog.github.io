@@ -8,15 +8,15 @@ nav: travel
   <h1>食べたり、歩いたり</h1>
   <p class="travel-lede">旅行流水账。吃东西，也在城市里走来走去。</p>
 
-  {% assign travel_posts = site.categories['食べたり、歩いたり'] %}
-  {% assign travel_years = travel_posts | group_by_exp: 'post', "post.date | date: '%Y'" %}
+  {% assign travel_posts = site.categories['食べたり、歩いたり'] | sort: 'travel_date' | reverse %}
+  {% assign travel_years = travel_posts | group_by_exp: 'post', "post.travel_date | date: '%Y'" %}
 
   {% for year in travel_years %}
     <div class="travel-year"><span>{{ year.name }}</span></div>
     <section class="travel-timeline" aria-label="{{ year.name }}年游记">
       {% for post in year.items %}
         <article class="travel-entry">
-          <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%m.%d' }}</time>
+          <time datetime="{{ post.travel_date | date_to_xmlschema }}">{{ post.travel_date | date: '%m.%d' }}</time>
           <a class="travel-entry-image" href="{{ post.url | relative_url }}" aria-label="阅读：{{ post.title }}">
             <img src="{{ post.travel_image }}" alt="" loading="lazy">
           </a>
