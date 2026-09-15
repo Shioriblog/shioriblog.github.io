@@ -1,6 +1,7 @@
 :root {
   --serif: "Source Serif 4", "Noto Serif SC", "Songti SC", "Source Han Serif SC", serif;
   --serif-ja: "Shippori Mincho", "Yu Mincho", "Hiragino Mincho ProN", serif;
+  --sans-ja: "Noto Sans JP", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
 }
 
 /* English and other Latin text naturally use Source Serif 4 first;
@@ -23,8 +24,11 @@
   font-size: .82rem;
 }
 
+/* Navigation-like taxonomy labels need clarity more than literary texture. */
 .category-label-ja,
 .tag-label-ja {
-  font-family: var(--serif-ja);
-  font-feature-settings: "palt" 1;
+  font-family: var(--sans-ja);
+  font-feature-settings: normal;
+  font-weight: 500;
+  letter-spacing: .015em;
 }
