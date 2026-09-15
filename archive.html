@@ -8,6 +8,29 @@ nav: archive
   <h1>Archives</h1>
 
   {% assign posts_by_year = site.posts | group_by_exp: 'post', 'post.date | date: "%Y"' %}
+
+  <section class="archive-calendar" aria-label="文章日历">
+    <div class="calendar-years" role="tablist" aria-label="选择年份">
+      {% for year in posts_by_year %}
+        <button class="calendar-year{% if forloop.first %} is-active{% endif %}" type="button" role="tab" data-year="{{ year.name }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+          {{ year.name }} <span>({{ year.items | size }})</span>
+        </button>
+      {% endfor %}
+    </div>
+
+    <div class="calendar-scroll" tabindex="0" aria-label="文章发表日期，可横向滚动">
+      <div class="calendar-chart">
+        <div class="calendar-months" aria-hidden="true"></div>
+        <div class="calendar-body">
+          <div class="calendar-weekdays" aria-hidden="true">
+            <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+          </div>
+          <div class="calendar-grid"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   {% for year in posts_by_year %}
     <h2 class="archive-year">{{ year.name }}</h2>
     <ul class="archive-list">
@@ -22,4 +45,100 @@ nav: archive
   {% else %}
     <p class="empty-state">文章迁移完成后，会在这里按年份归档。</p>
   {% endfor %}
+
+  <script id="archive-post-data" type="application/json">
+    [
+      {% for post in site.posts %}
+        {"title":{{ post.title | jsonify }},"url":{{ post.url | relative_url | jsonify }},"date":"{{ post.date | date: '%Y-%m-%d' }}"}{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ]
+  </script>
+  <script>
+    (() => {
+      const dataElement = document.getElementById('archive-post-data')
+      const grid = document.querySelector('.calendar-grid')
+      const months = document.querySelector('.calendar-months')
+      const yearButtons = Array.from(document.querySelectorAll('.calendar-year'))
+      if (!dataElement || !grid || !months || yearButtons.length === 0) return
+
+      const posts = JSON.parse(dataElement.textContent)
+      const postsByDate = new Map()
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+      const dayLength = 24 * 60 * 60 * 1000
+
+      posts.forEach((post) => {
+        const items = postsByDate.get(post.date) || []
+        items.push(post)
+        postsByDate.set(post.date, items)
+      })
+
+      const dateKey = (date) => {
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+
+      const renderYear = (yearValue) => {
+        const year = Number(yearValue)
+        const start = new Date(year, 0, 1)
+        start.setDate(start.getDate() - start.getDay())
+        const end = new Date(year, 11, 31)
+        end.setDate(end.getDate() + (6 - end.getDay()))
+        const totalDays = Math.round((end - start) / dayLength) + 1
+        const weekCount = totalDays / 7
+
+        grid.replaceChildren()
+        months.replaceChildren()
+        grid.style.gridTemplateColumns = `repeat(${weekCount}, var(--calendar-cell))`
+        months.style.gridTemplateColumns = `repeat(${weekCount}, var(--calendar-cell))`
+        grid.setAttribute('aria-label', `${year}年文章日历`)
+
+        monthNames.forEach((name, monthIndex) => {
+          const firstDay = new Date(year, monthIndex, 1)
+          const column = Math.floor(Math.round((firstDay - start) / dayLength) / 7) + 1
+          const label = document.createElement('span')
+          label.textContent = name
+          label.style.gridColumn = `${column} / span 4`
+          months.appendChild(label)
+        })
+
+        for (let index = 0; index < totalDays; index += 1) {
+          const date = new Date(start)
+          date.setDate(start.getDate() + index)
+          const key = dateKey(date)
+          const dayPosts = postsByDate.get(key) || []
+          const isSelectedYear = date.getFullYear() === year
+          const cell = dayPosts.length > 0 && isSelectedYear
+            ? document.createElement('a')
+            : document.createElement('span')
+
+          cell.className = 'calendar-day'
+          if (!isSelectedYear) {
+            cell.classList.add('is-outside')
+          } else if (dayPosts.length > 0) {
+            cell.classList.add('has-post', `level-${Math.min(dayPosts.length, 3)}`)
+            cell.href = dayPosts[0].url
+            const label = `${date.getMonth() + 1}月${date.getDate()}日 · ${dayPosts.map(post => post.title).join('、')}`
+            cell.title = label
+            cell.setAttribute('aria-label', label)
+          } else {
+            cell.setAttribute('aria-hidden', 'true')
+          }
+          grid.appendChild(cell)
+        }
+
+        yearButtons.forEach((button) => {
+          const active = button.dataset.year === String(year)
+          button.classList.toggle('is-active', active)
+          button.setAttribute('aria-selected', String(active))
+        })
+      }
+
+      yearButtons.forEach((button) => {
+        button.addEventListener('click', () => renderYear(button.dataset.year))
+      })
+      renderYear(yearButtons[0].dataset.year)
+    })()
+  </script>
 </main>
