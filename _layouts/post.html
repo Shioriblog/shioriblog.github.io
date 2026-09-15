@@ -7,12 +7,13 @@ layout: default
       {% if page.categories.size > 0 %}
         <p class="eyebrow">
           {% for category in page.categories %}
-            <a href="{% if category == '食べたり、歩いたり' %}{{ '/travel/' | relative_url }}{% else %}{{ '/categories/' | relative_url }}{% if category == '日記の練習' %}#category-daily{% elsif category == '言葉と歩く日記' %}#category-travel{% endif %}{% endif %}">{{ category }}</a>{% unless forloop.last %} · {% endunless %}
+            <a href="{% if category == '食べたり、歩いたり' %}{{ '/travel/' | relative_url }}{% else %}{{ '/categories/' | relative_url }}{% if category == '日記の練习' %}#category-daily{% elsif category == '言葉と歩く日記' %}#category-travel{% endif %}{% endif %}">{{ category }}</a>{% unless forloop.last %} · {% endunless %}
           {% endfor %}
         </p>
       {% endif %}
       <h1>{{ page.title }}</h1>
-      <p class="article-info"><time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%Y.%m.%d' }}</time></p>
+      {% assign display_date = page.travel_date | default: page.date %}
+      <p class="article-info"><time datetime="{{ display_date | date_to_xmlschema }}">{{ display_date | date: '%Y.%m.%d' }}</time></p>
     </header>
     <div class="article-content">{{ content }}</div>
     <footer class="article-copyright">
