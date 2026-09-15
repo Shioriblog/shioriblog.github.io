@@ -2,15 +2,127 @@
   <h2 id="subscribe-title">订阅新文章</h2>
   <p>新文章发布时收到一封邮件，或者使用 <a href="{{ '/feed.xml' | relative_url }}">RSS</a> 阅读。</p>
 
-  <iframe
-    title="订阅新文章"
-    width="540"
-    height="305"
-    src="https://3693b1ad.sibforms.com/v2/serve/MUIFAJi0O7F8qH7agDpwSWg6oAHlzhb-LHTu98WhY3r3yl4pYcWiAApt44BkjoJrBlTeQHIAJRBKyCJLlhjq-y0oURNC0TfTIjtSMN0A_Ft5ATNSyb3dfEkz3_sxQ9YSL7eF-0Q37f-Mm-WN_-Aq0HFa6-1qqdu-e6LoV3T2ivgpGah7gtKfxP7jitbT8coO_FQfJm_yvkHp_6SzIQ=="
-    frameborder="0"
-    scrolling="auto"
-    allowfullscreen
-    loading="lazy"
-    style="display:block;width:100%;max-width:540px;margin:1.25rem 0 0;"
-  ></iframe>
+  <link rel="stylesheet" href="https://sibforms.com/forms/end-form/build/sib-styles.css">
+  <style>
+    .subscription .sib-form {
+      margin: 0;
+      padding: 0;
+      background: transparent !important;
+      text-align: left !important;
+    }
+    .subscription .sib-form-container,
+    .subscription #sib-container {
+      width: 100%;
+      max-width: 34rem;
+      margin: 0;
+      padding: 0;
+      border: 0 !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      text-align: left !important;
+    }
+    .subscription .sib-form-message-panel {
+      display: none;
+      max-width: 34rem;
+      margin: 0 0 .9rem;
+      padding: .65rem .8rem;
+      border: 0 !important;
+      border-left: 2px solid var(--accent) !important;
+      border-radius: 0 !important;
+      background: var(--soft) !important;
+      color: var(--body) !important;
+      font-family: var(--sans) !important;
+      font-size: .78rem !important;
+      line-height: 1.6 !important;
+      text-align: left !important;
+    }
+    .subscription .sib-form-message-panel__text,
+    .subscription .sib-form-message-panel__text--center {
+      display: block !important;
+      text-align: left !important;
+    }
+    .subscription .sib-notification__icon { display: none !important; }
+    .subscription .sib-input,
+    .subscription .sib-form-block,
+    .subscription .form__entry,
+    .subscription .form__label-row,
+    .subscription .entry__field {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .subscription .entry__field { border: 0 !important; background: transparent !important; }
+    .subscription .entry__field input { box-shadow: none !important; }
+    .subscription .entry__error {
+      display: block;
+      margin-top: .45rem;
+      padding: 0 !important;
+      border: 0 !important;
+      background: transparent !important;
+      color: var(--muted) !important;
+      font-family: var(--sans) !important;
+      font-size: .72rem !important;
+      line-height: 1.5 !important;
+      text-align: left !important;
+    }
+    .subscription .sib-hide-loader-icon { display: none !important; }
+  </style>
+
+  <div class="sib-form">
+    <div id="sib-form-container" class="sib-form-container">
+      <div id="error-message" class="sib-form-message-panel">
+        <div class="sib-form-message-panel__text sib-form-message-panel__text--center">
+          <span class="sib-form-message-panel__inner-text">订阅没有成功，请稍后再试一次。</span>
+        </div>
+      </div>
+
+      <div id="success-message" class="sib-form-message-panel">
+        <div class="sib-form-message-panel__text sib-form-message-panel__text--center">
+          <span class="sib-form-message-panel__inner-text">感谢订阅！您会在博客更新时收到邮件推送 ^_^</span>
+        </div>
+      </div>
+
+      <div id="sib-container" class="sib-container--large sib-container--vertical">
+        <form id="sib-form" method="POST" action="https://3693b1ad.sibforms.com/serve/MUIFAJi0O7F8qH7agDpwSWg6oAHlzhb-LHTu98WhY3r3yl4pYcWiAApt44BkjoJrBlTeQHIAJRBKyCJLlhjq-y0oURNC0TfTIjtSMN0A_Ft5ATNSyb3dfEkz3_sxQ9YSL7eF-0Q37f-Mm-WN_-Aq0HFa6-1qqdu-e6LoV3T2ivgpGah7gtKfxP7jitbT8coO_FQfJm_yvkHp_6SzIQ==" data-type="subscription">
+          <label class="sr-only" for="EMAIL">Email address</label>
+          <div class="inline-form">
+            <div class="sib-input" style="flex:1; min-width:0;">
+              <div class="form__entry entry_block">
+                <div class="form__label-row">
+                  <div class="entry__field">
+                    <input class="input" type="email" id="EMAIL" name="EMAIL" autocomplete="email" placeholder="Email address" data-required="true" required>
+                  </div>
+                </div>
+                <label class="entry__error entry__error--primary"></label>
+              </div>
+            </div>
+            <button class="sib-form-block__button sib-form-block__button-with-loader" form="sib-form" type="submit">订阅</button>
+          </div>
+
+          <input type="text" name="email_address_check" value="" class="input--hidden" tabindex="-1" aria-hidden="true">
+          <input type="hidden" name="locale" value="en">
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.REQUIRED_CODE_ERROR_MESSAGE = 'Please choose a country code';
+    window.LOCALE = 'en';
+    window.EMAIL_INVALID_MESSAGE = window.SMS_INVALID_MESSAGE = '邮箱格式好像不对，请检查后再试一次。';
+    window.REQUIRED_ERROR_MESSAGE = '请输入邮箱地址。';
+    window.GENERIC_INVALID_MESSAGE = '邮箱格式好像不对，请检查后再试一次。';
+    window.INVALID_NUMBER = '邮箱格式好像不对，请检查后再试一次。';
+    window.INVALID_DATE = 'Please enter a valid date';
+    window.REQUIRED_MULTISELECT_MESSAGE = 'Please select at least 1 option';
+    window.translation = {
+      common: {
+        selectedList: '{quantity} list selected',
+        selectedLists: '{quantity} lists selected',
+        selectedOption: '{quantity} selected',
+        selectedOptions: '{quantity} selected'
+      }
+    };
+    var AUTOHIDE = Boolean(0);
+  </script>
+  <script defer src="https://sibforms.com/forms/end-form/build/main.js"></script>
 </section>
