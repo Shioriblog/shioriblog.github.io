@@ -135,26 +135,13 @@ nav: archive
         })
       }
 
-      const jumpToYear = (yearValue) => {
-        const target = document.getElementById(`archive-year-${yearValue}`)
-        if (!target) return
-        history.replaceState(null, '', `#archive-year-${yearValue}`)
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }
-
       yearButtons.forEach((button) => {
         button.addEventListener('click', () => {
           renderYear(button.dataset.year)
-          jumpToYear(button.dataset.year)
         })
       })
 
-      const requestedYear = window.location.hash.replace('#archive-year-', '')
-      const initialButton = yearButtons.find(button => button.dataset.year === requestedYear) || yearButtons[0]
-      renderYear(initialButton.dataset.year)
-      if (requestedYear && initialButton.dataset.year === requestedYear) {
-        requestAnimationFrame(() => jumpToYear(requestedYear))
-      }
+      renderYear(yearButtons[0].dataset.year)
     })()
   </script>
 </main>
