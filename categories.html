@@ -19,8 +19,6 @@ nav: categories
     </button>
   </div>
 
-  <p class="category-travel-link"><a href="{{ '/travel/' | relative_url }}">食べたり、歩いたり <span>旅行随笔 →</span></a></p>
-
   <section class="category-panel" id="category-daily" role="tabpanel" aria-labelledby="category-tab-daily">
     <p class="category-description">日常随笔</p>
     {% assign daily_years = daily_posts | group_by_exp: 'post', "post.date | date: '%Y'" %}
