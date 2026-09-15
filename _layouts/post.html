@@ -16,6 +16,26 @@ layout: default
       <p class="article-info"><time datetime="{{ display_date | date_to_xmlschema }}">{{ display_date | date: '%Y.%m.%d' }}</time></p>
     </header>
     <div class="article-content">{{ content }}</div>
+
+    {% if page.wordpress_id %}
+      {% assign lyket_id = 'post-' | append: page.wordpress_id %}
+    {% else %}
+      {% assign lyket_id = page.date | date: 'post-%Y%m%d%H%M%S' %}
+    {% endif %}
+    <div class="article-like" aria-label="喜欢这篇文章">
+      <div
+        data-lyket-type="like"
+        data-lyket-namespace="shioriblog-posts"
+        data-lyket-id="{{ lyket_id }}"
+        data-lyket-template="twitter"
+        data-lyket-color-primary="#4f5a49"
+        data-lyket-color-text="#6f6a64"
+        data-lyket-color-icon="#4f5a49"
+        data-lyket-color-highlight="#cdd4c8"
+        data-lyket-font-family="Inter, system-ui, sans-serif"
+      ></div>
+    </div>
+
     <footer class="article-copyright">
       <p>未经许可，请勿全文转载。© Shiori 栞</p>
     </footer>
@@ -28,3 +48,19 @@ layout: default
 
   {% include comments.html %}
 </main>
+
+<style>
+  .article-like {
+    display: flex;
+    align-items: center;
+    min-height: 2.2rem;
+    margin-top: 2.6rem;
+    font-family: var(--sans);
+    font-size: .78rem;
+  }
+
+  .article-like > div {
+    display: inline-flex;
+    align-items: center;
+  }
+</style>
