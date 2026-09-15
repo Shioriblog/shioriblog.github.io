@@ -19,9 +19,9 @@ plugins:
 feed:
   path: feed.xml
 
-# 申请服务后填入；留空时网站会显示准备中的说明。
+# 留空时网站会显示准备中的说明。
 buttondown_username: ""
-hyvor_website_id: ""
+twikoo_env_id: "https://shiori-twikoo.netlify.app/.netlify/functions/twikoo"
 
 exclude:
   - README.md
