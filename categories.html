@@ -11,32 +11,38 @@ nav: categories
   {% assign travel_posts = site.categories['言葉と歩く日記'] %}
 
   <div class="category-tabs" role="tablist" aria-label="文章分类">
-    <button class="category-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="category-daily" data-category-target="category-daily">
-      日記の練習 <span>{{ daily_posts | size }}</span>
+    <button class="category-tab is-active" id="category-tab-daily" type="button" role="tab" aria-selected="true" aria-controls="category-daily" data-category-target="category-daily">
+      日記の練習 <sup>{{ daily_posts | size }}</sup>
     </button>
-    <button class="category-tab" type="button" role="tab" aria-selected="false" aria-controls="category-travel" data-category-target="category-travel">
-      言葉と歩く日記 <span>{{ travel_posts | size }}</span>
+    <button class="category-tab" id="category-tab-travel" type="button" role="tab" aria-selected="false" aria-controls="category-travel" data-category-target="category-travel">
+      言葉と歩く日記 <sup>{{ travel_posts | size }}</sup>
     </button>
   </div>
 
-  <section class="category-panel" id="category-daily" role="tabpanel">
-    <h2>日記の練習</h2>
+  <section class="category-panel" id="category-daily" role="tabpanel" aria-labelledby="category-tab-daily">
     <p class="category-description">日常随笔</p>
-    <ul class="category-posts">
-      {% for post in daily_posts %}
-        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
-      {% endfor %}
-    </ul>
+    {% assign daily_years = daily_posts | group_by_exp: 'post', "post.date | date: '%Y'" %}
+    {% for year in daily_years %}
+      <div class="category-year"><span>{{ year.name }}</span></div>
+      <ul class="category-posts">
+        {% for post in year.items %}
+          <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
+        {% endfor %}
+      </ul>
+    {% endfor %}
   </section>
 
-  <section class="category-panel" id="category-travel" role="tabpanel" hidden>
-    <h2>言葉と歩く日記</h2>
+  <section class="category-panel" id="category-travel" role="tabpanel" aria-labelledby="category-tab-travel" hidden>
     <p class="category-description">旅行随笔</p>
-    <ul class="category-posts">
-      {% for post in travel_posts %}
-        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
-      {% endfor %}
-    </ul>
+    {% assign travel_years = travel_posts | group_by_exp: 'post', "post.date | date: '%Y'" %}
+    {% for year in travel_years %}
+      <div class="category-year"><span>{{ year.name }}</span></div>
+      <ul class="category-posts">
+        {% for post in year.items %}
+          <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
+        {% endfor %}
+      </ul>
+    {% endfor %}
   </section>
 
   <script>
