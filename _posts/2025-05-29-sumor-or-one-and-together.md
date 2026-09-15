@@ -2,12 +2,12 @@
 layout: post
 title: '''Sumor'' or One and Together'
 date: '2025-05-29 13:54:57'
-permalink: /2025/05/29/5月：sumor-or-one-and-together/
+permalink: /2025/05/29/sumor-or-one-and-together/
 categories:
 - 日記の練習
 tags:
+- 食べる
 - 考える
-- 暮らす
 wordpress_id: 1698
 comments: true
 ---
