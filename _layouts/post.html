@@ -13,20 +13,12 @@ layout: default
       {% endif %}
       <h1>{{ page.title }}</h1>
       {% assign display_date = page.travel_date | default: page.date %}
-      {% assign article_words = content | strip_html | number_of_words: 'cjk' %}
-      {% assign reading_minutes = article_words | divided_by: 400.0 | ceil %}
-      {% if reading_minutes < 1 %}{% assign reading_minutes = 1 %}{% endif %}
-      {% if article_words >= 1000 %}
-        {% assign article_words_display = article_words | divided_by: 1000.0 | round: 2 | append: 'K' %}
-      {% else %}
-        {% assign article_words_display = article_words %}
-      {% endif %}
       <p class="article-info">
         <span class="article-info-item"><time datetime="{{ display_date | date_to_xmlschema }}">{{ display_date | date: '%Y.%m.%d' }}</time></span>
         <span class="article-info-divider" aria-hidden="true">·</span>
-        <span class="article-info-item article-reading-time">
+        <span class="article-info-item article-reading-time" id="article-reading-time">
           <svg class="article-info-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 7.5v5l3.2 2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          本文总计约 {{ article_words_display }} 字，阅读约需 {{ reading_minutes }} 分钟
+          <span id="article-reading-text">正在计算字数…</span>
         </span>
       </p>
     </header>
@@ -85,6 +77,27 @@ layout: default
   </nav>
 
   {% include comments.html %}
+
+  <script>
+    (() => {
+      const content = document.querySelector('.article-content')
+      const output = document.getElementById('article-reading-text')
+      if (!content || !output) return
+
+      const text = content.innerText.replace(/\s+/g, ' ').trim()
+      const cjkPattern = /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\u3040-\u30FF\uAC00-\uD7AF]/g
+      const cjkChars = text.match(cjkPattern) || []
+      const nonCjkText = text.replace(cjkPattern, ' ')
+      const latinWords = nonCjkText.match(/[A-Za-z0-9]+(?:['’\-][A-Za-z0-9]+)*/g) || []
+      const count = cjkChars.length + latinWords.length
+      const minutes = Math.max(1, Math.ceil(count / 400))
+      const displayCount = count >= 1000
+        ? `${(count / 1000).toFixed(2).replace(/\.?0+$/, '')}K`
+        : String(count)
+
+      output.textContent = `本文总计约 ${displayCount} 字，阅读约需 ${minutes} 分钟`
+    })()
+  </script>
 </main>
 
 <style>
