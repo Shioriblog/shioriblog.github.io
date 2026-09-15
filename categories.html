@@ -24,7 +24,7 @@ nav: categories
     <p class="category-description">日常随笔</p>
     <ul class="category-posts">
       {% for post in daily_posts %}
-        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%m.%d' }}</time></li>
+        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
       {% endfor %}
     </ul>
   </section>
@@ -34,7 +34,7 @@ nav: categories
     <p class="category-description">旅行随笔</p>
     <ul class="category-posts">
       {% for post in travel_posts %}
-        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%m.%d' }}</time></li>
+        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
       {% endfor %}
     </ul>
   </section>
