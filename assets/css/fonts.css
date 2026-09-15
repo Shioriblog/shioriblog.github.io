@@ -1,0 +1,19 @@
+:root {
+  --serif: "Source Serif 4", "Noto Serif SC", "Songti SC", "Source Han Serif SC", serif;
+  --serif-ja: "Shippori Mincho", "Yu Mincho", "Hiragino Mincho ProN", serif;
+}
+
+/* English and other Latin text naturally use Source Serif 4 first;
+   Chinese glyphs fall through to Noto Serif SC. */
+:lang(ja) {
+  font-family: var(--serif-ja);
+}
+
+.article-content :lang(ja) {
+  font-feature-settings: "palt" 1;
+  letter-spacing: .015em;
+}
+
+.travel-kicker {
+  font-family: var(--serif-ja);
+}
