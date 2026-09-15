@@ -17,21 +17,21 @@ nav: friends
   <section class="friends-blogroll" aria-labelledby="blogroll-title">
     <h2 id="blogroll-title">BLOGROLL</h2>
     <ul class="friends-list">
-      <li><a href="https://www.joeyrambles.com/">小小日常</a></li>
-      <li><a href="https://hippostank.org/">河马吐槽</a></li>
-      <li><a href="https://thirdshire.com/">第三夏尔 | Third Shire</a></li>
-      <li><a href="https://tortie.me/">A Purrception</a></li>
-      <li><a href="https://borderlinejourney.com/">Borderline Journey</a></li>
-      <li><a href="https://blogatlarge.com/c1air2">萌荷里安</a></li>
-      <li><a href="https://mokuyo.xyz/">光明岛</a></li>
-      <li><a href="https://aliangx.blog/">蛰洲</a></li>
-      <li><a href="https://imick.github.io/">Chiaroscuro</a></li>
-      <li><a href="https://www.kylinbag.top/">锁麟囊</a></li>
-      <li><a href="https://www.after27.me/">After 27</a></li>
-      <li><a href="https://blog.douchi.space/#gsc.tab=0">椒盐豆豉</a></li>
-      <li><a href="https://pensieve.wangxindi.org/">邓布利多的冥想盆</a></li>
-      <li><a href="https://solanalifeblog.vercel.app/">在世一日</a></li>
-      <li><a href="https://fourxiajiao.github.io/">一笼虾饺有四个</a></li>
+      <li><a href="https://www.joeyrambles.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://www.joeyrambles.com&sz=32" alt="" loading="lazy">小小日常</a></li>
+      <li><a href="https://hippostank.org/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://hippostank.org&sz=32" alt="" loading="lazy">河马吐槽</a></li>
+      <li><a href="https://thirdshire.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://thirdshire.com&sz=32" alt="" loading="lazy">第三夏尔 | Third Shire</a></li>
+      <li><a href="https://tortie.me/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://tortie.me&sz=32" alt="" loading="lazy">A Purrception</a></li>
+      <li><a href="https://borderlinejourney.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://borderlinejourney.com&sz=32" alt="" loading="lazy">Borderline Journey</a></li>
+      <li><a href="https://blogatlarge.com/c1air2"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://blogatlarge.com&sz=32" alt="" loading="lazy">萌荷里安</a></li>
+      <li><a href="https://mokuyo.xyz/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://mokuyo.xyz&sz=32" alt="" loading="lazy">光明岛</a></li>
+      <li><a href="https://aliangx.blog/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://aliangx.blog&sz=32" alt="" loading="lazy">蛰洲</a></li>
+      <li><a href="https://imick.github.io/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://imick.github.io&sz=32" alt="" loading="lazy">Chiaroscuro</a></li>
+      <li><a href="https://www.kylinbag.top/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://www.kylinbag.top&sz=32" alt="" loading="lazy">锁麟囊</a></li>
+      <li><a href="https://www.after27.me/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://www.after27.me&sz=32" alt="" loading="lazy">After 27</a></li>
+      <li><a href="https://blog.douchi.space/#gsc.tab=0"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://blog.douchi.space&sz=32" alt="" loading="lazy">椒盐豆豉</a></li>
+      <li><a href="https://pensieve.wangxindi.org/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://pensieve.wangxindi.org&sz=32" alt="" loading="lazy">邓布利多的冥想盆</a></li>
+      <li><a href="https://solanalifeblog.vercel.app/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://solanalifeblog.vercel.app&sz=32" alt="" loading="lazy">在世一日</a></li>
+      <li><a href="https://fourxiajiao.github.io/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://fourxiajiao.github.io&sz=32" alt="" loading="lazy">一笼虾饺有四个</a></li>
     </ul>
   </section>
 
@@ -101,12 +101,22 @@ nav: friends
   }
 
   .friends-list a {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: .65rem;
     padding: .82rem 0;
     color: var(--body);
     text-decoration: none;
     overflow-wrap: anywhere;
     transition: color .15s ease;
+  }
+
+  .friend-favicon {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    border-radius: 4px;
+    object-fit: contain;
   }
 
   .friends-list a:hover {
