@@ -51,12 +51,16 @@ layout: default
 
 <style>
   .article-like {
-    display: flex;
+    display: none;
     align-items: center;
-    min-height: 2.2rem;
     margin-top: 2.6rem;
     font-family: var(--sans);
     font-size: .78rem;
+  }
+
+  .article-like:has(button),
+  .article-like:has([role="button"]) {
+    display: flex;
   }
 
   .article-like > div {
