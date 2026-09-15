@@ -1,0 +1,38 @@
+name: Add post tags once
+
+on:
+  push:
+    paths:
+      - '.github/workflows/add-tags-once.yml'
+      - 'scripts/add_tags_once.py'
+
+permissions:
+  contents: write
+
+jobs:
+  tag-posts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Add tags
+        run: python scripts/add_tags_once.py
+      - name: Remove one-time files
+        run: |
+          rm -f scripts/add_tags_once.py
+          rm -f .github/workflows/add-tags-once.yml
+      - name: Commit changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Add thematic tags to diary posts'
+          git push
