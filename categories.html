@@ -53,6 +53,8 @@ nav: categories
       <section class="category-panel" id="{{ panel_id }}" role="tabpanel" aria-labelledby="{{ panel_id }}-tab" data-category-name="{{ category_name | escape }}"{% unless forloop.first %} hidden{% endunless %}>
         {% if category_name == '日記の練習' %}
           <p class="category-description">日常随笔</p>
+        {% elsif category_name == 'うたかたの日々' %}
+          <p class="category-description">岁月的泡沫</p>
         {% elsif category_name == '言葉と歩く日記' %}
           <p class="category-description">旅行随笔</p>
         {% endif %}
