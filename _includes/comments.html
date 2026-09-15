@@ -1,10 +1,18 @@
 <section class="comments" aria-labelledby="comments-title">
   <h2 id="comments-title">Comments</h2>
-  {% if site.hyvor_website_id != '' %}
-    <script async src="https://talk.hyvor.com/embed/embed.js" type="module"></script>
-    <hyvor-talk-comments website-id="{{ site.hyvor_website_id }}" page-id="{{ page.id | default: page.url }}"></hyvor-talk-comments>
+  {% if site.twikoo_env_id != '' %}
+    <div id="tcomment"></div>
+    <script src="https://cdn.jsdelivr.net/npm/twikoo@1.7.22/dist/twikoo.min.js"></script>
+    <script>
+      twikoo.init({
+        envId: {{ site.twikoo_env_id | jsonify }},
+        el: '#tcomment',
+        path: {{ page.url | jsonify }},
+        lang: 'zh-CN'
+      })
+    </script>
   {% else %}
-    <p class="service-note">留言区正在准备中。接入后可以访客留言，并由博主审核。</p>
+    <p class="service-note">留言区正在准备中。</p>
   {% endif %}
 </section>
 
