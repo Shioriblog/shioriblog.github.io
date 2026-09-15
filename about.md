@@ -24,6 +24,31 @@ nav: about
       </div>
     </div>
   </section>
+
+  <section class="about-subscribe" aria-labelledby="about-subscribe-title">
+    <p class="about-section-kicker">SUBSCRIBE</p>
+    <h2 id="about-subscribe-title">偶尔回来看看</h2>
+    <p class="about-subscribe-copy">如果你愿意偶尔回来看看，可以通过 Email 或 RSS 订阅这个博客的新文章。</p>
+
+    <div class="about-subscribe-links">
+      <button id="about-email-subscribe" type="button">✉ Email 订阅</button>
+      <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+    </div>
+
+    <p class="about-privacy-note">Email 仅用于发送博客更新通知，可以随时退订。关于本站如何处理访问统计、留言和订阅信息，可以阅读 <a href="{{ '/privacy/' | relative_url }}">Privacy</a>。</p>
+  </section>
+
+  <script>
+    (() => {
+      const emailButton = document.getElementById('about-email-subscribe')
+      const launcher = document.getElementById('subscription-launcher')
+      if (!emailButton || !launcher) return
+
+      emailButton.addEventListener('click', () => {
+        launcher.click()
+      })
+    })()
+  </script>
 </main>
 
 <style>
@@ -33,13 +58,18 @@ nav: about
     padding: 3.5rem 0 5rem;
   }
 
-  .about-kicker {
-    margin: 0 0 1.6rem;
+  .about-kicker,
+  .about-section-kicker {
+    margin: 0;
     color: var(--accent);
     font-family: var(--sans);
     font-size: .72rem;
     font-weight: 500;
     letter-spacing: .16em;
+  }
+
+  .about-kicker {
+    margin-bottom: 1.6rem;
   }
 
   .about-profile {
@@ -100,6 +130,67 @@ nav: about
   }
 
   .about-support-card a {
+    color: var(--accent);
+  }
+
+  .about-subscribe {
+    margin-top: 3.8rem;
+    padding-top: 2.2rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .about-subscribe h2 {
+    margin: .7rem 0 .65rem;
+    color: var(--ink);
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+
+  .about-subscribe-copy {
+    max-width: 34rem;
+    margin: 0;
+    color: var(--body);
+    line-height: 1.85;
+  }
+
+  .about-subscribe-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .7rem 1rem;
+    margin-top: 1.25rem;
+  }
+
+  .about-subscribe-links button,
+  .about-subscribe-links a {
+    display: inline-flex;
+    align-items: center;
+    padding: .48rem .72rem;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: .76rem;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .about-subscribe-links button:hover,
+  .about-subscribe-links a:hover {
+    border-color: #d7d1c8;
+    background: var(--soft);
+  }
+
+  .about-privacy-note {
+    max-width: 36rem;
+    margin: 1.35rem 0 0;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .72rem;
+    line-height: 1.75;
+  }
+
+  .about-privacy-note a {
     color: var(--accent);
   }
 
