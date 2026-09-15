@@ -32,6 +32,29 @@ layout: default
     </header>
     <div class="article-content">{{ content }}</div>
 
+    {% assign has_visible_tags = false %}
+    {% for tag in page.tags %}
+      {% unless tag == 'featured' %}
+        {% assign has_visible_tags = true %}
+      {% endunless %}
+    {% endfor %}
+    {% if has_visible_tags %}
+      <div class="article-tags" aria-label="文章标签">
+        <span class="article-tags-label">TAGS</span>
+        <div class="article-tags-list">
+          {% for tag in page.tags %}
+            {% unless tag == 'featured' %}
+              {% if page.categories contains '日記の練習' %}
+                <a href="{{ '/categories/' | relative_url }}?tag={{ tag | url_encode }}#category-daily">{{ tag }}</a>
+              {% else %}
+                <span>{{ tag }}</span>
+              {% endif %}
+            {% endunless %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
     {% if page.wordpress_id %}
       {% assign lyket_id = 'post-' | append: page.wordpress_id %}
     {% else %}
@@ -92,10 +115,42 @@ layout: default
     flex: 0 0 13px;
   }
 
+  .article-tags {
+    display: flex;
+    align-items: baseline;
+    gap: .9rem;
+    margin-top: 2.4rem;
+    font-family: var(--sans);
+    font-size: .72rem;
+  }
+
+  .article-tags-label {
+    flex: 0 0 auto;
+    color: var(--muted);
+    letter-spacing: .12em;
+  }
+
+  .article-tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem .8rem;
+  }
+
+  .article-tags-list a,
+  .article-tags-list span {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .article-tags-list a:hover {
+    text-decoration: underline;
+    text-underline-offset: .22em;
+  }
+
   .article-like {
     display: none;
     align-items: center;
-    margin-top: 2.6rem;
+    margin-top: 2.2rem;
     font-family: var(--sans);
     font-size: .78rem;
   }
