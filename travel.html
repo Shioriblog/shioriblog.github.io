@@ -1,0 +1,34 @@
+---
+layout: default
+title: 食べたり、歩いたり
+permalink: /travel/
+nav: travel
+---
+<main class="simple-page travel-page" id="content">
+  <h1>食べたり、歩いたり</h1>
+  <p class="travel-lede">旅行流水账。吃东西，也在城市里走来走去。</p>
+
+  {% assign travel_posts = site.categories['食べたり、歩いたり'] %}
+  {% assign travel_years = travel_posts | group_by_exp: 'post', "post.date | date: '%Y'" %}
+
+  {% for year in travel_years %}
+    <div class="travel-year"><span>{{ year.name }}</span></div>
+    <section class="travel-timeline" aria-label="{{ year.name }}年游记">
+      {% for post in year.items %}
+        <article class="travel-entry">
+          <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%m.%d' }}</time>
+          <a class="travel-entry-image" href="{{ post.url | relative_url }}" aria-label="阅读：{{ post.title }}">
+            <img src="{{ post.travel_image }}" alt="" loading="lazy">
+          </a>
+          <div class="travel-entry-body">
+            {% if post.travel_place %}<p class="travel-entry-place">{{ post.travel_place }}</p>{% endif %}
+            <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+            <p class="travel-entry-excerpt">{% if post.travel_excerpt %}{{ post.travel_excerpt }}{% else %}{{ post.excerpt | strip_html | normalize_whitespace | truncate: 90 }}{% endif %}</p>
+          </div>
+        </article>
+      {% endfor %}
+    </section>
+  {% else %}
+    <p class="empty-state">游记会从这里慢慢积累。</p>
+  {% endfor %}
+</main>
