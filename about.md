@@ -25,29 +25,61 @@ nav: about
     </div>
   </section>
 
-  <section class="about-subscribe" aria-labelledby="about-subscribe-title">
-    <p class="about-section-kicker">SUBSCRIBE</p>
-    <h2 id="about-subscribe-title">偶尔回来看看</h2>
-    <p class="about-subscribe-copy">如果你愿意偶尔回来看看，可以通过 Email 或 RSS 订阅这个博客的新文章。</p>
+  <section class="about-subscribe" aria-labelledby="about-subscribe-label">
+    <p class="about-section-kicker" id="about-subscribe-label">SUBSCRIBE</p>
+    <p class="about-subscribe-copy">可以通过 Email 或 <a href="{{ '/feed.xml' | relative_url }}">RSS</a> 订阅这个博客的新文章。</p>
 
-    <div class="about-subscribe-links">
-      <button id="about-email-subscribe" type="button">✉ Email 订阅</button>
-      <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+    <div id="about-subscribe-success" class="about-subscribe-status" role="status" hidden>
+      感谢订阅！您会在博客更新时收到邮件推送 ^_^
     </div>
+
+    <form
+      id="about-subscribe-form"
+      class="about-subscribe-form"
+      action="https://3693b1ad.sibforms.com/serve/MUIFAJi0O7F8qH7agDpwSWg6oAHlzhb-LHTu98WhY3r3yl4pYcWiAApt44BkjoJrBlTeQHIAJRBKyCJLlhjq-y0oURNC0TfTIjtSMN0A_Ft5ATNSyb3dfEkz3_sxQ9YSL7eF-0Q37f-Mm-WN_-Aq0HFa6-1qqdu-e6LoV3T2ivgpGah7gtKfxP7jitbT8coO_FQfJm_yvkHp_6SzIQ=="
+      method="POST"
+      target="about-brevo-subscribe-target"
+    >
+      <label class="sr-only" for="about-brevo-email">Email address</label>
+      <div class="about-subscribe-form-row">
+        <input id="about-brevo-email" type="email" name="EMAIL" placeholder="Email address" autocomplete="email" required>
+        <button id="about-subscribe-button" type="submit">订阅</button>
+      </div>
+      <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;">
+      <input type="hidden" name="locale" value="en">
+    </form>
+
+    <iframe id="about-brevo-subscribe-target" name="about-brevo-subscribe-target" title="订阅提交结果" hidden></iframe>
 
     <p class="about-privacy-note">Email 仅用于发送博客更新通知，可以随时退订。关于本站如何处理访问统计、留言和订阅信息，可以阅读 <a href="{{ '/privacy/' | relative_url }}">Privacy</a>。</p>
   </section>
 
   <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      const emailButton = document.getElementById('about-email-subscribe')
-      if (!emailButton) return
+    (() => {
+      const form = document.getElementById('about-subscribe-form')
+      const frame = document.getElementById('about-brevo-subscribe-target')
+      const success = document.getElementById('about-subscribe-success')
+      const button = document.getElementById('about-subscribe-button')
+      if (!form || !frame || !success || !button) return
 
-      emailButton.addEventListener('click', () => {
-        const launcher = document.getElementById('subscription-launcher')
-        if (launcher) launcher.click()
+      let submitted = false
+
+      form.addEventListener('submit', () => {
+        submitted = true
+        button.disabled = true
+        button.textContent = '提交中…'
+        success.hidden = true
       })
-    })
+
+      frame.addEventListener('load', () => {
+        if (!submitted) return
+        submitted = false
+        success.hidden = false
+        form.reset()
+        button.disabled = false
+        button.textContent = '订阅'
+      })
+    })()
   </script>
 </main>
 
@@ -139,46 +171,62 @@ nav: about
     border-top: 1px solid var(--line);
   }
 
-  .about-subscribe h2 {
-    margin: .7rem 0 .65rem;
-    color: var(--ink);
-    font-size: 1.25rem;
-    font-weight: 500;
-  }
-
   .about-subscribe-copy {
     max-width: 34rem;
-    margin: 0;
+    margin: .75rem 0 1.15rem;
     color: var(--body);
     line-height: 1.85;
   }
 
-  .about-subscribe-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .7rem 1rem;
-    margin-top: 1.25rem;
+  .about-subscribe-copy a,
+  .about-privacy-note a {
+    color: var(--accent);
   }
 
-  .about-subscribe-links button,
-  .about-subscribe-links a {
-    display: inline-flex;
-    align-items: center;
-    padding: .48rem .72rem;
+  .about-subscribe-form-row {
+    display: flex;
+    align-items: stretch;
+    width: min(100%, 360px);
+    gap: .55rem;
+  }
+
+  .about-subscribe-form-row input {
+    min-width: 0;
+    flex: 1 1 auto;
+    padding: .68rem .72rem;
     border: 1px solid var(--line);
-    background: transparent;
-    color: var(--accent);
+    background: var(--paper);
+    color: var(--body);
+    font-family: var(--sans);
+    font-size: .78rem;
+  }
+
+  .about-subscribe-form-row button {
+    flex: 0 0 auto;
+    padding: .68rem .86rem;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: #fff;
     font-family: var(--sans);
     font-size: .76rem;
-    line-height: 1;
-    text-decoration: none;
     cursor: pointer;
   }
 
-  .about-subscribe-links button:hover,
-  .about-subscribe-links a:hover {
-    border-color: #d7d1c8;
+  .about-subscribe-form-row button:disabled {
+    opacity: .65;
+    cursor: wait;
+  }
+
+  .about-subscribe-status {
+    width: min(100%, 360px);
+    margin: 0 0 .9rem;
+    padding: .6rem .7rem;
+    border-left: 2px solid var(--accent);
     background: var(--soft);
+    color: var(--body);
+    font-family: var(--sans);
+    font-size: .74rem;
+    line-height: 1.55;
   }
 
   .about-privacy-note {
@@ -188,10 +236,6 @@ nav: about
     font-family: var(--sans);
     font-size: .72rem;
     line-height: 1.75;
-  }
-
-  .about-privacy-note a {
-    color: var(--accent);
   }
 
   @media (max-width: 640px) {
@@ -207,6 +251,10 @@ nav: about
 
     .about-portrait {
       width: min(190px, 62vw);
+    }
+
+    .about-subscribe-form-row {
+      width: 100%;
     }
   }
 </style>
