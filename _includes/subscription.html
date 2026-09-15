@@ -1,79 +1,229 @@
-<section class="subscription" aria-labelledby="subscribe-title">
-  <h2 id="subscribe-title">订阅新文章</h2>
-  <p>新文章发布时收到一封邮件，或者使用 <a href="{{ '/feed.xml' | relative_url }}">RSS</a> 阅读。</p>
-
-  <div id="brevo-subscribe-success" class="subscription-status" role="status" hidden>
-    感谢订阅！您会在博客更新时收到邮件推送 ^_^
-  </div>
-
-  <form
-    id="brevo-subscribe-form"
-    action="https://3693b1ad.sibforms.com/serve/MUIFAJi0O7F8qH7agDpwSWg6oAHlzhb-LHTu98WhY3r3yl4pYcWiAApt44BkjoJrBlTeQHIAJRBKyCJLlhjq-y0oURNC0TfTIjtSMN0A_Ft5ATNSyb3dfEkz3_sxQ9YSL7eF-0Q37f-Mm-WN_-Aq0HFa6-1qqdu-e6LoV3T2ivgpGah7gtKfxP7jitbT8coO_FQfJm_yvkHp_6SzIQ=="
-    method="POST"
-    target="brevo-subscribe-target"
+<div class="subscription-float" id="subscription-float">
+  <button
+    class="subscription-launcher"
+    id="subscription-launcher"
+    type="button"
+    aria-expanded="false"
+    aria-controls="subscription-panel"
   >
-    <label class="sr-only" for="brevo-email">Email address</label>
-    <div class="inline-form brevo-inline-form">
-      <input id="brevo-email" type="email" name="EMAIL" placeholder="Email address" autocomplete="email" required>
-      <button id="brevo-subscribe-button" type="submit">订阅</button>
-    </div>
-    <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;">
-    <input type="hidden" name="locale" value="en">
-  </form>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 6.5h15v11h-15z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="m5.2 7.3 6.8 5.4 6.8-5.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>订阅</span>
+  </button>
 
-  <iframe id="brevo-subscribe-target" name="brevo-subscribe-target" title="订阅提交结果" hidden></iframe>
+  <section class="subscription-panel" id="subscription-panel" aria-labelledby="subscribe-title" hidden>
+    <button class="subscription-close" id="subscription-close" type="button" aria-label="关闭订阅窗口">×</button>
+    <p class="subscription-kicker">NEWSLETTER</p>
+    <h2 id="subscribe-title">订阅新文章</h2>
+    <p class="subscription-copy">新文章发布时收到一封邮件。也可以使用 <a href="{{ '/feed.xml' | relative_url }}">RSS</a> 阅读。</p>
+
+    <div id="brevo-subscribe-success" class="subscription-status" role="status" hidden>
+      感谢订阅！您会在博客更新时收到邮件推送 ^_^
+    </div>
+
+    <form
+      id="brevo-subscribe-form"
+      action="https://3693b1ad.sibforms.com/serve/MUIFAJi0O7F8qH7agDpwSWg6oAHlzhb-LHTu98WhY3r3yl4pYcWiAApt44BkjoJrBlTeQHIAJRBKyCJLlhjq-y0oURNC0TfTIjtSMN0A_Ft5ATNSyb3dfEkz3_sxQ9YSL7eF-0Q37f-Mm-WN_-Aq0HFa6-1qqdu-e6LoV3T2ivgpGah7gtKfxP7jitbT8coO_FQfJm_yvkHp_6SzIQ=="
+      method="POST"
+      target="brevo-subscribe-target"
+    >
+      <label class="sr-only" for="brevo-email">Email address</label>
+      <div class="subscription-form-row">
+        <input id="brevo-email" type="email" name="EMAIL" placeholder="Email address" autocomplete="email" required>
+        <button id="brevo-subscribe-button" type="submit">订阅</button>
+      </div>
+      <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;">
+      <input type="hidden" name="locale" value="en">
+    </form>
+
+    <iframe id="brevo-subscribe-target" name="brevo-subscribe-target" title="订阅提交结果" hidden></iframe>
+  </section>
 
   <style>
-    .subscription .brevo-inline-form {
-      max-width: 28rem;
-      gap: .65rem;
+    .subscription-float {
+      position: fixed;
+      left: 1.25rem;
+      bottom: 1.25rem;
+      z-index: 80;
+      font-family: var(--sans);
+    }
+
+    .subscription-launcher {
+      display: inline-flex;
       align-items: center;
-    }
-
-    .subscription #brevo-email {
-      padding: .5rem .65rem;
-      border-right: 1px solid #aaa49b;
-      font-size: .9rem;
-      line-height: 1.35;
-    }
-
-    .subscription #brevo-subscribe-button {
-      flex: 0 0 auto;
-      padding: .5rem .85rem;
+      gap: .45rem;
+      min-height: 38px;
+      padding: .48rem .8rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .94);
+      color: var(--body);
+      font: inherit;
       font-size: .76rem;
-      line-height: 1.35;
-      white-space: nowrap;
+      cursor: pointer;
+      box-shadow: 0 5px 18px rgba(29, 28, 26, .08);
+      backdrop-filter: blur(8px);
+    }
+
+    .subscription-launcher:hover {
+      color: var(--accent);
+      border-color: #d7d1c8;
+    }
+
+    .subscription-launcher svg {
+      width: 15px;
+      height: 15px;
+      flex: 0 0 15px;
+    }
+
+    .subscription-panel {
+      position: absolute;
+      left: 0;
+      bottom: calc(100% + .75rem);
+      width: min(330px, calc(100vw - 2.5rem));
+      padding: 1.25rem 1.25rem 1.15rem;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      box-shadow: 0 12px 36px rgba(29, 28, 26, .12);
+    }
+
+    .subscription-panel[hidden] {
+      display: none;
+    }
+
+    .subscription-close {
+      position: absolute;
+      top: .65rem;
+      right: .75rem;
+      padding: .1rem .25rem;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 1.15rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .subscription-kicker {
+      margin: 0 0 .6rem;
+      color: var(--accent);
+      font-size: .66rem;
+      font-weight: 500;
+      letter-spacing: .14em;
+    }
+
+    .subscription-panel h2 {
+      margin: 0 0 .45rem;
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: 1.18rem;
+      font-weight: 500;
+    }
+
+    .subscription-copy {
+      margin: 0 0 1rem;
+      color: var(--muted);
+      font-size: .76rem;
+      line-height: 1.65;
+    }
+
+    .subscription-copy a {
+      color: var(--accent);
+    }
+
+    .subscription-form-row {
+      display: flex;
+      align-items: stretch;
+      gap: .5rem;
+    }
+
+    .subscription-form-row input {
+      min-width: 0;
+      flex: 1 1 auto;
+      padding: .56rem .65rem;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--body);
+      font: inherit;
+      font-size: .78rem;
+    }
+
+    .subscription-form-row button {
+      flex: 0 0 auto;
+      padding: .56rem .78rem;
+      border: 1px solid var(--accent);
+      background: var(--accent);
+      color: #fff;
+      font: inherit;
+      font-size: .74rem;
+      cursor: pointer;
+    }
+
+    .subscription-form-row button:disabled {
+      opacity: .65;
+      cursor: wait;
     }
 
     .subscription-status {
-      max-width: 28rem;
       margin: 0 0 .9rem;
-      padding: .6rem .75rem;
+      padding: .6rem .7rem;
       border-left: 2px solid var(--accent);
       background: var(--soft);
       color: var(--body);
-      font-family: var(--sans);
-      font-size: .76rem;
+      font-size: .74rem;
       line-height: 1.55;
     }
 
     @media (max-width: 560px) {
-      .subscription .brevo-inline-form {
-        max-width: 100%;
-        gap: .5rem;
+      .subscription-float {
+        left: 1rem;
+        bottom: 1rem;
+      }
+
+      .subscription-panel {
+        width: calc(100vw - 2rem);
+      }
+
+      .subscription-form-row {
+        align-items: stretch;
       }
     }
   </style>
 
   <script>
     (() => {
+      const root = document.getElementById('subscription-float')
+      const launcher = document.getElementById('subscription-launcher')
+      const panel = document.getElementById('subscription-panel')
+      const close = document.getElementById('subscription-close')
       const form = document.getElementById('brevo-subscribe-form')
       const frame = document.getElementById('brevo-subscribe-target')
       const success = document.getElementById('brevo-subscribe-success')
       const button = document.getElementById('brevo-subscribe-button')
-      if (!form || !frame || !success || !button) return
+      const email = document.getElementById('brevo-email')
+      if (!root || !launcher || !panel || !close || !form || !frame || !success || !button) return
 
       let submitted = false
+
+      const setOpen = (open) => {
+        panel.hidden = !open
+        launcher.setAttribute('aria-expanded', String(open))
+        if (open && email) window.setTimeout(() => email.focus(), 50)
+      }
+
+      launcher.addEventListener('click', () => setOpen(panel.hidden))
+      close.addEventListener('click', () => setOpen(false))
+
+      document.addEventListener('click', (event) => {
+        if (!panel.hidden && !root.contains(event.target)) setOpen(false)
+      })
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !panel.hidden) {
+          setOpen(false)
+          launcher.focus()
+        }
+      })
 
       form.addEventListener('submit', () => {
         submitted = true
@@ -92,4 +242,4 @@
       })
     })()
   </script>
-</section>
+</div>
