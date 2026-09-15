@@ -5,16 +5,9 @@ permalink: /travel/
 nav: travel
 ---
 <main class="simple-page travel-page" id="content">
-  <section class="travel-hero" aria-labelledby="travel-title">
-    <div class="travel-hero-copy">
-      <p class="travel-kicker">食べたり、歩いたり</p>
-      <h1 id="travel-title">游记</h1>
-      <p class="travel-lede">旅行流水账。在城市里逛一逛，吃一吃。</p>
-    </div>
-    <div class="travel-hero-map">
-      <img src="{{ '/assets/images/travel-map.webp' | relative_url }}" alt="用手绘地图标记去过的地方" width="450" height="318">
-    </div>
-  </section>
+  <p class="travel-kicker">食べたり、歩いたり</p>
+  <h1>游记</h1>
+  <p class="travel-lede">旅行流水账。在城市里逛一逛，吃一吃。</p>
 
   {% assign travel_posts = site.categories['食べたり、歩いたり'] | sort: 'travel_date' | reverse %}
   {% assign travel_years = travel_posts | group_by_exp: 'post', "post.travel_date | date: '%Y'" %}
@@ -40,41 +33,3 @@ nav: travel
     <p class="empty-state">游记会从这里慢慢积累。</p>
   {% endfor %}
 </main>
-
-<style>
-  .travel-hero {
-    display: grid;
-    grid-template-columns: minmax(0, .78fr) minmax(320px, 1.22fr);
-    gap: 2.4rem;
-    align-items: center;
-    margin-bottom: 2.8rem;
-  }
-
-  .travel-hero-copy,
-  .travel-hero-map {
-    min-width: 0;
-  }
-
-  .travel-hero .travel-lede {
-    margin-bottom: 0;
-  }
-
-  .travel-hero-map img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-
-  @media (max-width: 720px) {
-    .travel-hero {
-      grid-template-columns: 1fr;
-      gap: 1.8rem;
-      margin-bottom: 2.4rem;
-    }
-
-    .travel-hero-map {
-      width: min(100%, 34rem);
-      margin-inline: auto;
-    }
-  }
-</style>
