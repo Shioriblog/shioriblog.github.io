@@ -63,6 +63,8 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
 .article-content img { display: block; max-width: 100%; height: auto; margin: 2.6rem auto; }
 .article-content figure img { margin: 0 auto; }
 .article-content figcaption { margin-top: .6rem; color: var(--muted); font-family: var(--sans); font-size: .7rem; }
+.article-content .article-image-pair-grid { display: grid; grid-template-columns: minmax(0, .68fr) minmax(0, 1.33fr); gap: .75rem; align-items: start; }
+.article-content .article-image-pair-grid img { width: 100%; margin: 0; }
 .article-content blockquote { margin: 2.2rem 0; padding-left: 1.2rem; color: var(--body); border-left: 1px solid #aaa49b; }
 .article-copyright { margin-top: 3.7rem; color: var(--muted); font-family: var(--sans); font-size: .7rem; line-height: 1.7; }
 .article-copyright::before { content: ""; display: block; width: 2.25rem; height: 1px; margin-bottom: .8rem; background: #aaa49b; }
