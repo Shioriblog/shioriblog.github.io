@@ -32,7 +32,7 @@ nav: archive
   </section>
 
   {% for year in posts_by_year %}
-    <h2 class="archive-year">{{ year.name }}</h2>
+    <h2 class="archive-year" id="archive-year-{{ year.name }}">{{ year.name }}</h2>
     <ul class="archive-list">
       {% for post in year.items %}
         <li>
@@ -135,10 +135,26 @@ nav: archive
         })
       }
 
+      const jumpToYear = (yearValue) => {
+        const target = document.getElementById(`archive-year-${yearValue}`)
+        if (!target) return
+        history.replaceState(null, '', `#archive-year-${yearValue}`)
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+
       yearButtons.forEach((button) => {
-        button.addEventListener('click', () => renderYear(button.dataset.year))
+        button.addEventListener('click', () => {
+          renderYear(button.dataset.year)
+          jumpToYear(button.dataset.year)
+        })
       })
-      renderYear(yearButtons[0].dataset.year)
+
+      const requestedYear = window.location.hash.replace('#archive-year-', '')
+      const initialButton = yearButtons.find(button => button.dataset.year === requestedYear) || yearButtons[0]
+      renderYear(initialButton.dataset.year)
+      if (requestedYear && initialButton.dataset.year === requestedYear) {
+        requestAnimationFrame(() => jumpToYear(requestedYear))
+      }
     })()
   </script>
 </main>
