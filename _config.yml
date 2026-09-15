@@ -24,7 +24,12 @@ feed:
 buttondown_username: ""
 twikoo_env_id: "https://shiori-twikoo.netlify.app/.netlify/functions/twikoo"
 cloudflare_beacon_token: "17f59f664edc4eee966afed69fcf5598"
+
+# 部署 Dashboard Worker 后，把 workers.dev 地址填在这里。
+dashboard_api_url: ""
+
 exclude:
   - README.md
   - Gemfile
   - Gemfile.lock
+  - tools
