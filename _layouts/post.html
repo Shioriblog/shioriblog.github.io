@@ -13,7 +13,22 @@ layout: default
       {% endif %}
       <h1>{{ page.title }}</h1>
       {% assign display_date = page.travel_date | default: page.date %}
-      <p class="article-info"><time datetime="{{ display_date | date_to_xmlschema }}">{{ display_date | date: '%Y.%m.%d' }}</time></p>
+      {% assign article_words = content | strip_html | number_of_words: 'cjk' %}
+      {% assign reading_minutes = article_words | divided_by: 400.0 | ceil %}
+      {% if reading_minutes < 1 %}{% assign reading_minutes = 1 %}{% endif %}
+      {% if article_words >= 1000 %}
+        {% assign article_words_display = article_words | divided_by: 1000.0 | round: 2 | append: 'K' %}
+      {% else %}
+        {% assign article_words_display = article_words %}
+      {% endif %}
+      <p class="article-info">
+        <span class="article-info-item"><time datetime="{{ display_date | date_to_xmlschema }}">{{ display_date | date: '%Y.%m.%d' }}</time></span>
+        <span class="article-info-divider" aria-hidden="true">·</span>
+        <span class="article-info-item article-reading-time">
+          <svg class="article-info-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 7.5v5l3.2 2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          本文总计约 {{ article_words_display }} 字，阅读约需 {{ reading_minutes }} 分钟
+        </span>
+      </p>
     </header>
     <div class="article-content">{{ content }}</div>
 
@@ -50,6 +65,33 @@ layout: default
 </main>
 
 <style>
+  .article-info {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .35rem .55rem;
+    margin: 0;
+  }
+
+  .article-info-item {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .article-info-divider {
+    color: var(--line);
+  }
+
+  .article-reading-time {
+    gap: .32rem;
+  }
+
+  .article-info-icon {
+    width: 13px;
+    height: 13px;
+    flex: 0 0 13px;
+  }
+
   .article-like {
     display: none;
     align-items: center;
@@ -66,5 +108,15 @@ layout: default
   .article-like > div {
     display: inline-flex;
     align-items: center;
+  }
+
+  @media (max-width: 520px) {
+    .article-info-divider {
+      display: none;
+    }
+
+    .article-reading-time {
+      flex-basis: 100%;
+    }
   }
 </style>
