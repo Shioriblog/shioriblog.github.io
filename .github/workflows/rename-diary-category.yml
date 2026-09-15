@@ -1,0 +1,63 @@
+name: Rename diary category
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/rename-diary-category.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  rename:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Replace category everywhere
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+
+          old = "\u65e5\u8a18\u306e\u7df4\u7fd2"
+          new = "\u3046\u305f\u304b\u305f\u306e\u65e5\u3005"
+
+          result = subprocess.run(
+              ['git', 'grep', '-Il', '--', old],
+              capture_output=True,
+              text=True,
+              check=False,
+          )
+          files = [Path(line) for line in result.stdout.splitlines() if line.strip()]
+
+          changed = []
+          for path in files:
+              text = path.read_text(encoding='utf-8')
+              updated = text.replace(old, new)
+              if updated != text:
+                  path.write_text(updated, encoding='utf-8')
+                  changed.append(str(path))
+
+          print(f'Renamed category in {len(changed)} files:')
+          for path in changed:
+              print(path)
+          PY
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo 'No changes needed.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Rename diary category to うたかたの日々'
+          git push
