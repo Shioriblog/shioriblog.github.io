@@ -7,23 +7,64 @@ nav: categories
 <main class="simple-page" id="content">
   <h1>Categories</h1>
 
-  {% assign sorted_categories = site.categories | sort %}
-  {% for category in sorted_categories %}
-    <section class="category-section" id="{{ category[0] | slugify }}">
-      <h2>{{ category[0] }}</h2>
-      {% case category[0] %}
-        {% when '日記の練習' %}
-          <p class="category-description">日常随笔</p>
-        {% when '言葉と歩く日記' %}
-          <p class="category-description">旅行随笔</p>
-      {% endcase %}
-      <ul class="category-posts">
-        {% for post in category[1] %}
-          <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
-        {% endfor %}
-      </ul>
-    </section>
-  {% else %}
-    <p class="empty-state">文章迁移完成后，分类会自动出现在这里。</p>
-  {% endfor %}
+  {% assign daily_posts = site.categories['日記の練習'] %}
+  {% assign travel_posts = site.categories['言葉と歩く日記'] %}
+
+  <div class="category-tabs" role="tablist" aria-label="文章分类">
+    <button class="category-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="category-daily" data-category-target="category-daily">
+      日記の練習 <span>{{ daily_posts | size }}</span>
+    </button>
+    <button class="category-tab" type="button" role="tab" aria-selected="false" aria-controls="category-travel" data-category-target="category-travel">
+      言葉と歩く日記 <span>{{ travel_posts | size }}</span>
+    </button>
+  </div>
+
+  <section class="category-panel" id="category-daily" role="tabpanel">
+    <h2>日記の練習</h2>
+    <p class="category-description">日常随笔</p>
+    <ul class="category-posts">
+      {% for post in daily_posts %}
+        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="category-panel" id="category-travel" role="tabpanel" hidden>
+    <h2>言葉と歩く日記</h2>
+    <p class="category-description">旅行随笔</p>
+    <ul class="category-posts">
+      {% for post in travel_posts %}
+        <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <script>
+    (() => {
+      const tabs = Array.from(document.querySelectorAll('.category-tab'))
+      const panels = Array.from(document.querySelectorAll('.category-panel'))
+      if (tabs.length === 0 || panels.length === 0) return
+
+      const selectCategory = (target, updateUrl = false) => {
+        tabs.forEach((tab) => {
+          const active = tab.dataset.categoryTarget === target
+          tab.classList.toggle('is-active', active)
+          tab.setAttribute('aria-selected', String(active))
+        })
+        panels.forEach((panel) => {
+          panel.hidden = panel.id !== target
+        })
+        if (updateUrl) history.replaceState(null, '', `#${target}`)
+      }
+
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => selectCategory(tab.dataset.categoryTarget, true))
+      })
+
+      const requestedCategory = window.location.hash.slice(1)
+      if (panels.some(panel => panel.id === requestedCategory)) {
+        selectCategory(requestedCategory)
+      }
+    })()
+  </script>
 </main>
