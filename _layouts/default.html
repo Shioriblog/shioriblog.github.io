@@ -15,7 +15,9 @@
     {% include header.html %}
     {{ content }}
     {% include footer.html %}
-    <script defer src="https://unpkg.com/@lyket/widget@latest/dist/lyket.js?apiKey=pt_c74039748e1bf2994bb76504bf7222"></script>
+    {% if page.layout == 'post' %}
+      <script defer src="https://unpkg.com/@lyket/widget@latest/dist/lyket.js?apiKey=pt_c74039748e1bf2994bb76504bf7222"></script>
+    {% endif %}
     {% if site.cloudflare_beacon_token %}
       <!-- Cloudflare Web Analytics -->
       <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "{{ site.cloudflare_beacon_token }}"}'></script>
