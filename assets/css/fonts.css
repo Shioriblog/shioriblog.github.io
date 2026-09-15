@@ -34,7 +34,7 @@
 }
 
 /* Travel posts: H3 reads like a small notebook label. */
-body:has(.eyebrow a[href*="#category-travel"]) .article-content h3 {
+body.post-category-travel .article-content h3 {
   display: inline-block;
   margin: 2.8rem 0 1.2rem;
   padding: .28rem .6rem;
@@ -50,7 +50,7 @@ body:has(.eyebrow a[href*="#category-travel"]) .article-content h3 {
 }
 
 /* うたかたの日々: H3 becomes a light time-slice divider. */
-body:has(.eyebrow a[href$="/categories/"]) .article-content h3 {
+body.post-category-utakata .article-content h3 {
   display: flex;
   align-items: center;
   gap: .8rem;
@@ -63,7 +63,7 @@ body:has(.eyebrow a[href$="/categories/"]) .article-content h3 {
   letter-spacing: .025em;
 }
 
-body:has(.eyebrow a[href$="/categories/"]) .article-content h3::after {
+body.post-category-utakata .article-content h3::after {
   content: "";
   flex: 1;
   height: 1px;
