@@ -74,4 +74,37 @@ nav: home
       {% if paginator.next_page %}<a href="{{ paginator.next_page_path | relative_url }}">更早 →</a>{% endif %}
     </nav>
   {% endif %}
+
+  {% if paginator.page == 1 %}
+    <aside class="home-site-note" aria-label="本站说明">
+      <p>本站文章与图片除特别注明外，版权归 Shiori 栞所有。未经许可，请勿全文转载。</p>
+      <p>关于本站如何处理访问统计、留言和订阅信息，可以阅读 <a href="{{ '/privacy/' | relative_url }}">Privacy</a>。</p>
+    </aside>
+  {% endif %}
 </main>
+
+<style>
+  .home-site-note {
+    margin-top: 4rem;
+    padding-top: 1.35rem;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .72rem;
+    line-height: 1.75;
+  }
+
+  .home-site-note p {
+    margin: 0 0 .35rem;
+  }
+
+  .home-site-note a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .home-site-note a:hover {
+    text-decoration: underline;
+    text-underline-offset: .22em;
+  }
+</style>
