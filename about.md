@@ -1,61 +1,71 @@
 ---
-layout: page
+layout: default
 title: About
 permalink: /about/
 nav: about
 ---
 
-<div class="about-profile-page">
-  <section class="about-author-hero">
-    <div class="about-author-copy">
-      <p class="about-section-label">关于作者</p>
-      <h2 class="about-name">Shiori</h2>
+<main class="about-page" id="content">
+  <p class="about-kicker">ABOUT</p>
+
+  <section class="about-profile">
+    <img class="about-portrait" src="{{ '/assets/images/about-shiori.jpg' | relative_url }}" alt="Shiori 的作者头像">
+
+    <div class="about-copy">
+      <h1>Shiori 栞</h1>
       <p class="about-japanese">本とお酒を楽しめる女子🍷</p>
       <p class="about-bio">坐标北美，平成废物<br>
       一般读者，又宅又腐<br>
       好好吃饭，随时摆烂</p>
-    </div>
-    <img class="about-portrait" src="{{ '/assets/images/about-shiori.jpg' | relative_url }}" alt="Shiori 的作者头像">
-  </section>
 
-  <div class="about-support-card">
-    <img src="{{ '/assets/images/kofi-logo.png' | relative_url }}" alt="Ko-fi">
-    <p>如果喜欢我的博客<br><a href="https://ko-fi.com/shioriblog">欢迎请我喝一杯咖啡 ☕️</a></p>
-  </div>
-</div>
+      <div class="about-support-card">
+        <img src="{{ '/assets/images/kofi-logo.png' | relative_url }}" alt="Ko-fi">
+        <p>如果喜欢我的博客<br><a href="https://ko-fi.com/shioriblog">欢迎请我喝一杯咖啡 ☕️</a></p>
+      </div>
+    </div>
+  </section>
+</main>
 
 <style>
-  .about-profile-page {
-    margin-top: .4rem;
+  .about-page {
+    width: min(720px, calc(100% - 4rem));
+    margin: 0 auto;
+    padding: 3.5rem 0 5rem;
   }
 
-  .about-author-hero {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 230px;
-    gap: 3.2rem;
-    align-items: center;
-    padding: 1.1rem 0 3.7rem;
-  }
-
-  .about-section-label {
-    margin: 0 0 1rem;
+  .about-kicker {
+    margin: 0 0 1.6rem;
     color: var(--accent);
     font-family: var(--sans);
     font-size: .72rem;
     font-weight: 500;
-    letter-spacing: .12em;
+    letter-spacing: .16em;
   }
 
-  .about-name {
-    margin: 0 0 .35rem;
+  .about-profile {
+    display: grid;
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: start;
+  }
+
+  .about-portrait {
+    display: block;
+    width: 190px;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .about-copy h1 {
+    margin: -.1rem 0 .35rem;
     color: var(--ink);
-    font-size: 1.75rem;
+    font-size: 2rem;
     font-weight: 500;
-    line-height: 1.35;
+    line-height: 1.3;
   }
 
   .about-japanese {
-    margin: 0 0 1.6rem;
+    margin: 0 0 1.7rem;
     color: var(--accent);
     font-size: .92rem;
   }
@@ -66,24 +76,17 @@ nav: about
     line-height: 2;
   }
 
-  .about-portrait {
-    display: block;
-    width: 100%;
-    aspect-ratio: 4 / 5;
-    object-fit: cover;
-  }
-
   .about-support-card {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 1.25rem;
-    max-width: 34rem;
-    padding: 1.25rem 1.4rem;
+    gap: .95rem;
+    margin-top: 2rem;
+    padding: .9rem 1rem;
     background: var(--soft);
   }
 
   .about-support-card img {
-    width: 58px;
+    width: 44px;
     height: auto;
     flex: 0 0 auto;
   }
@@ -92,8 +95,8 @@ nav: about
     margin: 0;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .8rem;
-    line-height: 1.75;
+    font-size: .76rem;
+    line-height: 1.7;
   }
 
   .about-support-card a {
@@ -101,14 +104,18 @@ nav: about
   }
 
   @media (max-width: 640px) {
-    .about-author-hero {
+    .about-page {
+      width: min(100% - 2rem, 34rem);
+      padding-top: 2.8rem;
+    }
+
+    .about-profile {
       grid-template-columns: 1fr;
-      gap: 1.8rem;
-      padding-bottom: 2.8rem;
+      gap: 1.7rem;
     }
 
     .about-portrait {
-      width: min(230px, 72vw);
+      width: min(190px, 62vw);
     }
   }
 </style>
