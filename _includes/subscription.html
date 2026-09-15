@@ -13,7 +13,7 @@
     target="brevo-subscribe-target"
   >
     <label class="sr-only" for="brevo-email">Email address</label>
-    <div class="inline-form">
+    <div class="inline-form brevo-inline-form">
       <input id="brevo-email" type="email" name="EMAIL" placeholder="Email address" autocomplete="email" required>
       <button id="brevo-subscribe-button" type="submit">订阅</button>
     </div>
@@ -24,16 +24,44 @@
   <iframe id="brevo-subscribe-target" name="brevo-subscribe-target" title="订阅提交结果" hidden></iframe>
 
   <style>
+    .subscription .brevo-inline-form {
+      max-width: 28rem;
+      gap: .65rem;
+      align-items: center;
+    }
+
+    .subscription #brevo-email {
+      padding: .5rem .65rem;
+      border-right: 1px solid #aaa49b;
+      font-size: .9rem;
+      line-height: 1.35;
+    }
+
+    .subscription #brevo-subscribe-button {
+      flex: 0 0 auto;
+      padding: .5rem .85rem;
+      font-size: .76rem;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+
     .subscription-status {
-      max-width: 34rem;
+      max-width: 28rem;
       margin: 0 0 .9rem;
-      padding: .65rem .8rem;
+      padding: .6rem .75rem;
       border-left: 2px solid var(--accent);
       background: var(--soft);
       color: var(--body);
       font-family: var(--sans);
-      font-size: .78rem;
-      line-height: 1.6;
+      font-size: .76rem;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 560px) {
+      .subscription .brevo-inline-form {
+        max-width: 100%;
+        gap: .5rem;
+      }
     }
   </style>
 
