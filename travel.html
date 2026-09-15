@@ -5,8 +5,9 @@ permalink: /travel/
 nav: travel
 ---
 <main class="simple-page travel-page" id="content">
-  <h1>食べたり、歩いたり</h1>
-  <p class="travel-lede">旅行流水账。吃东西，也在城市里走来走去。</p>
+  <p class="travel-kicker">食べたり、歩いたり</p>
+  <h1>游记</h1>
+  <p class="travel-lede">旅行流水账。在城市里逛一逛，吃一吃。</p>
 
   {% assign travel_posts = site.categories['食べたり、歩いたり'] | sort: 'travel_date' | reverse %}
   {% assign travel_years = travel_posts | group_by_exp: 'post', "post.travel_date | date: '%Y'" %}

@@ -130,6 +130,7 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
 .category-travel-link span { margin-left: .45rem; color: var(--muted); }
 
 .travel-page h1 { margin-bottom: .35rem; }
+.travel-kicker { margin: 0 0 .45rem; color: var(--accent); font-family: "Noto Serif JP", "Yu Mincho", serif; font-size: .78rem; letter-spacing: .08em; }
 .travel-lede { margin: 0 0 2.8rem; color: var(--muted); font-family: var(--sans); font-size: .76rem; }
 .travel-year { display: flex; align-items: center; gap: .8rem; margin: 2.8rem 0 .45rem; color: var(--muted); font-family: var(--sans); font-size: .7rem; letter-spacing: .12em; }
 .travel-year:first-of-type { margin-top: 0; }
