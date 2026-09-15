@@ -13,7 +13,16 @@
     <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="{{ '/feed.xml' | relative_url }}">
     {% seo %}
   </head>
-  <body>
+  {% assign body_classes = '' %}
+  {% if page.layout == 'post' %}
+    {% if page.categories contains '言葉と歩く日記' or page.categories contains '食べたり、歩いたり' %}
+      {% assign body_classes = body_classes | append: ' post-category-travel' %}
+    {% endif %}
+    {% if page.categories contains 'うたかたの日々' %}
+      {% assign body_classes = body_classes | append: ' post-category-utakata' %}
+    {% endif %}
+  {% endif %}
+  <body{% unless body_classes == '' %} class="{{ body_classes | strip }}"{% endunless %}>
     {% include header.html %}
     {{ content }}
     {% include footer.html %}
