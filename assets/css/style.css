@@ -62,7 +62,10 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
 .article-content figure img { margin: 0 auto; }
 .article-content figcaption { margin-top: .6rem; color: var(--muted); font-family: var(--sans); font-size: .7rem; }
 .article-content blockquote { margin: 2.2rem 0; padding-left: 1.2rem; color: var(--body); border-left: 1px solid #aaa49b; }
-.article-nav { margin-top: 4.5rem; padding-top: 1.4rem; display: flex; justify-content: space-between; gap: 1.5rem; border-top: 1px solid var(--line); color: var(--accent); font-size: .82rem; }
+.article-copyright { margin-top: 3.7rem; color: var(--muted); font-family: var(--sans); font-size: .7rem; line-height: 1.7; }
+.article-copyright::before { content: ""; display: block; width: 2.25rem; height: 1px; margin-bottom: .8rem; background: #aaa49b; }
+.article-copyright p { margin: 0; }
+.article-nav { margin-top: 2.5rem; padding-top: 1.4rem; display: flex; justify-content: space-between; gap: 1.5rem; border-top: 1px solid var(--line); color: var(--accent); font-size: .82rem; }
 
 .simple-page h1 { margin: 0 0 1.4rem; color: var(--ink); font-size: clamp(2rem, 5vw, 2.55rem); font-weight: 500; line-height: 1.3; }
 .simple-page h3 { margin: 2.8rem 0 .7rem; color: var(--ink); font-size: 1.25rem; font-weight: 500; }
