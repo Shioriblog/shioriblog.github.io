@@ -78,6 +78,11 @@ layout: default
 
   {% include comments.html %}
 
+  <div class="image-lightbox" id="image-lightbox" role="dialog" aria-modal="true" aria-label="查看原图" hidden>
+    <button class="image-lightbox-close" id="image-lightbox-close" type="button" aria-label="关闭原图">×</button>
+    <img id="image-lightbox-image" src="" alt="">
+  </div>
+
   <script>
     (() => {
       const content = document.querySelector('.article-content')
@@ -96,6 +101,63 @@ layout: default
         : String(count)
 
       output.textContent = `本文总计约 ${displayCount} 字，阅读约需 ${minutes} 分钟`
+    })()
+  </script>
+
+  <script>
+    (() => {
+      const content = document.querySelector('.article-content')
+      const lightbox = document.getElementById('image-lightbox')
+      const lightboxImage = document.getElementById('image-lightbox-image')
+      const closeButton = document.getElementById('image-lightbox-close')
+      if (!content || !lightbox || !lightboxImage || !closeButton) return
+
+      let previousFocus = null
+
+      const openLightbox = (image) => {
+        previousFocus = image
+        lightboxImage.src = image.currentSrc || image.src
+        lightboxImage.alt = image.alt || ''
+        lightbox.hidden = false
+        document.body.style.overflow = 'hidden'
+        closeButton.focus()
+      }
+
+      const closeLightbox = () => {
+        lightbox.hidden = true
+        lightboxImage.src = ''
+        document.body.style.overflow = ''
+        if (previousFocus) previousFocus.focus()
+      }
+
+      content.querySelectorAll('img').forEach((image) => {
+        image.classList.add('article-zoomable-image')
+        image.tabIndex = 0
+        image.setAttribute('role', 'button')
+        image.setAttribute('aria-label', image.alt ? `查看原图：${image.alt}` : '查看原图')
+
+        image.addEventListener('click', (event) => {
+          event.preventDefault()
+          openLightbox(image)
+        })
+
+        image.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            openLightbox(image)
+          }
+        })
+      })
+
+      closeButton.addEventListener('click', closeLightbox)
+
+      lightbox.addEventListener('click', (event) => {
+        if (event.target === lightbox) closeLightbox()
+      })
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !lightbox.hidden) closeLightbox()
+      })
     })()
   </script>
 </main>
@@ -178,6 +240,58 @@ layout: default
     align-items: center;
   }
 
+  .article-zoomable-image {
+    cursor: zoom-in;
+  }
+
+  .article-zoomable-image:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .image-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem;
+    background: rgba(18, 18, 17, .92);
+  }
+
+  .image-lightbox[hidden] {
+    display: none;
+  }
+
+  .image-lightbox img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 94vw;
+    max-height: 90vh;
+    object-fit: contain;
+    box-shadow: 0 10px 45px rgba(0, 0, 0, .28);
+  }
+
+  .image-lightbox-close {
+    position: fixed;
+    top: 1rem;
+    right: 1.2rem;
+    z-index: 201;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    font-family: var(--sans);
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1;
+    cursor: pointer;
+  }
+
   @media (max-width: 520px) {
     .article-info-divider {
       display: none;
@@ -185,6 +299,15 @@ layout: default
 
     .article-reading-time {
       flex-basis: 100%;
+    }
+
+    .image-lightbox {
+      padding: 1rem;
+    }
+
+    .image-lightbox img {
+      max-width: 96vw;
+      max-height: 88vh;
     }
   }
 </style>
