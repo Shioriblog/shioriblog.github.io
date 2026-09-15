@@ -33,3 +33,5 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - tools
+  - cloudflare-worker
+  - wrangler.jsonc
