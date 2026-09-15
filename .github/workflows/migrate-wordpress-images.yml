@@ -1,0 +1,51 @@
+name: Migrate WordPress images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/migrate_wordpress_images.py'
+      - '.github/workflows/migrate-wordpress-images.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: migrate-wordpress-images
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install migration dependencies
+        run: python -m pip install --disable-pip-version-check requests pillow
+
+      - name: Download and localize WordPress media
+        run: python scripts/migrate_wordpress_images.py
+
+      - name: Commit migrated media
+        shell: bash
+        run: |
+          rm -f scripts/migrate_wordpress_images.py .github/workflows/migrate-wordpress-images.yml
+          rmdir scripts 2>/dev/null || true
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No migration changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Migrate WordPress images to GitHub'
+          git push origin HEAD:main
