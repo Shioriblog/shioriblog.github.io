@@ -16,6 +16,32 @@
   const rangeButtons = Array.from(document.querySelectorAll('[data-days]'))
 
   const number = new Intl.NumberFormat('en-US')
+  const regionNames = typeof Intl.DisplayNames === 'function'
+    ? new Intl.DisplayNames(['en'], { type: 'region' })
+    : null
+
+  const countryFlag = (code) => {
+    if (!/^[A-Z]{2}$/.test(code)) return '🌐'
+    return String.fromCodePoint(...code.split('').map((char) => 127397 + char.charCodeAt(0)))
+  }
+
+  const formatCountry = (label) => {
+    const raw = String(label || '').trim()
+    const code = raw.toUpperCase()
+
+    if (/^[A-Z]{2}$/.test(code)) {
+      let name = raw
+      try {
+        name = regionNames?.of(code) || raw
+      } catch (_) {
+        name = raw
+      }
+      return `${countryFlag(code)} ${name}`
+    }
+
+    if (!raw || raw === 'Unknown') return '🌐 Unknown'
+    return raw
+  }
 
   const clearLists = () => {
     pages.innerHTML = ''
@@ -50,6 +76,7 @@
         link.title = item.label
         li.appendChild(link)
       } else {
+        if (kind === 'country') label = formatCountry(label)
         const span = document.createElement('span')
         span.textContent = label
         li.appendChild(span)
