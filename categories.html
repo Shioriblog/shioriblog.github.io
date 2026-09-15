@@ -10,6 +10,19 @@ nav: categories
   {% assign daily_posts = site.categories['日記の練習'] %}
   {% assign travel_posts = site.categories['言葉と歩く日記'] %}
 
+  {% assign count_living = 0 %}
+  {% assign count_eating = 0 %}
+  {% assign count_reading = 0 %}
+  {% assign count_thinking = 0 %}
+  {% assign count_language = 0 %}
+  {% for post in daily_posts %}
+    {% if post.tags contains '暮らす' %}{% assign count_living = count_living | plus: 1 %}{% endif %}
+    {% if post.tags contains '食べる' %}{% assign count_eating = count_eating | plus: 1 %}{% endif %}
+    {% if post.tags contains '読む・観る' %}{% assign count_reading = count_reading | plus: 1 %}{% endif %}
+    {% if post.tags contains '考える' %}{% assign count_thinking = count_thinking | plus: 1 %}{% endif %}
+    {% if post.tags contains '言葉' %}{% assign count_language = count_language | plus: 1 %}{% endif %}
+  {% endfor %}
+
   <div class="category-tabs" role="tablist" aria-label="文章分类">
     <button class="category-tab is-active" id="category-tab-daily" type="button" role="tab" aria-selected="true" aria-controls="category-daily" data-category-target="category-daily">
       日記の練習 <sup>{{ daily_posts | size }}</sup>
@@ -23,12 +36,12 @@ nav: categories
     <p class="category-description">日常随笔</p>
 
     <div class="tag-filters" role="group" aria-label="按主题筛选日记">
-      <button class="tag-filter is-active" type="button" data-tag-filter="all">ALL</button>
-      <button class="tag-filter" type="button" data-tag-filter="暮らす">暮らす</button>
-      <button class="tag-filter" type="button" data-tag-filter="食べる">食べる</button>
-      <button class="tag-filter" type="button" data-tag-filter="読む・観る">読む・観る</button>
-      <button class="tag-filter" type="button" data-tag-filter="考える">考える</button>
-      <button class="tag-filter" type="button" data-tag-filter="言葉">言葉</button>
+      <button class="tag-filter is-active" type="button" data-tag-filter="all">ALL <sup>{{ daily_posts | size }}</sup></button>
+      <button class="tag-filter" type="button" data-tag-filter="暮らす">暮らす <sup>{{ count_living }}</sup></button>
+      <button class="tag-filter" type="button" data-tag-filter="食べる">食べる <sup>{{ count_eating }}</sup></button>
+      <button class="tag-filter" type="button" data-tag-filter="読む・観る">読む・観る <sup>{{ count_reading }}</sup></button>
+      <button class="tag-filter" type="button" data-tag-filter="考える">考える <sup>{{ count_thinking }}</sup></button>
+      <button class="tag-filter" type="button" data-tag-filter="言葉">言葉 <sup>{{ count_language }}</sup></button>
     </div>
 
     {% assign daily_years = daily_posts | group_by_exp: 'post', "post.date | date: '%Y'" %}
@@ -132,6 +145,10 @@ nav: categories
     font-weight: 500;
   }
 
+  .category-page .category-year-group:not(:first-of-type) {
+    margin-top: 2.35rem;
+  }
+
   .category-page .category-posts li[hidden],
   .category-page .category-year-group[hidden] {
     display: none;
@@ -154,6 +171,15 @@ nav: categories
     letter-spacing: .04em;
     cursor: pointer;
     transition: color .15s ease;
+  }
+
+  .tag-filter sup {
+    position: relative;
+    top: -.3em;
+    margin-left: .12rem;
+    color: var(--muted);
+    font-size: .56rem;
+    line-height: 1;
   }
 
   .tag-filter:hover,
