@@ -53,6 +53,8 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
 .article-shell { width: min(650px, calc(100% - 4rem)); margin: 0 auto; padding: 3.4rem 0 5.5rem; }
 .article-shell header { margin-bottom: 2.2rem; }
 .eyebrow { margin: 0 0 .75rem; color: var(--accent); font-family: var(--sans); font-size: .72rem; letter-spacing: .035em; }
+.eyebrow a { color: inherit; border-bottom: 1px solid transparent; text-decoration: none; }
+.eyebrow a:hover { color: var(--ink); border-bottom-color: var(--line); }
 .article-shell h1 { margin: 0 0 .8rem; color: var(--ink); font-size: clamp(2rem, 6vw, 2.55rem); font-weight: 500; letter-spacing: .01em; line-height: 1.28; text-wrap: pretty; }
 .article-info { color: var(--muted); font-family: var(--sans); font-size: .72rem; font-variant-numeric: tabular-nums; }
 .article-content { color: var(--body); font-size: 1.1rem; letter-spacing: .01em; line-height: 1.92; }
