@@ -37,11 +37,9 @@ nav: home
       <span>Categories</span>
       {% assign sorted_categories = site.categories | sort %}
       {% for category in sorted_categories %}
-        {% if category[0] == '食べたり、歩いたり' %}
-          <a href="{{ '/travel/' | relative_url }}">{{ category[0] }}</a>
-        {% else %}
+        {% unless category[0] == '食べたり、歩いたり' %}
           <a href="{{ '/categories/' | relative_url }}#{{ category[0] | slugify }}">{{ category[0] }}</a>
-        {% endif %}
+        {% endunless %}
       {% endfor %}
     </div>
   {% endif %}
