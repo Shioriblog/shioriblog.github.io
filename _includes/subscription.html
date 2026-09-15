@@ -53,20 +53,25 @@
       gap: .45rem;
       min-height: 38px;
       padding: .48rem .8rem;
-      border: 1px solid var(--line);
+      border: 1px solid var(--accent);
       border-radius: 999px;
-      background: rgba(255, 255, 255, .94);
-      color: var(--body);
+      background: var(--accent);
+      color: #fff;
       font: inherit;
       font-size: .76rem;
       cursor: pointer;
-      box-shadow: 0 5px 18px rgba(29, 28, 26, .08);
-      backdrop-filter: blur(8px);
+      box-shadow: 0 5px 18px rgba(29, 28, 26, .10);
+      transition: background-color .15s ease, border-color .15s ease, transform .15s ease;
     }
 
     .subscription-launcher:hover {
-      color: var(--accent);
-      border-color: #d7d1c8;
+      background: #3f493b;
+      border-color: #3f493b;
+      color: #fff;
+    }
+
+    .subscription-launcher:active {
+      transform: translateY(1px);
     }
 
     .subscription-launcher svg {
