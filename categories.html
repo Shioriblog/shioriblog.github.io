@@ -108,9 +108,18 @@ nav: categories
         button.addEventListener('click', () => filterDailyPosts(button.dataset.tagFilter))
       })
 
+      const params = new URLSearchParams(window.location.search)
+      const requestedTag = params.get('tag')
+      const availableTags = tagFilters.map(button => button.dataset.tagFilter)
+
       const requestedCategory = window.location.hash.slice(1)
       if (panels.some(panel => panel.id === requestedCategory)) {
         selectCategory(requestedCategory)
+      }
+
+      if (requestedTag && availableTags.includes(requestedTag)) {
+        selectCategory('category-daily')
+        filterDailyPosts(requestedTag)
       }
     })()
   </script>
