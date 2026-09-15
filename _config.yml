@@ -22,7 +22,7 @@ feed:
 # 留空时网站会显示准备中的说明。
 buttondown_username: ""
 twikoo_env_id: "https://shiori-twikoo.netlify.app/.netlify/functions/twikoo"
-
+cloudflare_beacon_token: "17f59f664edc4eee966afed69fcf5598"
 exclude:
   - README.md
   - Gemfile
