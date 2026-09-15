@@ -39,10 +39,10 @@ Ali Smith在她的小说Summer里写：“The English word for summer comes from
 
 <figure class="wp-block-gallery has-nested-images columns-default is-cropped">
 <figure class="wp-block-image size-large">
-<img src="https://shioriblogorg.wordpress.com/wp-content/uploads/2025/05/img_6548_vsco.jpg?w=1024" class="wp-image-1699" />
+<img src="/assets/images/posts/2025/05/ea60cc7cfdeaa9c2.jpg" class="wp-image-1699" />
 </figure>
 <figure class="wp-block-image size-large">
-<img src="https://shioriblogorg.wordpress.com/wp-content/uploads/2025/05/img_6545_vsco.jpg?w=1024" class="wp-image-1700" />
+<img src="/assets/images/posts/2025/05/62cea55b87c02958.jpg" class="wp-image-1700" />
 </figure>
 </figure>
 
