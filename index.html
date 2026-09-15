@@ -38,7 +38,13 @@ nav: home
       {% assign sorted_categories = site.categories | sort %}
       {% for category in sorted_categories %}
         {% unless category[0] == '食べたり、歩いたり' %}
-          <a href="{{ '/categories/' | relative_url }}#{{ category[0] | slugify }}">{{ category[0] }}</a>
+          {% if category[0] == '言葉と歩く日記' %}
+            <a href="{{ '/categories/' | relative_url }}#category-travel">{{ category[0] }}</a>
+          {% elsif category[0] == '日記の練習' %}
+            <a href="{{ '/categories/' | relative_url }}#category-daily">{{ category[0] }}</a>
+          {% else %}
+            <a href="{{ '/categories/' | relative_url }}#{{ category[0] | slugify }}">{{ category[0] }}</a>
+          {% endif %}
         {% endunless %}
       {% endfor %}
     </div>
