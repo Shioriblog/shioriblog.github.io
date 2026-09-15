@@ -39,15 +39,15 @@ nav: about
   </section>
 
   <script>
-    (() => {
+    window.addEventListener('DOMContentLoaded', () => {
       const emailButton = document.getElementById('about-email-subscribe')
-      const launcher = document.getElementById('subscription-launcher')
-      if (!emailButton || !launcher) return
+      if (!emailButton) return
 
       emailButton.addEventListener('click', () => {
-        launcher.click()
+        const launcher = document.getElementById('subscription-launcher')
+        if (launcher) launcher.click()
       })
-    })()
+    })
   </script>
 </main>
 
