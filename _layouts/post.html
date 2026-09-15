@@ -71,6 +71,13 @@ layout: default
     </footer>
   </article>
 
+  <aside class="article-toc" id="article-toc" aria-label="文章目录" hidden>
+    <p class="article-toc-title">ON THIS PAGE</p>
+    <nav aria-label="文中小标题">
+      <ol id="article-toc-list"></ol>
+    </nav>
+  </aside>
+
   <nav class="article-nav" aria-label="相邻文章">
     {% if page.previous %}<a href="{{ page.previous.url | relative_url }}">← {{ page.previous.title }}</a>{% else %}<span></span>{% endif %}
     {% if page.next %}<a href="{{ page.next.url | relative_url }}">{{ page.next.title }} →</a>{% endif %}
@@ -101,6 +108,73 @@ layout: default
         : String(count)
 
       output.textContent = `本文总计约 ${displayCount} 字，阅读约需 ${minutes} 分钟`
+    })()
+  </script>
+
+  <script>
+    (() => {
+      const content = document.querySelector('.article-content')
+      const toc = document.getElementById('article-toc')
+      const list = document.getElementById('article-toc-list')
+      if (!content || !toc || !list) return
+
+      const headings = Array.from(content.querySelectorAll('h2, h3'))
+      if (headings.length < 2) return
+
+      const usedIds = new Set(Array.from(document.querySelectorAll('[id]')).map((element) => element.id))
+
+      headings.forEach((heading, index) => {
+        if (!heading.id) {
+          let id = `section-${index + 1}`
+          let suffix = 2
+          while (usedIds.has(id)) {
+            id = `section-${index + 1}-${suffix}`
+            suffix += 1
+          }
+          heading.id = id
+          usedIds.add(id)
+        }
+
+        const item = document.createElement('li')
+        if (heading.tagName === 'H3') item.classList.add('is-subheading')
+
+        const link = document.createElement('a')
+        link.href = `#${heading.id}`
+        link.textContent = heading.textContent.trim()
+        link.dataset.target = heading.id
+
+        item.appendChild(link)
+        list.appendChild(item)
+      })
+
+      toc.hidden = false
+
+      const links = Array.from(list.querySelectorAll('a'))
+      const setActive = (id) => {
+        links.forEach((link) => {
+          const active = link.dataset.target === id
+          link.classList.toggle('is-active', active)
+          if (active) link.setAttribute('aria-current', 'location')
+          else link.removeAttribute('aria-current')
+        })
+      }
+
+      const updateActiveHeading = () => {
+        const marker = window.innerHeight * 0.28
+        let active = headings[0]
+        headings.forEach((heading) => {
+          if (heading.getBoundingClientRect().top <= marker) active = heading
+        })
+        setActive(active.id)
+      }
+
+      links.forEach((link) => {
+        link.addEventListener('click', () => setActive(link.dataset.target))
+      })
+
+      updateActiveHeading()
+      window.addEventListener('scroll', updateActiveHeading, { passive: true })
+      window.addEventListener('resize', updateActiveHeading)
     })()
   </script>
 
@@ -188,6 +262,67 @@ layout: default
     width: 13px;
     height: 13px;
     flex: 0 0 13px;
+  }
+
+  .article-content h2,
+  .article-content h3 {
+    scroll-margin-top: 2rem;
+  }
+
+  .article-toc {
+    position: fixed;
+    top: 28vh;
+    left: calc(50% + 365px);
+    width: min(210px, calc(50vw - 390px));
+    max-height: 55vh;
+    overflow-y: auto;
+    padding-left: 1rem;
+    border-left: 1px solid var(--line);
+    font-family: var(--sans);
+  }
+
+  .article-toc[hidden] {
+    display: none;
+  }
+
+  .article-toc-title {
+    margin: 0 0 .75rem;
+    color: var(--muted);
+    font-size: .62rem;
+    font-weight: 500;
+    letter-spacing: .12em;
+  }
+
+  .article-toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .article-toc li {
+    margin: 0 0 .52rem;
+    line-height: 1.45;
+  }
+
+  .article-toc li.is-subheading {
+    padding-left: .75rem;
+  }
+
+  .article-toc a {
+    display: block;
+    color: var(--muted);
+    font-size: .7rem;
+    text-decoration: none;
+    transition: color .15s ease;
+  }
+
+  .article-toc a:hover,
+  .article-toc a.is-active {
+    color: var(--accent);
+  }
+
+  .article-toc a.is-active {
+    font-weight: 500;
   }
 
   .article-tags {
@@ -290,6 +425,12 @@ layout: default
     font-weight: 300;
     line-height: 1;
     cursor: pointer;
+  }
+
+  @media (max-width: 1120px) {
+    .article-toc {
+      display: none;
+    }
   }
 
   @media (max-width: 520px) {
