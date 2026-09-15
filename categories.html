@@ -21,14 +21,26 @@ nav: categories
 
   <section class="category-panel" id="category-daily" role="tabpanel" aria-labelledby="category-tab-daily">
     <p class="category-description">日常随笔</p>
+
+    <div class="tag-filters" role="group" aria-label="按主题筛选日记">
+      <button class="tag-filter is-active" type="button" data-tag-filter="all">ALL</button>
+      <button class="tag-filter" type="button" data-tag-filter="暮らす">暮らす</button>
+      <button class="tag-filter" type="button" data-tag-filter="食べる">食べる</button>
+      <button class="tag-filter" type="button" data-tag-filter="読む・観る">読む・観る</button>
+      <button class="tag-filter" type="button" data-tag-filter="考える">考える</button>
+      <button class="tag-filter" type="button" data-tag-filter="言葉">言葉</button>
+    </div>
+
     {% assign daily_years = daily_posts | group_by_exp: 'post', "post.date | date: '%Y'" %}
     {% for year in daily_years %}
-      <div class="category-year"><span>{{ year.name }}</span></div>
-      <ul class="category-posts">
-        {% for post in year.items %}
-          <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
-        {% endfor %}
-      </ul>
+      <div class="category-year-group">
+        <div class="category-year"><span>{{ year.name }}</span></div>
+        <ul class="category-posts">
+          {% for post in year.items %}
+            <li data-post-tags="{{ post.tags | join: '|' | escape }}"><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
+          {% endfor %}
+        </ul>
+      </div>
     {% endfor %}
   </section>
 
@@ -49,6 +61,8 @@ nav: categories
     (() => {
       const tabs = Array.from(document.querySelectorAll('.category-tab'))
       const panels = Array.from(document.querySelectorAll('.category-panel'))
+      const tagFilters = Array.from(document.querySelectorAll('.tag-filter'))
+      const dailyGroups = Array.from(document.querySelectorAll('#category-daily .category-year-group'))
       if (tabs.length === 0 || panels.length === 0) return
 
       const selectCategory = (target, updateUrl = false) => {
@@ -63,8 +77,35 @@ nav: categories
         if (updateUrl) history.replaceState(null, '', `#${target}`)
       }
 
+      const filterDailyPosts = (tag) => {
+        tagFilters.forEach((button) => {
+          const active = button.dataset.tagFilter === tag
+          button.classList.toggle('is-active', active)
+          button.setAttribute('aria-pressed', String(active))
+        })
+
+        dailyGroups.forEach((group) => {
+          const posts = Array.from(group.querySelectorAll('.category-posts li'))
+          let visibleCount = 0
+
+          posts.forEach((post) => {
+            const tags = (post.dataset.postTags || '').split('|').filter(Boolean)
+            const visible = tag === 'all' || tags.includes(tag)
+            post.hidden = !visible
+            if (visible) visibleCount += 1
+          })
+
+          group.hidden = visibleCount === 0
+        })
+      }
+
       tabs.forEach((tab) => {
         tab.addEventListener('click', () => selectCategory(tab.dataset.categoryTarget, true))
+      })
+
+      tagFilters.forEach((button) => {
+        button.setAttribute('aria-pressed', String(button.classList.contains('is-active')))
+        button.addEventListener('click', () => filterDailyPosts(button.dataset.tagFilter))
       })
 
       const requestedCategory = window.location.hash.slice(1)
@@ -80,5 +121,35 @@ nav: categories
     color: var(--ink);
     font-size: .9rem;
     font-weight: 500;
+  }
+
+  .tag-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .55rem 1rem;
+    margin: -.15rem 0 2.2rem;
+  }
+
+  .tag-filter {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .72rem;
+    letter-spacing: .04em;
+    cursor: pointer;
+    transition: color .15s ease;
+  }
+
+  .tag-filter:hover,
+  .tag-filter.is-active {
+    color: var(--accent);
+  }
+
+  .tag-filter.is-active {
+    text-decoration: underline;
+    text-underline-offset: .28rem;
+    text-decoration-thickness: 1px;
   }
 </style>
