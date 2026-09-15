@@ -17,3 +17,14 @@
 .travel-kicker {
   font-family: var(--serif-ja);
 }
+
+/* Slightly restore visual weight after the serif update. */
+.site-header nav a {
+  font-size: .82rem;
+}
+
+.category-label-ja,
+.tag-label-ja {
+  font-family: var(--serif-ja);
+  font-feature-settings: "palt" 1;
+}
