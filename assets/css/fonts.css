@@ -33,6 +33,22 @@
   letter-spacing: .015em;
 }
 
+/* Keep the reading-time placeholder out of the first paint.
+   The word-count script finishes almost immediately, then this metadata fades in. */
+.article-info-divider,
+.article-reading-time {
+  opacity: 0;
+  visibility: hidden;
+  animation: article-reading-meta-reveal .14s ease .28s forwards;
+}
+
+@keyframes article-reading-meta-reveal {
+  to {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
 /* Travel posts: H3 reads like a small notebook label. */
 body.post-category-travel .article-content h3 {
   display: inline-block;
