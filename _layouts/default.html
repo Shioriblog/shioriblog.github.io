@@ -34,6 +34,9 @@
     {% if page.categories contains '言葉と歩く日記' or page.categories contains '食べたり、歩いたり' %}
       {% assign body_classes = body_classes | append: ' post-category-travel' %}
     {% endif %}
+    {% if page.categories contains '食べたり、歩いたり' %}
+      {% assign body_classes = body_classes | append: ' post-category-tabetari' %}
+    {% endif %}
     {% if page.categories contains 'うたかたの日々' %}
       {% assign body_classes = body_classes | append: ' post-category-utakata' %}
     {% endif %}
