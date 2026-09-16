@@ -38,12 +38,20 @@ nav: home
       {% assign sorted_categories = site.categories | sort %}
       {% for category in sorted_categories %}
         {% unless category[0] == '食べたり、歩いたり' %}
+          {% assign category_description = '' %}
+          {% case category[0] %}
+            {% when 'うたかたの日々' %}{% assign category_description = '岁月的泡沫' %}
+            {% when '日記の練習' %}{% assign category_description = '日常随笔' %}
+            {% when '言葉と歩く日記' %}{% assign category_description = '旅行随笔' %}
+          {% endcase %}
           {% if category[0] == '言葉と歩く日記' %}
-            <a href="{{ '/categories/' | relative_url }}#category-travel">{{ category[0] }}</a>
+            <a class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}" href="{{ '/categories/' | relative_url }}#category-travel"{% if category_description != '' %} data-tooltip="{{ category_description }}" aria-label="{{ category[0] }} — {{ category_description }}"{% endif %}>{{ category[0] }}</a>
           {% elsif category[0] == '日記の練習' %}
-            <a href="{{ '/categories/' | relative_url }}#category-daily">{{ category[0] }}</a>
+            <a class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}" href="{{ '/categories/' | relative_url }}#category-daily"{% if category_description != '' %} data-tooltip="{{ category_description }}" aria-label="{{ category[0] }} — {{ category_description }}"{% endif %}>{{ category[0] }}</a>
+          {% elsif category[0] == 'うたかたの日々' %}
+            <a class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}" href="{{ '/categories/' | relative_url }}#category-utakata"{% if category_description != '' %} data-tooltip="{{ category_description }}" aria-label="{{ category[0] }} — {{ category_description }}"{% endif %}>{{ category[0] }}</a>
           {% else %}
-            <a href="{{ '/categories/' | relative_url }}#{{ category[0] | slugify }}">{{ category[0] }}</a>
+            <a class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}" href="{{ '/categories/' | relative_url }}#{{ category[0] | slugify }}"{% if category_description != '' %} data-tooltip="{{ category_description }}" aria-label="{{ category[0] }} — {{ category_description }}"{% endif %}>{{ category[0] }}</a>
           {% endif %}
         {% endunless %}
       {% endfor %}
@@ -84,6 +92,40 @@ nav: home
 </main>
 
 <style>
+  .home-category-link {
+    position: relative;
+  }
+
+  .home-category-link.has-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + .42rem);
+    z-index: 10;
+    padding: .22rem .38rem;
+    border: 1px solid rgba(111, 106, 100, .16);
+    border-radius: 3px;
+    background: rgba(247, 246, 243, .96);
+    color: var(--muted);
+    box-shadow: 0 2px 8px rgba(29, 28, 26, .06);
+    font-family: var(--sans);
+    font-size: .6rem;
+    font-weight: 400;
+    letter-spacing: .015em;
+    line-height: 1.2;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, .12rem);
+    transition: opacity .12s ease, transform .12s ease;
+  }
+
+  .home-category-link.has-tooltip:hover::after,
+  .home-category-link.has-tooltip:focus-visible::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
   .home-site-note {
     margin-top: 4rem;
     padding-top: 1.35rem;
