@@ -1,4 +1,91 @@
 (() => {
+  const content = document.querySelector('.article-content')
+  const lightbox = document.getElementById('image-lightbox')
+  const lightboxImage = document.getElementById('image-lightbox-image')
+  if (!content || !lightbox || !lightboxImage) return
+
+  const allImages = Array.from(content.querySelectorAll('img'))
+  if (!allImages.length) return
+
+  const previousButton = document.createElement('button')
+  previousButton.type = 'button'
+  previousButton.className = 'image-lightbox-nav image-lightbox-prev'
+  previousButton.setAttribute('aria-label', '上一张图片')
+  previousButton.textContent = '‹'
+
+  const nextButton = document.createElement('button')
+  nextButton.type = 'button'
+  nextButton.className = 'image-lightbox-nav image-lightbox-next'
+  nextButton.setAttribute('aria-label', '下一张图片')
+  nextButton.textContent = '›'
+
+  lightbox.append(previousButton, nextButton)
+
+  let activeImages = []
+  let activeIndex = 0
+
+  const sourceFor = (image) => image.dataset.originalSrc || image.currentSrc || image.src
+
+  const imagesFor = (image) => {
+    const gallery = image.closest('.wp-block-jetpack-tiled-gallery, .wp-block-gallery')
+    if (gallery) return Array.from(gallery.querySelectorAll('img'))
+    return allImages
+  }
+
+  const updateButtons = () => {
+    const showNavigation = activeImages.length > 1
+    previousButton.hidden = !showNavigation
+    nextButton.hidden = !showNavigation
+  }
+
+  const setActiveImage = (image) => {
+    activeImages = imagesFor(image)
+    activeIndex = Math.max(0, activeImages.indexOf(image))
+    updateButtons()
+  }
+
+  const showAt = (index) => {
+    if (activeImages.length < 2) return
+    activeIndex = (index + activeImages.length) % activeImages.length
+    const image = activeImages[activeIndex]
+    lightboxImage.src = sourceFor(image)
+    lightboxImage.alt = image.alt || ''
+  }
+
+  content.addEventListener('click', (event) => {
+    const image = event.target.closest('img')
+    if (image && content.contains(image)) setActiveImage(image)
+  }, true)
+
+  content.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    const image = event.target.closest('img')
+    if (image && content.contains(image)) setActiveImage(image)
+  }, true)
+
+  previousButton.addEventListener('click', (event) => {
+    event.stopPropagation()
+    showAt(activeIndex - 1)
+  })
+
+  nextButton.addEventListener('click', (event) => {
+    event.stopPropagation()
+    showAt(activeIndex + 1)
+  })
+
+  document.addEventListener('keydown', (event) => {
+    if (lightbox.hidden || activeImages.length < 2) return
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault()
+      showAt(activeIndex - 1)
+    } else if (event.key === 'ArrowRight') {
+      event.preventDefault()
+      showAt(activeIndex + 1)
+    }
+  })
+})()
+
+(() => {
   const script = document.currentScript
   const apiBase = (script?.dataset.api || '').replace(/\/$/, '')
   const container = document.querySelector('.article-like [data-lyket-type="like"]')
