@@ -26,9 +26,9 @@ nav: about
     <div class="about-popular-list" id="about-popular-list"></div>
   </section>
 
-  <section class="about-panel about-support" aria-labelledby="about-support-label">
+  <section class="about-section about-support" aria-labelledby="about-support-label">
     <p class="about-section-kicker" id="about-support-label">SUPPORT</p>
-    <div class="about-panel-body about-support-body">
+    <div class="about-support-row">
       <p>如果喜欢这里，可以请我喝一杯咖啡。</p>
       <a class="about-kofi-button" href="https://ko-fi.com/shioriblog" target="_blank" rel="noopener">
         <img src="{{ '/assets/images/kofi-logo.png' | relative_url }}" alt="" aria-hidden="true">
@@ -37,35 +37,33 @@ nav: about
     </div>
   </section>
 
-  <section class="about-panel about-subscribe" aria-labelledby="about-subscribe-label">
+  <section class="about-section about-subscribe" aria-labelledby="about-subscribe-label">
     <p class="about-section-kicker" id="about-subscribe-label">SUBSCRIBE</p>
-    <div class="about-panel-body">
-      <p class="about-subscribe-copy">可以通过 Email 或 <a href="{{ '/feed.xml' | relative_url }}">RSS</a> 订阅这个博客的新文章。</p>
+    <p class="about-subscribe-copy">可以通过 Email 或 <a href="{{ '/feed.xml' | relative_url }}">RSS</a> 订阅这个博客的新文章。</p>
 
-      <div id="about-subscribe-success" class="about-subscribe-status" role="status" hidden>
-        感谢订阅！您会在博客更新时收到邮件推送 ^_^
-      </div>
-
-      <form
-        id="about-subscribe-form"
-        class="about-subscribe-form"
-        action="https://3693b1ad.sibforms.com/serve/MUIFAJi0O7F8qH7agDpwSWg6oAHlzhb-LHTu98WhY3r3yl4pYcWiAApt44BkjoJrBlTeQHIAJRBKyCJLlhjq-y0oURNC0TfTIjtSMN0A_Ft5ATNSyb3dfEkz3_sxQ9YSL7eF-0Q37f-Mm-WN_-Aq0HFa6-1qqdu-e6LoV3T2ivgpGah7gtKfxP7jitbT8coO_FQfJm_yvkHp_6SzIQ=="
-        method="POST"
-        target="about-brevo-subscribe-target"
-      >
-        <label class="sr-only" for="about-brevo-email">Email address</label>
-        <div class="about-subscribe-form-row">
-          <input id="about-brevo-email" type="email" name="EMAIL" placeholder="Email address" autocomplete="email" required>
-          <button id="about-subscribe-button" type="submit">订阅</button>
-        </div>
-        <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;">
-        <input type="hidden" name="locale" value="en">
-      </form>
-
-      <iframe id="about-brevo-subscribe-target" name="about-brevo-subscribe-target" title="订阅提交结果" hidden></iframe>
-
-      <p class="about-privacy-note">Email 仅用于发送博客更新通知，可以随时退订。关于本站如何处理访问统计、留言和订阅信息，可以阅读 <a href="{{ '/privacy/' | relative_url }}">Privacy</a>。</p>
+    <div id="about-subscribe-success" class="about-subscribe-status" role="status" hidden>
+      感谢订阅！您会在博客更新时收到邮件推送 ^_^
     </div>
+
+    <form
+      id="about-subscribe-form"
+      class="about-subscribe-form"
+      action="https://3693b1ad.sibforms.com/serve/MUIFAJi0O7F8qH7agDpwSWg6oAHlzhb-LHTu98WhY3r3yl4pYcWiAApt44BkjoJrBlTeQHIAJRBKyCJLlhjq-y0oURNC0TfTIjtSMN0A_Ft5ATNSyb3dfEkz3_sxQ9YSL7eF-0Q37f-Mm-WN_-Aq0HFa6-1qqdu-e6LoV3T2ivgpGah7gtKfxP7jitbT8coO_FQfJm_yvkHp_6SzIQ=="
+      method="POST"
+      target="about-brevo-subscribe-target"
+    >
+      <label class="sr-only" for="about-brevo-email">Email address</label>
+      <div class="about-subscribe-form-row">
+        <input id="about-brevo-email" type="email" name="EMAIL" placeholder="Email address" autocomplete="email" required>
+        <button id="about-subscribe-button" type="submit">订阅</button>
+      </div>
+      <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;">
+      <input type="hidden" name="locale" value="en">
+    </form>
+
+    <iframe id="about-brevo-subscribe-target" name="about-brevo-subscribe-target" title="订阅提交结果" hidden></iframe>
+
+    <p class="about-privacy-note">Email 仅用于发送博客更新通知，可以随时退订。关于本站如何处理访问统计、留言和订阅信息，可以阅读 <a href="{{ '/privacy/' | relative_url }}">Privacy</a>。</p>
   </section>
 
   <script>
@@ -97,14 +95,10 @@ nav: about
 
             if (!popular.length) return
 
-            popular.forEach((item, index) => {
+            popular.forEach((item) => {
               const meta = posts[item.label]
               const article = document.createElement('article')
               article.className = 'about-popular-item'
-
-              const number = document.createElement('span')
-              number.className = 'about-popular-number'
-              number.textContent = String(index + 1).padStart(2, '0')
 
               const copy = document.createElement('div')
               copy.className = 'about-popular-copy'
@@ -122,7 +116,7 @@ nav: about
               arrow.textContent = '↗'
 
               copy.append(link, details)
-              article.append(number, copy, arrow)
+              article.append(copy, arrow)
               popularList.appendChild(article)
             })
 
@@ -261,18 +255,11 @@ nav: about
 
   .about-popular-item {
     display: grid;
-    grid-template-columns: 2.1rem minmax(0, 1fr) auto;
-    gap: .8rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
     align-items: center;
     padding: 1rem 0;
     border-bottom: 1px solid var(--line);
-  }
-
-  .about-popular-number {
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: .58rem;
-    letter-spacing: .08em;
   }
 
   .about-popular-copy {
@@ -305,29 +292,25 @@ nav: about
     font-size: .7rem;
   }
 
-  .about-panel {
-    margin-top: 2.4rem;
-    padding: 1.25rem 1.35rem 1.35rem;
-    border-radius: 8px;
-    background: var(--soft);
+  .about-section {
+    margin-top: 3.2rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--line);
   }
 
-  .about-panel-body {
-    margin-top: .72rem;
-  }
-
-  .about-support-body {
+  .about-support-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1.2rem;
+    margin-top: .8rem;
   }
 
-  .about-support-body > p {
+  .about-support-row > p {
     margin: 0;
     color: var(--body);
-    font-size: .92rem;
-    line-height: 1.7;
+    font-size: .94rem;
+    line-height: 1.75;
   }
 
   .about-kofi-button {
@@ -335,8 +318,8 @@ nav: about
     flex: 0 0 auto;
     align-items: center;
     gap: .48rem;
-    padding: .52rem .72rem;
-    border: 1px solid rgba(111, 106, 100, .18);
+    padding: .5rem .72rem;
+    border: 1px solid var(--line);
     border-radius: 999px;
     background: var(--paper);
     color: var(--body);
@@ -358,15 +341,11 @@ nav: about
     object-fit: contain;
   }
 
-  .about-subscribe {
-    margin-top: 1rem;
-  }
-
   .about-subscribe-copy {
-    margin: 0 0 .95rem;
+    margin: .8rem 0 1rem;
     color: var(--body);
-    font-size: .92rem;
-    line-height: 1.75;
+    font-size: .94rem;
+    line-height: 1.8;
   }
 
   .about-subscribe-copy a,
@@ -377,7 +356,7 @@ nav: about
   .about-subscribe-form-row {
     display: flex;
     align-items: stretch;
-    width: 100%;
+    width: min(100%, 430px);
     gap: .5rem;
   }
 
@@ -385,7 +364,7 @@ nav: about
     min-width: 0;
     flex: 1 1 auto;
     padding: .68rem .72rem;
-    border: 1px solid rgba(111, 106, 100, .2);
+    border: 1px solid var(--line);
     border-radius: 3px;
     background: var(--paper);
     color: var(--body);
@@ -416,10 +395,11 @@ nav: about
   }
 
   .about-subscribe-status {
+    width: min(100%, 430px);
     margin: 0 0 .9rem;
     padding: .6rem .7rem;
     border-left: 2px solid var(--accent);
-    background: var(--paper);
+    background: var(--soft);
     color: var(--body);
     font-family: var(--sans);
     font-size: .7rem;
@@ -427,6 +407,7 @@ nav: about
   }
 
   .about-privacy-note {
+    max-width: 36rem;
     margin: .95rem 0 0;
     color: var(--muted);
     font-family: var(--sans);
@@ -444,19 +425,19 @@ nav: about
       margin-top: 3.5rem;
     }
 
-    .about-popular-item {
-      grid-template-columns: 1.7rem minmax(0, 1fr) auto;
-      gap: .6rem;
+    .about-section {
+      margin-top: 2.7rem;
+      padding-top: 1.45rem;
     }
 
-    .about-panel {
-      padding: 1.1rem;
-    }
-
-    .about-support-body {
+    .about-support-row {
       align-items: flex-start;
       flex-direction: column;
       gap: .9rem;
+    }
+
+    .about-subscribe-form-row {
+      width: 100%;
     }
   }
 </style>
