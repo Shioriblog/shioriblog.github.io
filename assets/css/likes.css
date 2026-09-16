@@ -46,3 +46,7 @@
   min-width: .65em;
   font-variant-numeric: tabular-nums;
 }
+
+.article-related {
+  display: none !important;
+}
