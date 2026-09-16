@@ -47,6 +47,87 @@
     {{ content }}
     {% include footer.html %}
     {% unless page.subscription == false %}{% include subscription.html %}{% endunless %}
+
+    <script>
+      (() => {
+        const images = Array.from(document.querySelectorAll('main img'))
+          .filter((image) => {
+            try {
+              const source = new URL(image.currentSrc || image.src, window.location.href)
+              return source.origin === window.location.origin && source.pathname.startsWith('/assets/images/')
+            } catch (_) {
+              return false
+            }
+          })
+
+        if (!images.length) return
+
+        images.forEach((image, index) => {
+          image.decoding = 'async'
+          if (index > 0) image.loading = 'lazy'
+        })
+
+        const widthFor = (image) => {
+          const cssWidth = image.getBoundingClientRect().width || 720
+          const wanted = cssWidth * Math.min(window.devicePixelRatio || 1, 2)
+          if (wanted <= 480) return 480
+          if (wanted <= 720) return 720
+          return 1200
+        }
+
+        const optimizedUrl = (image) => {
+          const source = new URL(image.currentSrc || image.src, window.location.href)
+          const width = widthFor(image)
+          return `/cdn-cgi/image/width=${width},fit=scale-down,quality=82,format=auto,metadata=none${source.pathname}`
+        }
+
+        const swap = (image) => {
+          if (image.dataset.cfOptimized === '1') return
+          const original = new URL(image.currentSrc || image.src, window.location.href).href
+          image.dataset.originalSrc = original
+          image.dataset.cfOptimized = '1'
+          image.removeAttribute('srcset')
+          image.removeAttribute('sizes')
+          image.onerror = () => {
+            image.onerror = null
+            image.src = original
+          }
+          image.src = optimizedUrl(image)
+
+          if (image.closest('.article-content')) {
+            const restoreLightbox = () => {
+              const lightboxImage = document.getElementById('image-lightbox-image')
+              if (lightboxImage) requestAnimationFrame(() => { lightboxImage.src = original })
+            }
+            image.addEventListener('click', restoreLightbox)
+            image.addEventListener('keydown', (event) => {
+              if (event.key === 'Enter' || event.key === ' ') restoreLightbox()
+            })
+          }
+        }
+
+        let support = null
+        try { support = sessionStorage.getItem('shiori-cf-images') } catch (_) {}
+
+        if (support === 'yes') {
+          images.forEach(swap)
+          return
+        }
+
+        if (support === 'no') return
+
+        const probe = new Image()
+        probe.onload = () => {
+          try { sessionStorage.setItem('shiori-cf-images', 'yes') } catch (_) {}
+          images.forEach(swap)
+        }
+        probe.onerror = () => {
+          try { sessionStorage.setItem('shiori-cf-images', 'no') } catch (_) {}
+        }
+        probe.src = optimizedUrl(images[0])
+      })()
+    </script>
+
     {% if page.layout == 'post' %}
       <script>
         (() => {
