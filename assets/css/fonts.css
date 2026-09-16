@@ -69,3 +69,112 @@ body.post-category-utakata .article-content h3::after {
   height: 1px;
   background: var(--line);
 }
+
+/* Trial collage layout for the Berlin 2025 travel post only.
+   wp-image-1947 is unique to that post, so other travel posts are untouched. */
+body:has(.wp-image-1947) .article-content .wp-block-gallery.has-nested-images {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin: 1.35rem 0 1.9rem;
+}
+
+body:has(.wp-image-1947) .article-content .wp-block-gallery.has-nested-images > figure {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+body:has(.wp-image-1947) .article-content .wp-block-gallery.has-nested-images > figure img {
+  display: block;
+  width: 100%;
+  height: clamp(190px, 27vw, 260px);
+  object-fit: cover;
+}
+
+body:has(.wp-image-1947) .article-content .wp-block-jetpack-tiled-gallery {
+  margin: 1.35rem 0 1.9rem;
+}
+
+body:has(.wp-image-1947) .article-content .wp-block-jetpack-tiled-gallery .tiled-gallery__gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+body:has(.wp-image-1947) .article-content .wp-block-jetpack-tiled-gallery .tiled-gallery__row {
+  display: flex;
+  align-items: stretch;
+  gap: 7px;
+  width: 100%;
+}
+
+body:has(.wp-image-1947) .article-content .wp-block-jetpack-tiled-gallery .tiled-gallery__col {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+body:has(.wp-image-1947) .article-content .wp-block-jetpack-tiled-gallery .tiled-gallery__row.columns-1 .tiled-gallery__col {
+  flex: 1 1 100%;
+}
+
+body:has(.wp-image-1947) .article-content .wp-block-jetpack-tiled-gallery .tiled-gallery__row.columns-3 .tiled-gallery__col {
+  flex: 1 1 0;
+}
+
+body:has(.wp-image-1947) .article-content .wp-block-jetpack-tiled-gallery figure {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+body:has(.wp-image-1947) .article-content .wp-block-jetpack-tiled-gallery img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 170px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+body:has(.wp-image-1947) .article-content .wp-block-jetpack-tiled-gallery .tiled-gallery__col:has(figure + figure) img {
+  min-height: 115px;
+  aspect-ratio: 3 / 2;
+}
+
+body:has(.wp-image-1947) .article-content .wp-block-jetpack-tiled-gallery .columns-1 img {
+  max-height: 390px;
+  aspect-ratio: 16 / 9;
+}
+
+@media (max-width: 640px) {
+  body:has(.wp-image-1947) .article-content .wp-block-gallery.has-nested-images {
+    gap: 5px;
+  }
+
+  body:has(.wp-image-1947) .article-content .wp-block-gallery.has-nested-images > figure img {
+    height: 44vw;
+    min-height: 145px;
+  }
+
+  body:has(.wp-image-1947) .article-content .wp-block-jetpack-tiled-gallery .tiled-gallery__gallery,
+  body:has(.wp-image-1947) .article-content .wp-block-jetpack-tiled-gallery .tiled-gallery__row,
+  body:has(.wp-image-1947) .article-content .wp-block-jetpack-tiled-gallery .tiled-gallery__col {
+    gap: 5px;
+  }
+
+  body:has(.wp-image-1947) .article-content .wp-block-jetpack-tiled-gallery .tiled-gallery__row {
+    flex-wrap: wrap;
+  }
+
+  body:has(.wp-image-1947) .article-content .wp-block-jetpack-tiled-gallery .tiled-gallery__row:not(.columns-1) > .tiled-gallery__col {
+    flex: 1 1 calc(50% - 3px) !important;
+  }
+
+  body:has(.wp-image-1947) .article-content .wp-block-jetpack-tiled-gallery img {
+    min-height: 135px;
+  }
+}
