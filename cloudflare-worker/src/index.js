@@ -158,7 +158,7 @@ async function handleDashboard(request, env, url) {
     const previousViews = estimate(previousTotal)
     const previousVisits = Math.round(previousTotal.sum?.visits || 0)
 
-    const pageMap = mergeRows(account.pages, (row) => row.dimensions?.requestPath || '/', (row) => ({
+    const pageMap = mergeRows(account.pages, (row) => normalizeRequestPath(row.dimensions?.requestPath || '/'), (row) => ({
       views: estimate(row),
       visits: Math.round(row.sum?.visits || 0)
     }))
@@ -224,7 +224,7 @@ async function handleMostRead(request, env) {
   try {
     const payload = await runGraphQL(env, query)
     const rows = payload.data?.viewer?.accounts?.[0]?.pages || []
-    const posts = mergeNumeric(rows, (row) => row.dimensions?.requestPath || '', (row) => estimate(row))
+    const posts = mergeNumeric(rows, (row) => normalizeRequestPath(row.dimensions?.requestPath || ''), (row) => estimate(row))
       .map(([path, views]) => ({ path, views }))
       .filter((item) => POST_PATH.test(item.path))
       .sort((a, b) => b.views - a.views)
@@ -303,6 +303,12 @@ function rumFilter(start, end) {
     requestHost: ${JSON.stringify(SITE_HOST)}
     bot: 0
   }`
+}
+
+function normalizeRequestPath(value) {
+  const raw = typeof value === 'string' ? value : ''
+  if (!raw) return ''
+  try { return decodeURIComponent(raw) } catch (_) { return raw }
 }
 
 function countKey(postId) {
