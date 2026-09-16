@@ -13,57 +13,59 @@ nav: about
     <p class="about-japanese">本とお酒を楽しめる女子 🍷</p>
     <p class="about-bio">坐标北美，平成废物<br>一般读者，又宅又腐<br>好好吃饭，随时摆烂</p>
 
-    <nav class="about-links" aria-label="Shiori 的公开链接">
-      <a href="https://gravatar.com/shiorizh20216ad72941ad?utm_source=hovercard" target="_blank" rel="me noopener">Gravatar</a>
-      <span aria-hidden="true">·</span>
-      <a href="https://open.spotify.com/show/6hUUlQ8zkJkx2CzdLXiI0F" target="_blank" rel="noopener">Podcast</a>
-    </nav>
+    <a class="about-podcast" href="https://open.spotify.com/show/6hUUlQ8zkJkx2CzdLXiI0F" target="_blank" rel="noopener">
+      <span>Podcast:</span> 普通读者
+    </a>
   </section>
 
   <section class="about-popular" id="about-popular" aria-labelledby="about-popular-label" hidden>
     <div class="about-section-heading">
       <p class="about-section-kicker" id="about-popular-label">POPULAR READS</p>
-      <span>30 DAYS</span>
+      <span>PAST 30 DAYS</span>
     </div>
     <div class="about-popular-list" id="about-popular-list"></div>
   </section>
 
-  <section class="about-support" aria-labelledby="about-support-label">
+  <section class="about-panel about-support" aria-labelledby="about-support-label">
     <p class="about-section-kicker" id="about-support-label">SUPPORT</p>
-    <p>如果喜欢这里，可以请我喝一杯咖啡。</p>
-    <a class="about-kofi-button" href="https://ko-fi.com/shioriblog" target="_blank" rel="noopener">
-      <img src="{{ '/assets/images/kofi-logo.png' | relative_url }}" alt="" aria-hidden="true">
-      <span>Buy me a coffee</span>
-    </a>
+    <div class="about-panel-body about-support-body">
+      <p>如果喜欢这里，可以请我喝一杯咖啡。</p>
+      <a class="about-kofi-button" href="https://ko-fi.com/shioriblog" target="_blank" rel="noopener">
+        <img src="{{ '/assets/images/kofi-logo.png' | relative_url }}" alt="" aria-hidden="true">
+        <span>Buy me a coffee</span>
+      </a>
+    </div>
   </section>
 
-  <section class="about-subscribe" aria-labelledby="about-subscribe-label">
+  <section class="about-panel about-subscribe" aria-labelledby="about-subscribe-label">
     <p class="about-section-kicker" id="about-subscribe-label">SUBSCRIBE</p>
-    <p class="about-subscribe-copy">可以通过 Email 或 <a href="{{ '/feed.xml' | relative_url }}">RSS</a> 订阅这个博客的新文章。</p>
+    <div class="about-panel-body">
+      <p class="about-subscribe-copy">可以通过 Email 或 <a href="{{ '/feed.xml' | relative_url }}">RSS</a> 订阅这个博客的新文章。</p>
 
-    <div id="about-subscribe-success" class="about-subscribe-status" role="status" hidden>
-      感谢订阅！您会在博客更新时收到邮件推送 ^_^
-    </div>
-
-    <form
-      id="about-subscribe-form"
-      class="about-subscribe-form"
-      action="https://3693b1ad.sibforms.com/serve/MUIFAJi0O7F8qH7agDpwSWg6oAHlzhb-LHTu98WhY3r3yl4pYcWiAApt44BkjoJrBlTeQHIAJRBKyCJLlhjq-y0oURNC0TfTIjtSMN0A_Ft5ATNSyb3dfEkz3_sxQ9YSL7eF-0Q37f-Mm-WN_-Aq0HFa6-1qqdu-e6LoV3T2ivgpGah7gtKfxP7jitbT8coO_FQfJm_yvkHp_6SzIQ=="
-      method="POST"
-      target="about-brevo-subscribe-target"
-    >
-      <label class="sr-only" for="about-brevo-email">Email address</label>
-      <div class="about-subscribe-form-row">
-        <input id="about-brevo-email" type="email" name="EMAIL" placeholder="Email address" autocomplete="email" required>
-        <button id="about-subscribe-button" type="submit">订阅</button>
+      <div id="about-subscribe-success" class="about-subscribe-status" role="status" hidden>
+        感谢订阅！您会在博客更新时收到邮件推送 ^_^
       </div>
-      <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;">
-      <input type="hidden" name="locale" value="en">
-    </form>
 
-    <iframe id="about-brevo-subscribe-target" name="about-brevo-subscribe-target" title="订阅提交结果" hidden></iframe>
+      <form
+        id="about-subscribe-form"
+        class="about-subscribe-form"
+        action="https://3693b1ad.sibforms.com/serve/MUIFAJi0O7F8qH7agDpwSWg6oAHlzhb-LHTu98WhY3r3yl4pYcWiAApt44BkjoJrBlTeQHIAJRBKyCJLlhjq-y0oURNC0TfTIjtSMN0A_Ft5ATNSyb3dfEkz3_sxQ9YSL7eF-0Q37f-Mm-WN_-Aq0HFa6-1qqdu-e6LoV3T2ivgpGah7gtKfxP7jitbT8coO_FQfJm_yvkHp_6SzIQ=="
+        method="POST"
+        target="about-brevo-subscribe-target"
+      >
+        <label class="sr-only" for="about-brevo-email">Email address</label>
+        <div class="about-subscribe-form-row">
+          <input id="about-brevo-email" type="email" name="EMAIL" placeholder="Email address" autocomplete="email" required>
+          <button id="about-subscribe-button" type="submit">订阅</button>
+        </div>
+        <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;">
+        <input type="hidden" name="locale" value="en">
+      </form>
 
-    <p class="about-privacy-note">Email 仅用于发送博客更新通知，可以随时退订。关于本站如何处理访问统计、留言和订阅信息，可以阅读 <a href="{{ '/privacy/' | relative_url }}">Privacy</a>。</p>
+      <iframe id="about-brevo-subscribe-target" name="about-brevo-subscribe-target" title="订阅提交结果" hidden></iframe>
+
+      <p class="about-privacy-note">Email 仅用于发送博客更新通知，可以随时退订。关于本站如何处理访问统计、留言和订阅信息，可以阅读 <a href="{{ '/privacy/' | relative_url }}">Privacy</a>。</p>
+    </div>
   </section>
 
   <script>
@@ -95,10 +97,17 @@ nav: about
 
             if (!popular.length) return
 
-            popular.forEach((item) => {
+            popular.forEach((item, index) => {
               const meta = posts[item.label]
               const article = document.createElement('article')
               article.className = 'about-popular-item'
+
+              const number = document.createElement('span')
+              number.className = 'about-popular-number'
+              number.textContent = String(index + 1).padStart(2, '0')
+
+              const copy = document.createElement('div')
+              copy.className = 'about-popular-copy'
 
               const link = document.createElement('a')
               link.href = item.label
@@ -107,7 +116,13 @@ nav: about
               const details = document.createElement('p')
               details.textContent = [meta.date, meta.category].filter(Boolean).join(' · ')
 
-              article.append(link, details)
+              const arrow = document.createElement('span')
+              arrow.className = 'about-popular-arrow'
+              arrow.setAttribute('aria-hidden', 'true')
+              arrow.textContent = '↗'
+
+              copy.append(link, details)
+              article.append(number, copy, arrow)
               popularList.appendChild(article)
             })
 
@@ -159,9 +174,9 @@ nav: about
     margin: 0;
     color: var(--accent);
     font-family: var(--sans);
-    font-size: .66rem;
+    font-size: .64rem;
     font-weight: 500;
-    letter-spacing: .16em;
+    letter-spacing: .17em;
   }
 
   .about-kicker {
@@ -200,31 +215,25 @@ nav: about
     line-height: 1.95;
   }
 
-  .about-links {
-    display: flex;
-    justify-content: center;
-    gap: .62rem;
+  .about-podcast {
+    display: inline-block;
     margin-top: 1.45rem;
-    color: var(--line);
+    color: var(--body);
     font-family: var(--sans);
     font-size: .72rem;
-  }
-
-  .about-links a {
-    color: var(--muted);
     text-decoration: none;
   }
 
-  .about-links a:hover {
+  .about-podcast span {
+    color: var(--muted);
+  }
+
+  .about-podcast:hover {
     color: var(--accent);
   }
 
-  .about-popular,
-  .about-support,
-  .about-subscribe {
-    margin-top: 4rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--line);
+  .about-popular {
+    margin-top: 4.2rem;
   }
 
   .about-popular[hidden] {
@@ -236,72 +245,103 @@ nav: about
     align-items: baseline;
     justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 1.15rem;
+    margin-bottom: .7rem;
   }
 
-  .about-section-heading span {
+  .about-section-heading > span {
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .59rem;
-    letter-spacing: .08em;
+    font-size: .56rem;
+    letter-spacing: .09em;
   }
 
   .about-popular-list {
-    display: grid;
-    gap: 0;
+    border-top: 1px solid var(--line);
   }
 
   .about-popular-item {
-    padding: .95rem 0 1rem;
+    display: grid;
+    grid-template-columns: 2.1rem minmax(0, 1fr) auto;
+    gap: .8rem;
+    align-items: center;
+    padding: 1rem 0;
     border-bottom: 1px solid var(--line);
   }
 
-  .about-popular-item:first-child {
-    padding-top: .15rem;
+  .about-popular-number {
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .58rem;
+    letter-spacing: .08em;
   }
 
-  .about-popular-item:last-child {
-    border-bottom: 0;
-    padding-bottom: 0;
+  .about-popular-copy {
+    min-width: 0;
   }
 
-  .about-popular-item a {
+  .about-popular-copy a {
     color: var(--body);
     font-family: var(--serif);
-    font-size: 1.04rem;
-    line-height: 1.5;
+    font-size: 1.02rem;
+    line-height: 1.45;
     text-decoration: none;
   }
 
-  .about-popular-item a:hover {
+  .about-popular-copy a:hover {
     color: var(--accent);
   }
 
-  .about-popular-item p {
-    margin: .25rem 0 0;
+  .about-popular-copy p {
+    margin: .2rem 0 0;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .65rem;
+    font-size: .61rem;
     line-height: 1.5;
   }
 
-  .about-support > p:not(.about-section-kicker) {
-    margin: .8rem 0 1.05rem;
+  .about-popular-arrow {
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .7rem;
+  }
+
+  .about-panel {
+    margin-top: 2.4rem;
+    padding: 1.25rem 1.35rem 1.35rem;
+    border-radius: 8px;
+    background: var(--soft);
+  }
+
+  .about-panel-body {
+    margin-top: .72rem;
+  }
+
+  .about-support-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.2rem;
+  }
+
+  .about-support-body > p {
+    margin: 0;
     color: var(--body);
-    line-height: 1.8;
+    font-size: .92rem;
+    line-height: 1.7;
   }
 
   .about-kofi-button {
     display: inline-flex;
+    flex: 0 0 auto;
     align-items: center;
-    gap: .58rem;
-    padding: .58rem .82rem;
-    border: 1px solid var(--line);
+    gap: .48rem;
+    padding: .52rem .72rem;
+    border: 1px solid rgba(111, 106, 100, .18);
     border-radius: 999px;
-    background: var(--soft);
+    background: var(--paper);
     color: var(--body);
     font-family: var(--sans);
-    font-size: .72rem;
+    font-size: .68rem;
     text-decoration: none;
     transition: border-color .15s ease, color .15s ease, transform .15s ease;
   }
@@ -313,16 +353,20 @@ nav: about
   }
 
   .about-kofi-button img {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     object-fit: contain;
   }
 
+  .about-subscribe {
+    margin-top: 1rem;
+  }
+
   .about-subscribe-copy {
-    max-width: 34rem;
-    margin: .8rem 0 1.15rem;
+    margin: 0 0 .95rem;
     color: var(--body);
-    line-height: 1.85;
+    font-size: .92rem;
+    line-height: 1.75;
   }
 
   .about-subscribe-copy a,
@@ -333,7 +377,7 @@ nav: about
   .about-subscribe-form-row {
     display: flex;
     align-items: stretch;
-    width: min(100%, 380px);
+    width: 100%;
     gap: .5rem;
   }
 
@@ -341,12 +385,12 @@ nav: about
     min-width: 0;
     flex: 1 1 auto;
     padding: .68rem .72rem;
-    border: 1px solid var(--line);
+    border: 1px solid rgba(111, 106, 100, .2);
     border-radius: 3px;
     background: var(--paper);
     color: var(--body);
     font-family: var(--sans);
-    font-size: .78rem;
+    font-size: .76rem;
   }
 
   .about-subscribe-form-row input:focus {
@@ -362,7 +406,7 @@ nav: about
     background: var(--accent);
     color: #fff;
     font-family: var(--sans);
-    font-size: .76rem;
+    font-size: .74rem;
     cursor: pointer;
   }
 
@@ -372,23 +416,21 @@ nav: about
   }
 
   .about-subscribe-status {
-    width: min(100%, 380px);
     margin: 0 0 .9rem;
     padding: .6rem .7rem;
     border-left: 2px solid var(--accent);
-    background: var(--soft);
+    background: var(--paper);
     color: var(--body);
     font-family: var(--sans);
-    font-size: .74rem;
+    font-size: .7rem;
     line-height: 1.55;
   }
 
   .about-privacy-note {
-    max-width: 36rem;
-    margin: 1.35rem 0 0;
+    margin: .95rem 0 0;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .68rem;
+    font-size: .63rem;
     line-height: 1.7;
   }
 
@@ -398,14 +440,23 @@ nav: about
       padding-top: 3rem;
     }
 
-    .about-popular,
-    .about-support,
-    .about-subscribe {
-      margin-top: 3.2rem;
+    .about-popular {
+      margin-top: 3.5rem;
     }
 
-    .about-subscribe-form-row {
-      width: 100%;
+    .about-popular-item {
+      grid-template-columns: 1.7rem minmax(0, 1fr) auto;
+      gap: .6rem;
+    }
+
+    .about-panel {
+      padding: 1.1rem;
+    }
+
+    .about-support-body {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: .9rem;
     }
   }
 </style>
