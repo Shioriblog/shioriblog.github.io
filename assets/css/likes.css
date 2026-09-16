@@ -50,3 +50,65 @@
 .article-related {
   display: none !important;
 }
+
+.image-lightbox-nav {
+  position: fixed;
+  top: 50%;
+  z-index: 202;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 4.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .18);
+  color: rgba(255, 255, 255, .88);
+  font-family: var(--sans);
+  font-size: 3.1rem;
+  font-weight: 200;
+  line-height: 1;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background .15s ease, color .15s ease, opacity .15s ease;
+}
+
+.image-lightbox-nav:hover,
+.image-lightbox-nav:focus-visible {
+  background: rgba(0, 0, 0, .42);
+  color: #fff;
+}
+
+.image-lightbox-nav:focus-visible {
+  outline: 1px solid rgba(255, 255, 255, .75);
+  outline-offset: 3px;
+}
+
+.image-lightbox-nav[hidden] {
+  display: none;
+}
+
+.image-lightbox-prev {
+  left: 1.25rem;
+}
+
+.image-lightbox-next {
+  right: 1.25rem;
+}
+
+@media (max-width: 520px) {
+  .image-lightbox-nav {
+    width: 2.7rem;
+    height: 3.8rem;
+    font-size: 2.6rem;
+  }
+
+  .image-lightbox-prev {
+    left: .35rem;
+  }
+
+  .image-lightbox-next {
+    right: .35rem;
+  }
+}
