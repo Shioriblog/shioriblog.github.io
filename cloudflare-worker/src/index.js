@@ -6,6 +6,12 @@ const LYKET_PUBLIC_KEY = 'pt_c74039748e1bf2994bb76504bf7222'
 const LYKET_NAMESPACE = 'shioriblog-posts'
 const LIKE_STORE_NAME = 'shioriblog-post-likes'
 
+// Verified legacy counts can be kept here as a safety net during migration.
+// The API migration below still takes the larger value when Lyket responds.
+const LEGACY_LIKE_SEEDS = {
+  'post-20260915135000': 7
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url)
@@ -202,12 +208,18 @@ export class LikeStore {
       if (!Number.isFinite(seed) || seed < 0) {
         return internalJson({ error: 'Invalid seed' }, 400)
       }
-      const existing = await this.ctx.storage.get(countKey(postId))
-      if (existing === undefined) {
-        await this.ctx.storage.put(countKey(postId), Math.round(seed))
-        return internalJson({ likes: Math.round(seed), seeded: true })
+
+      const key = countKey(postId)
+      const existing = await this.ctx.storage.get(key)
+      const current = existing === undefined ? 0 : Number(existing) || 0
+      const next = Math.max(current, Math.round(seed))
+
+      if (existing === undefined || next > current) {
+        await this.ctx.storage.put(key, next)
+        return internalJson({ likes: next, seeded: true })
       }
-      return internalJson({ likes: Number(existing) || 0, seeded: false })
+
+      return internalJson({ likes: current, seeded: false })
     }
 
     return internalJson({ error: 'Method not allowed' }, 405)
@@ -216,11 +228,30 @@ export class LikeStore {
   async getOrSeedCount(postId) {
     const key = countKey(postId)
     const existing = await this.ctx.storage.get(key)
-    if (existing !== undefined) return Number(existing) || 0
+    const current = existing === undefined ? 0 : Number(existing) || 0
+    const verifiedSeed = Number(LEGACY_LIKE_SEEDS[postId] || 0)
 
-    const legacy = await fetchLegacyLike(postId)
-    await this.ctx.storage.put(key, legacy)
-    return legacy
+    // Never allow a verified migrated total to be replaced by the accidental zero
+    // that was stored during the first migration attempt.
+    if (verifiedSeed > current) {
+      await this.ctx.storage.put(key, verifiedSeed)
+      return verifiedSeed
+    }
+
+    // If a post has no stored count (or only the accidental zero), try Lyket again.
+    // We take the larger value so self-hosted likes received after migration are safe.
+    if (existing === undefined || current === 0) {
+      const legacy = await fetchLegacyLike(postId)
+      if (legacy.ok && legacy.likes > current) {
+        await this.ctx.storage.put(key, legacy.likes)
+        return legacy.likes
+      }
+    }
+
+    if (existing === undefined) {
+      await this.ctx.storage.put(key, current)
+    }
+    return current
   }
 }
 
@@ -268,10 +299,7 @@ async function importLyketLikes(request, env) {
 
   try {
     const response = await fetch(`${LYKET_API}/rank/like-buttons/${LYKET_NAMESPACE}`, {
-      headers: {
-        Authorization: `Bearer ${LYKET_PUBLIC_KEY}`,
-        Accept: 'application/json'
-      }
+      headers: legacyHeaders()
     })
 
     if (!response.ok) {
@@ -287,7 +315,7 @@ async function importLyketLikes(request, env) {
 
     for (const button of buttons) {
       const postId = button?.id
-      const likes = Number(button?.attributes?.totalLikes ?? button?.totalLikes ?? 0)
+      const likes = readLegacyLikes(button)
       if (!validPostId(postId) || !Number.isFinite(likes) || likes < 0) continue
 
       const seedResponse = await stub.fetch(new Request(`https://likes.internal/${encodeURIComponent(postId)}`, {
@@ -309,19 +337,41 @@ async function importLyketLikes(request, env) {
 async function fetchLegacyLike(postId) {
   try {
     const response = await fetch(`${LYKET_API}/like-buttons/${LYKET_NAMESPACE}/${encodeURIComponent(postId)}`, {
-      headers: {
-        Authorization: `Bearer ${LYKET_PUBLIC_KEY}`,
-        Accept: 'application/json'
-      }
+      headers: legacyHeaders()
     })
-    if (!response.ok) return 0
+    if (!response.ok) return { ok: false, likes: 0, status: response.status }
+
     const payload = await response.json()
     const button = payload?.data || payload
-    const likes = Number(button?.attributes?.totalLikes ?? button?.totalLikes ?? 0)
-    return Number.isFinite(likes) && likes >= 0 ? Math.round(likes) : 0
+    const likes = readLegacyLikes(button)
+    if (!Number.isFinite(likes) || likes < 0) return { ok: false, likes: 0, status: response.status }
+
+    return { ok: true, likes: Math.round(likes), status: response.status }
   } catch (_) {
-    return 0
+    return { ok: false, likes: 0, status: 0 }
   }
+}
+
+function legacyHeaders() {
+  return {
+    Authorization: `Bearer ${LYKET_PUBLIC_KEY}`,
+    Accept: 'application/json',
+    Origin: ALLOWED_ORIGIN,
+    Referer: `${ALLOWED_ORIGIN}/`
+  }
+}
+
+function readLegacyLikes(button) {
+  const raw = button?.attributes?.totalLikes
+    ?? button?.attributes?.total_likes
+    ?? button?.totalLikes
+    ?? button?.total_likes
+    ?? button?.attributes?.totalScore
+    ?? button?.attributes?.total_score
+    ?? button?.totalScore
+    ?? button?.total_score
+    ?? 0
+  return Number(raw)
 }
 
 function extractButtons(payload) {
