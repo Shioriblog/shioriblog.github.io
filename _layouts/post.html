@@ -34,13 +34,10 @@ layout: default
       <div class="article-tags" aria-label="文章标签">
         <span class="article-tags-label">TAGS</span>
         <div class="article-tags-list">
+          {% assign primary_category = page.categories | first %}
           {% for tag in page.tags %}
             {% unless tag == 'featured' %}
-              {% if page.categories contains '日記の練習' %}
-                <a href="{{ '/categories/' | relative_url }}?tag={{ tag | url_encode }}#category-daily">{{ tag }}</a>
-              {% else %}
-                <span>{{ tag }}</span>
-              {% endif %}
+              <a href="{{ '/categories/' | relative_url }}?category={{ primary_category | url_encode }}&tag={{ tag | url_encode }}">{{ tag }}</a>
             {% endunless %}
           {% endfor %}
         </div>
