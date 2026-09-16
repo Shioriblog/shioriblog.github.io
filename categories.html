@@ -83,7 +83,16 @@ nav: categories
                   {% endif %}
                 {% endfor %}
                 {% if tag_count > 0 %}
-                  <button class="tag-filter" type="button" data-tag-filter="{{ tag[0] | escape }}"><span class="tag-label-ja" lang="ja">{{ tag[0] }}</span> <sup>{{ tag_count }}</sup></button>
+                  {% assign tag_meaning = '' %}
+                  {% case tag[0] %}
+                    {% when '暮らす' %}{% assign tag_meaning = 'Living' %}
+                    {% when '考える' %}{% assign tag_meaning = 'Thinking' %}
+                    {% when '言葉' %}{% assign tag_meaning = 'Words' %}
+                    {% when '読む・観る' %}{% assign tag_meaning = 'Reading & Watching' %}
+                    {% when '食べる' %}{% assign tag_meaning = 'Eating' %}
+                    {% when '話す' %}{% assign tag_meaning = 'Talking' %}
+                  {% endcase %}
+                  <button class="tag-filter{% if tag_meaning != '' %} has-tooltip{% endif %}" type="button" data-tag-filter="{{ tag[0] | escape }}"{% if tag_meaning != '' %} data-tooltip="{{ tag_meaning }}" title="{{ tag_meaning }}" aria-label="{{ tag[0] }} — {{ tag_meaning }}"{% endif %}><span class="tag-label-ja" lang="ja">{{ tag[0] }}</span> <sup>{{ tag_count }}</sup></button>
                 {% endif %}
               {% endunless %}
             {% endfor %}
@@ -233,6 +242,7 @@ nav: categories
   }
 
   .tag-filter {
+    position: relative;
     padding: 0;
     border: 0;
     background: transparent;
@@ -267,5 +277,34 @@ nav: categories
     text-decoration: underline;
     text-underline-offset: .28rem;
     text-decoration-thickness: 1px;
+  }
+
+  .tag-filter.has-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + .55rem);
+    z-index: 10;
+    padding: .32rem .48rem;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--ink);
+    color: #fff;
+    font-family: var(--sans);
+    font-size: .64rem;
+    font-weight: 400;
+    letter-spacing: .02em;
+    line-height: 1.2;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, .2rem);
+    transition: opacity .15s ease, transform .15s ease;
+  }
+
+  .tag-filter.has-tooltip:hover::after,
+  .tag-filter.has-tooltip:focus-visible::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
   }
 </style>
