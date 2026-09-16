@@ -3,6 +3,7 @@
   const endpoint = config.endpoint || ''
   const titles = config.titles || {}
   const categoriesByPath = config.categories || {}
+  const likeIdsByPath = config.likeIds || {}
   const siteHost = 'shioriblog.org'
 
   const setup = document.getElementById('stats-setup')
@@ -22,6 +23,13 @@
   const sitePages = document.getElementById('stats-site-pages')
   const countries = document.getElementById('stats-countries')
   const rangeButtons = Array.from(document.querySelectorAll('[data-days]'))
+
+  const responseMostRead = document.getElementById('response-most-read')
+  const responseMostReadMeta = document.getElementById('response-most-read-meta')
+  const responseMostLiked = document.getElementById('response-most-liked')
+  const responseMostLikedMeta = document.getElementById('response-most-liked-meta')
+  const responseLikeRate = document.getElementById('response-like-rate')
+  const responseLikeRateMeta = document.getElementById('response-like-rate-meta')
 
   const number = new Intl.NumberFormat('en-US')
   const regionNames = typeof Intl.DisplayNames === 'function'
@@ -60,7 +68,7 @@
   const pathLabel = (path) => titles[path] || decodeURIComponent(path).replace(/\/$/, '') || '/'
 
   const addItems = (list, items, options = {}) => {
-    const { link = false, country = false, value = 'views', dual = false } = options
+    const { link = false, country = false, value = 'views', dual = false, triple = false } = options
     list.innerHTML = ''
     if (!items?.length) {
       showEmpty(list)
@@ -86,7 +94,9 @@
 
       const metric = document.createElement('span')
       metric.className = 'stats-value'
-      if (dual) {
+      if (triple) {
+        metric.textContent = `${number.format(item.views || 0)} · ${number.format(item.visits || 0)} · ♥ ${number.format(item.likes || 0)}`
+      } else if (dual) {
         metric.textContent = `${number.format(item.views || 0)} · ${number.format(item.visits || 0)}`
       } else {
         metric.textContent = number.format(item[value] || 0)
@@ -155,7 +165,7 @@
 
   const externalReferrers = (items) => (items || []).filter((item) => {
     const host = normalizeHost(item.label)
-    return !host || (host !== siteHost && host !== `www.${siteHost}`)
+    return !host || host !== siteHost
   })
 
   const sourceType = (label) => {
@@ -184,12 +194,16 @@
     return order.map((label) => ({ label, visits: totals.get(label) || 0 })).filter((item) => item.visits > 0)
   }
 
-  const splitPages = (items) => {
+  const splitPages = (items, likes) => {
     const postRows = []
     const siteRows = []
     ;(items || []).forEach((item) => {
-      if (Object.prototype.hasOwnProperty.call(titles, item.label)) postRows.push(item)
-      else siteRows.push(item)
+      if (Object.prototype.hasOwnProperty.call(titles, item.label)) {
+        const likeId = likeIdsByPath[item.label]
+        postRows.push({ ...item, likes: Number(likes?.[likeId] || 0) })
+      } else {
+        siteRows.push(item)
+      }
     })
     postRows.sort((a, b) => b.views - a.views)
     siteRows.sort((a, b) => b.views - a.views)
@@ -211,6 +225,35 @@
       .sort((a, b) => b.views - a.views)
   }
 
+  const setResponseCard = (link, meta, row, text) => {
+    if (!row) {
+      link.textContent = '—'
+      link.removeAttribute('href')
+      meta.textContent = '暂无数据'
+      return
+    }
+    link.href = row.label
+    link.textContent = pathLabel(row.label)
+    meta.textContent = text(row)
+  }
+
+  const renderReaderResponse = (postRows) => {
+    const mostRead = postRows[0]
+    const mostLiked = [...postRows].sort((a, b) => (b.likes - a.likes) || (b.views - a.views))[0]
+    const likeRateRows = postRows
+      .filter((row) => row.views >= 5 && row.likes > 0)
+      .map((row) => ({ ...row, likeDensity: (row.likes / row.views) * 100 }))
+      .sort((a, b) => b.likeDensity - a.likeDensity)
+    const highestDensity = likeRateRows[0]
+
+    setResponseCard(responseMostRead, responseMostReadMeta, mostRead,
+      (row) => `${number.format(row.views)} views · ${number.format(row.visits)} visits`)
+    setResponseCard(responseMostLiked, responseMostLikedMeta, mostLiked,
+      (row) => `♥ ${number.format(row.likes)} cumulative likes`)
+    setResponseCard(responseLikeRate, responseLikeRateMeta, highestDensity,
+      (row) => `${row.likeDensity.toFixed(1)} likes / 100 selected-period views`)
+  }
+
   const render = (data) => {
     const currentPpv = data.visits ? data.views / data.visits : null
     const previousPpv = data.previous?.pagesPerVisit
@@ -226,8 +269,9 @@
 
     drawChart(data.series || [])
 
-    const { postRows, siteRows } = splitPages(data.pages || [])
-    addItems(posts, postRows, { link: true, dual: true })
+    const { postRows, siteRows } = splitPages(data.pages || [], data.likes || {})
+    renderReaderResponse(postRows)
+    addItems(posts, postRows, { link: true, triple: true })
     addItems(sitePages, siteRows, { link: true, dual: true })
 
     const external = externalReferrers(data.referrers || [])
