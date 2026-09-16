@@ -51,9 +51,34 @@ subscription: false
     <div class="stats-chart" id="stats-chart" aria-label="每日浏览量图表"></div>
   </section>
 
+  <section class="stats-response" aria-labelledby="reader-response-title">
+    <div class="stats-panel-heading stats-response-heading">
+      <h2 id="reader-response-title">Reader response</h2>
+      <span>LIKES ARE CUMULATIVE</span>
+    </div>
+    <div class="stats-response-grid">
+      <article>
+        <span>MOST READ</span>
+        <a id="response-most-read" href="#">—</a>
+        <small id="response-most-read-meta">—</small>
+      </article>
+      <article>
+        <span>MOST LIKED</span>
+        <a id="response-most-liked" href="#">—</a>
+        <small id="response-most-liked-meta">—</small>
+      </article>
+      <article>
+        <span>LIKE DENSITY</span>
+        <a id="response-like-rate" href="#">—</a>
+        <small id="response-like-rate-meta">—</small>
+      </article>
+    </div>
+    <p class="stats-response-note">Like density = 当前累计点赞数 ÷ 所选时间段的浏览量 × 100；适合比较文章反馈强弱，但不是严格的转化率。</p>
+  </section>
+
   <div class="stats-grid">
     <section class="stats-panel">
-      <div class="stats-panel-heading"><h2>Top posts</h2><span>VIEWS · VISITS</span></div>
+      <div class="stats-panel-heading"><h2>Top posts</h2><span>VIEWS · VISITS · ♥</span></div>
       <ol class="stats-list" id="stats-posts"></ol>
     </section>
 
@@ -94,6 +119,16 @@ subscription: false
     },
     categories: {
       {% for post in site.posts %}{{ post.url | jsonify }}: {{ post.categories | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}
+    },
+    likeIds: {
+      {% for post in site.posts %}
+        {% if post.wordpress_id %}
+          {% assign dashboard_like_id = 'post-' | append: post.wordpress_id %}
+        {% else %}
+          {% assign dashboard_like_id = post.date | date: 'post-%Y%m%d%H%M%S' %}
+        {% endif %}
+        {{ post.url | jsonify }}: {{ dashboard_like_id | jsonify }}{% unless forloop.last %},{% endunless %}
+      {% endfor %}
     }
   }
 </script>
@@ -129,6 +164,19 @@ subscription: false
   .stats-bar-wrap { display: flex; width: min(32px, 72%); flex: 1; align-items: flex-end; }
   .stats-bar { width: 100%; min-height: 2px; background: var(--accent); opacity: .82; }
   .stats-bar-item time { min-height: 1.4rem; color: var(--muted); font-size: .58rem; line-height: 1.2; text-align: center; white-space: nowrap; }
+
+  .stats-response { margin: 0 0 3rem; }
+  .stats-response-heading { margin-bottom: .85rem; }
+  .stats-response-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stats-response-grid article { min-width: 0; padding: 1rem 1.2rem 1.05rem; border-right: 1px solid var(--line); }
+  .stats-response-grid article:first-child { padding-left: 0; }
+  .stats-response-grid article:last-child { border-right: 0; }
+  .stats-response-grid span { display: block; margin-bottom: .45rem; color: var(--muted); font-size: .61rem; letter-spacing: .1em; }
+  .stats-response-grid a { display: block; overflow: hidden; color: var(--body); font-family: var(--serif); font-size: .95rem; line-height: 1.45; text-decoration: none; text-overflow: ellipsis; white-space: nowrap; }
+  .stats-response-grid a:hover { color: var(--accent); }
+  .stats-response-grid small { display: block; margin-top: .25rem; color: var(--muted); font-size: .62rem; font-variant-numeric: tabular-nums; }
+  .stats-response-note { margin: .55rem 0 0; color: var(--muted); font-size: .61rem; line-height: 1.55; }
+
   .stats-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3rem 3.5rem; }
   .stats-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
   .stats-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; align-items: baseline; padding: .7rem 0; border-bottom: 1px solid var(--line); color: var(--body); font-size: .76rem; }
@@ -141,9 +189,10 @@ subscription: false
   @media (max-width: 700px) {
     .stats-page { width: min(100% - 2rem, 38rem); padding-top: 2.8rem; }
     .stats-header { align-items: flex-start; flex-direction: column; gap: 1.2rem; }
-    .stats-summary { grid-template-columns: 1fr; }
-    .stats-summary article, .stats-summary article:first-child { padding: 1rem 0; border-right: 0; border-bottom: 1px solid var(--line); }
-    .stats-summary article:last-child { border-bottom: 0; }
+    .stats-summary, .stats-response-grid { grid-template-columns: 1fr; }
+    .stats-summary article, .stats-summary article:first-child,
+    .stats-response-grid article, .stats-response-grid article:first-child { padding: 1rem 0; border-right: 0; border-bottom: 1px solid var(--line); }
+    .stats-summary article:last-child, .stats-response-grid article:last-child { border-bottom: 0; }
     .stats-grid { grid-template-columns: 1fr; gap: 2.6rem; }
     .stats-chart { gap: .35rem; height: 160px; }
     .stats-bar-item time { font-size: .5rem; }
