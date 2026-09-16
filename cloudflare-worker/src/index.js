@@ -7,7 +7,6 @@ const LYKET_NAMESPACE = 'shioriblog-posts'
 const LIKE_STORE_NAME = 'shioriblog-post-likes'
 
 // Verified legacy counts can be kept here as a safety net during migration.
-// The API migration below still takes the larger value when Lyket responds.
 const LEGACY_LIKE_SEEDS = {
   'post-20260915135000': 7
 }
@@ -46,22 +45,27 @@ export default {
 
     const end = new Date()
     const start = new Date(end.getTime() - days * 24 * 60 * 60 * 1000)
-    const startISO = start.toISOString()
-    const endISO = end.toISOString()
+    const previousEnd = start
+    const previousStart = new Date(previousEnd.getTime() - days * 24 * 60 * 60 * 1000)
 
-    const filter = `{
-      datetime_geq: ${JSON.stringify(startISO)}
-      datetime_leq: ${JSON.stringify(endISO)}
-      requestHost: ${JSON.stringify(SITE_HOST)}
-      bot: 0
-    }`
+    const currentFilter = rumFilter(start, end)
+    const previousFilter = rumFilter(previousStart, previousEnd)
 
     const query = `
       query BlogDashboard {
         viewer {
           accounts(filter: { accountTag: ${JSON.stringify(env.CF_ACCOUNT_ID)} }) {
             total: rumPageloadEventsAdaptiveGroups(
-              filter: ${filter}
+              filter: ${currentFilter}
+              limit: 1
+            ) {
+              count
+              avg { sampleInterval }
+              sum { visits }
+            }
+
+            previousTotal: rumPageloadEventsAdaptiveGroups(
+              filter: ${previousFilter}
               limit: 1
             ) {
               count
@@ -70,7 +74,7 @@ export default {
             }
 
             series: rumPageloadEventsAdaptiveGroups(
-              filter: ${filter}
+              filter: ${currentFilter}
               limit: 60
               orderBy: [date_ASC]
             ) {
@@ -80,28 +84,30 @@ export default {
             }
 
             pages: rumPageloadEventsAdaptiveGroups(
-              filter: ${filter}
-              limit: 20
+              filter: ${currentFilter}
+              limit: 200
               orderBy: [count_DESC]
             ) {
               count
               avg { sampleInterval }
+              sum { visits }
               dimensions { requestPath }
             }
 
             referrers: rumPageloadEventsAdaptiveGroups(
-              filter: ${filter}
-              limit: 20
+              filter: ${currentFilter}
+              limit: 100
               orderBy: [count_DESC]
             ) {
               count
               avg { sampleInterval }
+              sum { visits }
               dimensions { refererHost }
             }
 
             countries: rumPageloadEventsAdaptiveGroups(
-              filter: ${filter}
-              limit: 20
+              filter: ${currentFilter}
+              limit: 40
               orderBy: [count_DESC]
             ) {
               count
@@ -138,20 +144,44 @@ export default {
       }
 
       const total = account.total?.[0] || {}
+      const previousTotal = account.previousTotal?.[0] || {}
       const views = estimate(total)
       const visits = Math.round(total.sum?.visits || 0)
+      const previousViews = estimate(previousTotal)
+      const previousVisits = Math.round(previousTotal.sum?.visits || 0)
+
+      const pageMap = mergeRows(account.pages, (row) => row.dimensions?.requestPath || '/', (row) => ({
+        views: estimate(row),
+        visits: Math.round(row.sum?.visits || 0)
+      }))
+
+      const referrerMap = mergeRows(account.referrers, (row) => row.dimensions?.refererHost || 'Direct', (row) => ({
+        views: estimate(row),
+        visits: Math.round(row.sum?.visits || 0)
+      }))
+
+      const series = mergeNumeric(account.series, (row) => row.dimensions?.date || '', (row) => estimate(row))
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([date, value]) => ({ date, views: value }))
 
       return json({
         views,
         visits,
+        previous: {
+          views: previousViews,
+          visits: previousVisits,
+          pagesPerVisit: previousVisits ? previousViews / previousVisits : null
+        },
         label: days === 1 ? 'Last 24 hours' : `Last ${days} days`,
-        series: mergeBy(account.series, (row) => row.dimensions?.date || '', (row) => estimate(row))
-          .map(([date, value]) => ({ date, views: value })),
-        pages: mergeBy(account.pages, (row) => row.dimensions?.requestPath || '/', (row) => estimate(row))
-          .map(([label, value]) => ({ label, views: value })),
-        referrers: mergeBy(account.referrers, (row) => row.dimensions?.refererHost || 'Direct', (row) => estimate(row))
-          .map(([label, value]) => ({ label, views: value })),
-        countries: mergeBy(account.countries, (row) => row.dimensions?.countryName || 'Unknown', (row) => estimate(row))
+        comparisonLabel: days === 1 ? 'vs previous 24h' : `vs previous ${days} days`,
+        series,
+        pages: Array.from(pageMap.entries())
+          .map(([label, value]) => ({ label, ...value }))
+          .sort((a, b) => b.views - a.views),
+        referrers: Array.from(referrerMap.entries())
+          .map(([label, value]) => ({ label, ...value }))
+          .sort((a, b) => (b.visits - a.visits) || (b.views - a.views)),
+        countries: mergeNumeric(account.countries, (row) => row.dimensions?.countryName || 'Unknown', (row) => estimate(row))
           .map(([label, value]) => ({ label, views: value }))
       }, 200, request)
     } catch (error) {
@@ -231,15 +261,11 @@ export class LikeStore {
     const current = existing === undefined ? 0 : Number(existing) || 0
     const verifiedSeed = Number(LEGACY_LIKE_SEEDS[postId] || 0)
 
-    // Never allow a verified migrated total to be replaced by the accidental zero
-    // that was stored during the first migration attempt.
     if (verifiedSeed > current) {
       await this.ctx.storage.put(key, verifiedSeed)
       return verifiedSeed
     }
 
-    // If a post has no stored count (or only the accidental zero), try Lyket again.
-    // We take the larger value so self-hosted likes received after migration are safe.
     if (existing === undefined || current === 0) {
       const legacy = await fetchLegacyLike(postId)
       if (legacy.ok && legacy.likes > current) {
@@ -352,6 +378,15 @@ async function fetchLegacyLike(postId) {
   }
 }
 
+function rumFilter(start, end) {
+  return `{
+    datetime_geq: ${JSON.stringify(start.toISOString())}
+    datetime_leq: ${JSON.stringify(end.toISOString())}
+    requestHost: ${JSON.stringify(SITE_HOST)}
+    bot: 0
+  }`
+}
+
 function legacyHeaders() {
   return {
     Authorization: `Bearer ${LYKET_PUBLIC_KEY}`,
@@ -427,7 +462,7 @@ function estimate(row) {
   return Math.round(Number(row?.count || 0) * sampleInterval)
 }
 
-function mergeBy(rows = [], keyFn, valueFn) {
+function mergeNumeric(rows = [], keyFn, valueFn) {
   const totals = new Map()
   for (const row of rows || []) {
     const key = keyFn(row)
@@ -435,6 +470,21 @@ function mergeBy(rows = [], keyFn, valueFn) {
     totals.set(key, (totals.get(key) || 0) + valueFn(row))
   }
   return Array.from(totals.entries()).sort((a, b) => b[1] - a[1])
+}
+
+function mergeRows(rows = [], keyFn, valueFn) {
+  const totals = new Map()
+  for (const row of rows || []) {
+    const key = keyFn(row)
+    if (!key) continue
+    const value = valueFn(row)
+    const existing = totals.get(key) || { views: 0, visits: 0 }
+    totals.set(key, {
+      views: existing.views + Number(value.views || 0),
+      visits: existing.visits + Number(value.visits || 0)
+    })
+  }
+  return totals
 }
 
 function corsHeaders(request, maxAge = 300) {
