@@ -2,16 +2,24 @@
   const config = window.SHIO_STATS_CONFIG || {}
   const endpoint = config.endpoint || ''
   const titles = config.titles || {}
+  const categoriesByPath = config.categories || {}
+  const siteHost = 'shioriblog.org'
 
   const setup = document.getElementById('stats-setup')
   const errorBox = document.getElementById('stats-error')
   const views = document.getElementById('stat-views')
   const visits = document.getElementById('stat-visits')
   const pagesPerVisit = document.getElementById('stat-pages-per-visit')
+  const viewsChange = document.getElementById('stat-views-change')
+  const visitsChange = document.getElementById('stat-visits-change')
+  const pagesPerVisitChange = document.getElementById('stat-pages-per-visit-change')
   const chart = document.getElementById('stats-chart')
   const periodLabel = document.getElementById('stats-period-label')
-  const pages = document.getElementById('stats-pages')
+  const posts = document.getElementById('stats-posts')
   const referrers = document.getElementById('stats-referrers')
+  const sources = document.getElementById('stats-sources')
+  const categories = document.getElementById('stats-categories')
+  const sitePages = document.getElementById('stats-site-pages')
   const countries = document.getElementById('stats-countries')
   const rangeButtons = Array.from(document.querySelectorAll('[data-days]'))
 
@@ -28,25 +36,17 @@
   const formatCountry = (label) => {
     const raw = String(label || '').trim()
     const code = raw.toUpperCase()
-
     if (/^[A-Z]{2}$/.test(code)) {
       let name = raw
-      try {
-        name = regionNames?.of(code) || raw
-      } catch (_) {
-        name = raw
-      }
+      try { name = regionNames?.of(code) || raw } catch (_) { name = raw }
       return `${countryFlag(code)} ${name}`
     }
-
     if (!raw || raw === 'Unknown') return '🌐 Unknown'
     return raw
   }
 
   const clearLists = () => {
-    pages.innerHTML = ''
-    referrers.innerHTML = ''
-    countries.innerHTML = ''
+    ;[posts, referrers, sources, categories, sitePages, countries].forEach((list) => { list.innerHTML = '' })
     chart.innerHTML = ''
   }
 
@@ -57,9 +57,12 @@
     list.appendChild(item)
   }
 
-  const addRankedItems = (list, items, kind) => {
+  const pathLabel = (path) => titles[path] || decodeURIComponent(path).replace(/\/$/, '') || '/'
+
+  const addItems = (list, items, options = {}) => {
+    const { link = false, country = false, value = 'views', dual = false } = options
     list.innerHTML = ''
-    if (!items || !items.length) {
+    if (!items?.length) {
       showEmpty(list)
       return
     }
@@ -67,32 +70,35 @@
     items.slice(0, 10).forEach((item) => {
       const li = document.createElement('li')
       let label = item.label || '—'
+      if (country) label = formatCountry(label)
 
-      if (kind === 'page') {
-        label = titles[label] || decodeURIComponent(label).replace(/\/$/, '') || '/'
-        const link = document.createElement('a')
-        link.href = item.label
-        link.textContent = label
-        link.title = item.label
-        li.appendChild(link)
+      if (link) {
+        const anchor = document.createElement('a')
+        anchor.href = item.label
+        anchor.textContent = pathLabel(item.label)
+        anchor.title = item.label
+        li.appendChild(anchor)
       } else {
-        if (kind === 'country') label = formatCountry(label)
         const span = document.createElement('span')
         span.textContent = label
         li.appendChild(span)
       }
 
-      const value = document.createElement('span')
-      value.className = 'stats-value'
-      value.textContent = number.format(item.views || 0)
-      li.appendChild(value)
+      const metric = document.createElement('span')
+      metric.className = 'stats-value'
+      if (dual) {
+        metric.textContent = `${number.format(item.views || 0)} · ${number.format(item.visits || 0)}`
+      } else {
+        metric.textContent = number.format(item[value] || 0)
+      }
+      li.appendChild(metric)
       list.appendChild(li)
     })
   }
 
   const drawChart = (series) => {
     chart.innerHTML = ''
-    if (!series || !series.length) {
+    if (!series?.length) {
       const empty = document.createElement('p')
       empty.className = 'stats-empty'
       empty.textContent = '暂无数据'
@@ -100,8 +106,9 @@
       return
     }
 
-    const max = Math.max(...series.map((item) => item.views), 1)
-    series.forEach((item) => {
+    const ordered = [...series].sort((a, b) => String(a.date).localeCompare(String(b.date)))
+    const max = Math.max(...ordered.map((item) => item.views), 1)
+    ordered.forEach((item) => {
       const node = document.createElement('div')
       node.className = 'stats-bar-item'
       node.title = `${item.date}: ${number.format(item.views)} views`
@@ -124,15 +131,111 @@
     })
   }
 
+  const pctChange = (current, previous) => {
+    if (previous == null || !Number.isFinite(Number(previous))) return null
+    if (Number(previous) === 0) return Number(current) === 0 ? 0 : null
+    return ((Number(current) - Number(previous)) / Number(previous)) * 100
+  }
+
+  const setChange = (node, current, previous, label) => {
+    const change = pctChange(current, previous)
+    node.classList.remove('is-up', 'is-down')
+    if (change == null) {
+      node.textContent = label ? `— ${label}` : ''
+      return
+    }
+    const rounded = Math.round(change)
+    const arrow = rounded > 0 ? '↑' : rounded < 0 ? '↓' : '→'
+    node.textContent = `${arrow} ${Math.abs(rounded)}% ${label}`
+    if (rounded > 0) node.classList.add('is-up')
+    if (rounded < 0) node.classList.add('is-down')
+  }
+
+  const normalizeHost = (host) => String(host || '').trim().toLowerCase().replace(/^www\./, '')
+
+  const externalReferrers = (items) => (items || []).filter((item) => {
+    const host = normalizeHost(item.label)
+    return !host || (host !== siteHost && host !== `www.${siteHost}`)
+  })
+
+  const sourceType = (label) => {
+    const host = normalizeHost(label)
+    if (!host || host === 'direct') return 'Direct'
+
+    const searchHosts = ['google.', 'bing.com', 'duckduckgo.com', 'yahoo.', 'baidu.com', 'yandex.']
+    if (searchHosts.some((needle) => host.includes(needle))) return 'Search'
+
+    const socialHosts = [
+      'douban.com', 'mastodon.', 'bsky.app', 'facebook.com', 'instagram.com', 'threads.net',
+      'twitter.com', 'x.com', 'weibo.com', 'reddit.com', 't.co', 'linkedin.com'
+    ]
+    if (socialHosts.some((needle) => host.includes(needle))) return 'Social'
+
+    return 'Other websites'
+  }
+
+  const groupSources = (items) => {
+    const totals = new Map()
+    externalReferrers(items).forEach((item) => {
+      const label = sourceType(item.label)
+      totals.set(label, (totals.get(label) || 0) + Number(item.visits || 0))
+    })
+    const order = ['Direct', 'Search', 'Social', 'Other websites']
+    return order.map((label) => ({ label, visits: totals.get(label) || 0 })).filter((item) => item.visits > 0)
+  }
+
+  const splitPages = (items) => {
+    const postRows = []
+    const siteRows = []
+    ;(items || []).forEach((item) => {
+      if (Object.prototype.hasOwnProperty.call(titles, item.label)) postRows.push(item)
+      else siteRows.push(item)
+    })
+    postRows.sort((a, b) => b.views - a.views)
+    siteRows.sort((a, b) => b.views - a.views)
+    return { postRows, siteRows }
+  }
+
+  const categoryRows = (pageItems) => {
+    const totals = new Map()
+    ;(pageItems || []).forEach((item) => {
+      const postCategories = categoriesByPath[item.label]
+      if (!Array.isArray(postCategories)) return
+      postCategories.forEach((category) => {
+        if (category === '食べたり、歩いたり') return
+        totals.set(category, (totals.get(category) || 0) + Number(item.views || 0))
+      })
+    })
+    return Array.from(totals.entries())
+      .map(([label, views]) => ({ label, views }))
+      .sort((a, b) => b.views - a.views)
+  }
+
   const render = (data) => {
+    const currentPpv = data.visits ? data.views / data.visits : null
+    const previousPpv = data.previous?.pagesPerVisit
+
     views.textContent = number.format(data.views || 0)
     visits.textContent = number.format(data.visits || 0)
-    pagesPerVisit.textContent = data.visits ? (data.views / data.visits).toFixed(2) : '—'
+    pagesPerVisit.textContent = currentPpv == null ? '—' : currentPpv.toFixed(2)
     periodLabel.textContent = data.label || ''
+
+    setChange(viewsChange, data.views || 0, data.previous?.views, data.comparisonLabel || '')
+    setChange(visitsChange, data.visits || 0, data.previous?.visits, data.comparisonLabel || '')
+    setChange(pagesPerVisitChange, currentPpv || 0, previousPpv, data.comparisonLabel || '')
+
     drawChart(data.series || [])
-    addRankedItems(pages, data.pages || [], 'page')
-    addRankedItems(referrers, data.referrers || [], 'referrer')
-    addRankedItems(countries, data.countries || [], 'country')
+
+    const { postRows, siteRows } = splitPages(data.pages || [])
+    addItems(posts, postRows, { link: true, dual: true })
+    addItems(sitePages, siteRows, { link: true, dual: true })
+
+    const external = externalReferrers(data.referrers || [])
+      .sort((a, b) => (b.visits - a.visits) || (b.views - a.views))
+    addItems(referrers, external, { value: 'visits' })
+    addItems(sources, groupSources(data.referrers || []), { value: 'visits' })
+    addItems(categories, categoryRows(data.pages || []), { value: 'views' })
+    addItems(countries, data.countries || [], { country: true, value: 'views' })
   }
 
   const load = async (days) => {
@@ -163,9 +266,7 @@
   if (!endpoint) {
     setup.hidden = false
     clearLists()
-    showEmpty(pages)
-    showEmpty(referrers)
-    showEmpty(countries)
+    ;[posts, referrers, sources, categories, sitePages, countries].forEach(showEmpty)
     return
   }
 
