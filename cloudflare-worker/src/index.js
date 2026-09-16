@@ -1,15 +1,8 @@
 const GRAPHQL_ENDPOINT = 'https://api.cloudflare.com/client/v4/graphql'
 const SITE_HOST = 'shioriblog.org'
 const ALLOWED_ORIGIN = 'https://shioriblog.org'
-const LYKET_API = 'https://api.lyket.dev/v1'
-const LYKET_PUBLIC_KEY = 'pt_c74039748e1bf2994bb76504bf7222'
-const LYKET_NAMESPACE = 'shioriblog-posts'
 const LIKE_STORE_NAME = 'shioriblog-post-likes'
-
-// Verified legacy counts can be kept here as a safety net during migration.
-const LEGACY_LIKE_SEEDS = {
-  'post-20260915135000': 7
-}
+const POST_PATH = /^\/\d{4}\/\d{2}\/\d{2}\//
 
 export default {
   async fetch(request, env) {
@@ -19,11 +12,8 @@ export default {
       return new Response(null, { headers: corsHeaders(request) })
     }
 
-    if (url.pathname === '/likes/import') {
-      if (request.method !== 'POST') {
-        return json({ error: 'Method not allowed' }, 405, request)
-      }
-      return importLyketLikes(request, env)
+    if (url.pathname === '/most-read') {
+      return handleMostRead(request, env)
     }
 
     if (url.pathname.startsWith('/likes/')) {
@@ -34,159 +24,7 @@ export default {
       return json({ error: 'Method not allowed' }, 405, request)
     }
 
-    const days = Number(url.searchParams.get('days') || 7)
-    if (![1, 7, 30].includes(days)) {
-      return json({ error: 'days must be 1, 7, or 30' }, 400, request)
-    }
-
-    if (!env.CF_API_TOKEN || !env.CF_ACCOUNT_ID) {
-      return json({ error: 'Worker secrets are not configured' }, 500, request)
-    }
-
-    const end = new Date()
-    const start = new Date(end.getTime() - days * 24 * 60 * 60 * 1000)
-    const previousEnd = start
-    const previousStart = new Date(previousEnd.getTime() - days * 24 * 60 * 60 * 1000)
-
-    const currentFilter = rumFilter(start, end)
-    const previousFilter = rumFilter(previousStart, previousEnd)
-
-    const query = `
-      query BlogDashboard {
-        viewer {
-          accounts(filter: { accountTag: ${JSON.stringify(env.CF_ACCOUNT_ID)} }) {
-            total: rumPageloadEventsAdaptiveGroups(
-              filter: ${currentFilter}
-              limit: 1
-            ) {
-              count
-              avg { sampleInterval }
-              sum { visits }
-            }
-
-            previousTotal: rumPageloadEventsAdaptiveGroups(
-              filter: ${previousFilter}
-              limit: 1
-            ) {
-              count
-              avg { sampleInterval }
-              sum { visits }
-            }
-
-            series: rumPageloadEventsAdaptiveGroups(
-              filter: ${currentFilter}
-              limit: 60
-              orderBy: [date_ASC]
-            ) {
-              count
-              avg { sampleInterval }
-              dimensions { date }
-            }
-
-            pages: rumPageloadEventsAdaptiveGroups(
-              filter: ${currentFilter}
-              limit: 200
-              orderBy: [count_DESC]
-            ) {
-              count
-              avg { sampleInterval }
-              sum { visits }
-              dimensions { requestPath }
-            }
-
-            referrers: rumPageloadEventsAdaptiveGroups(
-              filter: ${currentFilter}
-              limit: 100
-              orderBy: [count_DESC]
-            ) {
-              count
-              avg { sampleInterval }
-              sum { visits }
-              dimensions { refererHost }
-            }
-
-            countries: rumPageloadEventsAdaptiveGroups(
-              filter: ${currentFilter}
-              limit: 40
-              orderBy: [count_DESC]
-            ) {
-              count
-              avg { sampleInterval }
-              dimensions { countryName }
-            }
-          }
-        }
-      }
-    `
-
-    try {
-      const response = await fetch(GRAPHQL_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${env.CF_API_TOKEN}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ query })
-      })
-
-      const payload = await response.json()
-      if (!response.ok) {
-        return json({ error: `Cloudflare API returned ${response.status}` }, 502, request)
-      }
-
-      if (payload.errors?.length) {
-        return json({ error: payload.errors.map((item) => item.message).join('; ') }, 502, request)
-      }
-
-      const account = payload.data?.viewer?.accounts?.[0]
-      if (!account) {
-        return json({ error: 'No analytics data returned for this account' }, 502, request)
-      }
-
-      const total = account.total?.[0] || {}
-      const previousTotal = account.previousTotal?.[0] || {}
-      const views = estimate(total)
-      const visits = Math.round(total.sum?.visits || 0)
-      const previousViews = estimate(previousTotal)
-      const previousVisits = Math.round(previousTotal.sum?.visits || 0)
-
-      const pageMap = mergeRows(account.pages, (row) => row.dimensions?.requestPath || '/', (row) => ({
-        views: estimate(row),
-        visits: Math.round(row.sum?.visits || 0)
-      }))
-
-      const referrerMap = mergeRows(account.referrers, (row) => row.dimensions?.refererHost || 'Direct', (row) => ({
-        views: estimate(row),
-        visits: Math.round(row.sum?.visits || 0)
-      }))
-
-      const series = mergeNumeric(account.series, (row) => row.dimensions?.date || '', (row) => estimate(row))
-        .sort((a, b) => a[0].localeCompare(b[0]))
-        .map(([date, value]) => ({ date, views: value }))
-
-      return json({
-        views,
-        visits,
-        previous: {
-          views: previousViews,
-          visits: previousVisits,
-          pagesPerVisit: previousVisits ? previousViews / previousVisits : null
-        },
-        label: days === 1 ? 'Last 24 hours' : `Last ${days} days`,
-        comparisonLabel: days === 1 ? 'vs previous 24h' : `vs previous ${days} days`,
-        series,
-        pages: Array.from(pageMap.entries())
-          .map(([label, value]) => ({ label, ...value }))
-          .sort((a, b) => b.views - a.views),
-        referrers: Array.from(referrerMap.entries())
-          .map(([label, value]) => ({ label, ...value }))
-          .sort((a, b) => (b.visits - a.visits) || (b.views - a.views)),
-        countries: mergeNumeric(account.countries, (row) => row.dimensions?.countryName || 'Unknown', (row) => estimate(row))
-          .map(([label, value]) => ({ label, views: value }))
-      }, 200, request)
-    } catch (error) {
-      return json({ error: error.message || 'Unexpected Worker error' }, 500, request)
-    }
+    return handleDashboard(request, env, url)
   }
 }
 
@@ -197,14 +35,22 @@ export class LikeStore {
 
   async fetch(request) {
     const url = new URL(request.url)
-    const postId = decodeURIComponent(url.pathname.replace(/^\//, ''))
-    if (!validPostId(postId)) {
-      return new Response(JSON.stringify({ error: 'Invalid post id' }), { status: 400 })
+
+    if (url.pathname === '/__summary' && request.method === 'GET') {
+      const entries = await this.ctx.storage.list({ prefix: 'count:' })
+      const likes = {}
+      for (const [key, value] of entries) {
+        likes[key.slice('count:'.length)] = Number(value) || 0
+      }
+      return internalJson({ likes })
     }
+
+    const postId = decodeURIComponent(url.pathname.replace(/^\//, ''))
+    if (!validPostId(postId)) return internalJson({ error: 'Invalid post id' }, 400)
 
     if (request.method === 'GET') {
       const visitor = normalizeVisitor(url.searchParams.get('visitor'))
-      const count = await this.getOrSeedCount(postId)
+      const count = await this.getCount(postId)
       const liked = visitor ? Boolean(await this.ctx.storage.get(voterKey(postId, visitor))) : false
       return internalJson({ likes: count, liked })
     }
@@ -212,11 +58,9 @@ export class LikeStore {
     if (request.method === 'POST') {
       const body = await safeJson(request)
       const visitor = normalizeVisitor(body?.visitor)
-      if (!visitor) {
-        return internalJson({ error: 'A visitor id is required' }, 400)
-      }
+      if (!visitor) return internalJson({ error: 'A visitor id is required' }, 400)
 
-      let count = await this.getOrSeedCount(postId)
+      let count = await this.getCount(postId)
       const key = voterKey(postId, visitor)
       const liked = Boolean(await this.ctx.storage.get(key))
 
@@ -232,72 +76,176 @@ export class LikeStore {
       return internalJson({ likes: count, liked: !liked })
     }
 
-    if (request.method === 'PUT') {
-      const body = await safeJson(request)
-      const seed = Number(body?.seed)
-      if (!Number.isFinite(seed) || seed < 0) {
-        return internalJson({ error: 'Invalid seed' }, 400)
-      }
-
-      const key = countKey(postId)
-      const existing = await this.ctx.storage.get(key)
-      const current = existing === undefined ? 0 : Number(existing) || 0
-      const next = Math.max(current, Math.round(seed))
-
-      if (existing === undefined || next > current) {
-        await this.ctx.storage.put(key, next)
-        return internalJson({ likes: next, seeded: true })
-      }
-
-      return internalJson({ likes: current, seeded: false })
-    }
-
     return internalJson({ error: 'Method not allowed' }, 405)
   }
 
-  async getOrSeedCount(postId) {
+  async getCount(postId) {
     const key = countKey(postId)
     const existing = await this.ctx.storage.get(key)
-    const current = existing === undefined ? 0 : Number(existing) || 0
-    const verifiedSeed = Number(LEGACY_LIKE_SEEDS[postId] || 0)
+    if (existing !== undefined) return Number(existing) || 0
+    await this.ctx.storage.put(key, 0)
+    return 0
+  }
+}
 
-    if (verifiedSeed > current) {
-      await this.ctx.storage.put(key, verifiedSeed)
-      return verifiedSeed
-    }
+async function handleDashboard(request, env, url) {
+  const days = Number(url.searchParams.get('days') || 7)
+  if (![1, 7, 30].includes(days)) {
+    return json({ error: 'days must be 1, 7, or 30' }, 400, request)
+  }
 
-    if (existing === undefined || current === 0) {
-      const legacy = await fetchLegacyLike(postId)
-      if (legacy.ok && legacy.likes > current) {
-        await this.ctx.storage.put(key, legacy.likes)
-        return legacy.likes
+  if (!env.CF_API_TOKEN || !env.CF_ACCOUNT_ID) {
+    return json({ error: 'Worker secrets are not configured' }, 500, request)
+  }
+
+  const end = new Date()
+  const start = new Date(end.getTime() - days * 24 * 60 * 60 * 1000)
+  const previousEnd = start
+  const previousStart = new Date(previousEnd.getTime() - days * 24 * 60 * 60 * 1000)
+  const currentFilter = rumFilter(start, end)
+  const previousFilter = rumFilter(previousStart, previousEnd)
+
+  const query = `
+    query BlogDashboard {
+      viewer {
+        accounts(filter: { accountTag: ${JSON.stringify(env.CF_ACCOUNT_ID)} }) {
+          total: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 1) {
+            count
+            avg { sampleInterval }
+            sum { visits }
+          }
+          previousTotal: rumPageloadEventsAdaptiveGroups(filter: ${previousFilter}, limit: 1) {
+            count
+            avg { sampleInterval }
+            sum { visits }
+          }
+          series: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 60, orderBy: [date_ASC]) {
+            count
+            avg { sampleInterval }
+            dimensions { date }
+          }
+          pages: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 200, orderBy: [count_DESC]) {
+            count
+            avg { sampleInterval }
+            sum { visits }
+            dimensions { requestPath }
+          }
+          referrers: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 100, orderBy: [count_DESC]) {
+            count
+            avg { sampleInterval }
+            sum { visits }
+            dimensions { refererHost }
+          }
+          countries: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 40, orderBy: [count_DESC]) {
+            count
+            avg { sampleInterval }
+            dimensions { countryName }
+          }
+        }
       }
     }
+  `
 
-    if (existing === undefined) {
-      await this.ctx.storage.put(key, current)
+  try {
+    const payload = await runGraphQL(env, query)
+    const account = payload.data?.viewer?.accounts?.[0]
+    if (!account) return json({ error: 'No analytics data returned for this account' }, 502, request)
+
+    const total = account.total?.[0] || {}
+    const previousTotal = account.previousTotal?.[0] || {}
+    const views = estimate(total)
+    const visits = Math.round(total.sum?.visits || 0)
+    const previousViews = estimate(previousTotal)
+    const previousVisits = Math.round(previousTotal.sum?.visits || 0)
+
+    const pageMap = mergeRows(account.pages, (row) => row.dimensions?.requestPath || '/', (row) => ({
+      views: estimate(row),
+      visits: Math.round(row.sum?.visits || 0)
+    }))
+
+    const referrerMap = mergeRows(account.referrers, (row) => row.dimensions?.refererHost || 'Direct', (row) => ({
+      views: estimate(row),
+      visits: Math.round(row.sum?.visits || 0)
+    }))
+
+    const likes = await getLikeSummary(env)
+
+    return json({
+      views,
+      visits,
+      likes,
+      previous: {
+        views: previousViews,
+        visits: previousVisits,
+        pagesPerVisit: previousVisits ? previousViews / previousVisits : null
+      },
+      label: days === 1 ? 'Last 24 hours' : `Last ${days} days`,
+      comparisonLabel: days === 1 ? 'vs previous 24h' : `vs previous ${days} days`,
+      series: mergeNumeric(account.series, (row) => row.dimensions?.date || '', (row) => estimate(row))
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([date, value]) => ({ date, views: value })),
+      pages: Array.from(pageMap.entries())
+        .map(([label, value]) => ({ label, ...value }))
+        .sort((a, b) => b.views - a.views),
+      referrers: Array.from(referrerMap.entries())
+        .map(([label, value]) => ({ label, ...value }))
+        .sort((a, b) => (b.visits - a.visits) || (b.views - a.views)),
+      countries: mergeNumeric(account.countries, (row) => row.dimensions?.countryName || 'Unknown', (row) => estimate(row))
+        .map(([label, value]) => ({ label, views: value }))
+    }, 200, request)
+  } catch (error) {
+    return json({ error: error.message || 'Unexpected Worker error' }, 500, request)
+  }
+}
+
+async function handleMostRead(request, env) {
+  if (request.method !== 'GET') return json({ error: 'Method not allowed' }, 405, request)
+  if (!env.CF_API_TOKEN || !env.CF_ACCOUNT_ID) {
+    return json({ error: 'Worker secrets are not configured' }, 500, request)
+  }
+
+  const end = new Date()
+  const start = new Date(end.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const filter = rumFilter(start, end)
+  const query = `
+    query MostRead {
+      viewer {
+        accounts(filter: { accountTag: ${JSON.stringify(env.CF_ACCOUNT_ID)} }) {
+          pages: rumPageloadEventsAdaptiveGroups(filter: ${filter}, limit: 100, orderBy: [count_DESC]) {
+            count
+            avg { sampleInterval }
+            dimensions { requestPath }
+          }
+        }
+      }
     }
-    return current
+  `
+
+  try {
+    const payload = await runGraphQL(env, query)
+    const rows = payload.data?.viewer?.accounts?.[0]?.pages || []
+    const posts = mergeNumeric(rows, (row) => row.dimensions?.requestPath || '', (row) => estimate(row))
+      .map(([path, views]) => ({ path, views }))
+      .filter((item) => POST_PATH.test(item.path))
+      .sort((a, b) => b.views - a.views)
+      .slice(0, 5)
+    return json({ posts }, 200, request, 300)
+  } catch (error) {
+    return json({ error: error.message || 'Unable to load most-read posts' }, 500, request, 0)
   }
 }
 
 async function handleLikeRequest(request, env, url) {
-  if (!env.LIKES) {
-    return json({ error: 'Likes storage is not configured' }, 500, request)
-  }
+  if (!env.LIKES) return json({ error: 'Likes storage is not configured' }, 500, request)
 
   const postId = decodeURIComponent(url.pathname.slice('/likes/'.length))
-  if (!validPostId(postId)) {
-    return json({ error: 'Invalid post id' }, 400, request)
-  }
-
-  if (!['GET', 'POST'].includes(request.method)) {
-    return json({ error: 'Method not allowed' }, 405, request)
-  }
+  if (!validPostId(postId)) return json({ error: 'Invalid post id' }, 400, request)
+  if (!['GET', 'POST'].includes(request.method)) return json({ error: 'Method not allowed' }, 405, request)
 
   const objectId = env.LIKES.idFromName(LIKE_STORE_NAME)
   const stub = env.LIKES.get(objectId)
   const internalUrl = new URL(`https://likes.internal/${encodeURIComponent(postId)}`)
+
   if (request.method === 'GET') {
     const visitor = normalizeVisitor(url.searchParams.get('visitor'))
     if (visitor) internalUrl.searchParams.set('visitor', visitor)
@@ -318,64 +266,34 @@ async function handleLikeRequest(request, env, url) {
   }
 }
 
-async function importLyketLikes(request, env) {
-  if (!env.LIKES) {
-    return json({ error: 'Likes storage is not configured' }, 500, request)
-  }
-
+async function getLikeSummary(env) {
+  if (!env.LIKES) return {}
   try {
-    const response = await fetch(`${LYKET_API}/rank/like-buttons/${LYKET_NAMESPACE}`, {
-      headers: legacyHeaders()
-    })
-
-    if (!response.ok) {
-      return json({ error: `Lyket API returned ${response.status}` }, 502, request)
-    }
-
-    const payload = await response.json()
-    const buttons = extractButtons(payload)
     const objectId = env.LIKES.idFromName(LIKE_STORE_NAME)
     const stub = env.LIKES.get(objectId)
-    let imported = 0
-    const items = []
-
-    for (const button of buttons) {
-      const postId = button?.id
-      const likes = readLegacyLikes(button)
-      if (!validPostId(postId) || !Number.isFinite(likes) || likes < 0) continue
-
-      const seedResponse = await stub.fetch(new Request(`https://likes.internal/${encodeURIComponent(postId)}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ seed: likes })
-      }))
-      const seeded = await seedResponse.json()
-      if (seeded.seeded) imported += 1
-      items.push({ id: postId, likes: seeded.likes })
-    }
-
-    return json({ imported, found: buttons.length, items }, 200, request, 0)
-  } catch (error) {
-    return json({ error: error.message || 'Unable to import Lyket likes' }, 500, request, 0)
+    const response = await stub.fetch('https://likes.internal/__summary')
+    if (!response.ok) return {}
+    const data = await response.json()
+    return data.likes || {}
+  } catch (_) {
+    return {}
   }
 }
 
-async function fetchLegacyLike(postId) {
-  try {
-    const response = await fetch(`${LYKET_API}/like-buttons/${LYKET_NAMESPACE}/${encodeURIComponent(postId)}`, {
-      headers: legacyHeaders()
-    })
-    if (!response.ok) return { ok: false, likes: 0, status: response.status }
+async function runGraphQL(env, query) {
+  const response = await fetch(GRAPHQL_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${env.CF_API_TOKEN}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ query })
+  })
 
-    const payload = await response.json()
-    const button = payload?.data || payload
-    const likes = readLegacyLikes(button)
-    if (!Number.isFinite(likes) || likes < 0) return { ok: false, likes: 0, status: response.status }
-
-    return { ok: true, likes: Math.round(likes), status: response.status }
-  } catch (_) {
-    return { ok: false, likes: 0, status: 0 }
-  }
+  const payload = await response.json()
+  if (!response.ok) throw new Error(`Cloudflare API returned ${response.status}`)
+  if (payload.errors?.length) throw new Error(payload.errors.map((item) => item.message).join('; '))
+  return payload
 }
 
 function rumFilter(start, end) {
@@ -385,43 +303,6 @@ function rumFilter(start, end) {
     requestHost: ${JSON.stringify(SITE_HOST)}
     bot: 0
   }`
-}
-
-function legacyHeaders() {
-  return {
-    Authorization: `Bearer ${LYKET_PUBLIC_KEY}`,
-    Accept: 'application/json',
-    Origin: ALLOWED_ORIGIN,
-    Referer: `${ALLOWED_ORIGIN}/`
-  }
-}
-
-function readLegacyLikes(button) {
-  const raw = button?.attributes?.totalLikes
-    ?? button?.attributes?.total_likes
-    ?? button?.totalLikes
-    ?? button?.total_likes
-    ?? button?.attributes?.totalScore
-    ?? button?.attributes?.total_score
-    ?? button?.totalScore
-    ?? button?.total_score
-    ?? 0
-  return Number(raw)
-}
-
-function extractButtons(payload) {
-  const candidates = [
-    payload,
-    payload?.data,
-    payload?.data?.items,
-    payload?.data?.attributes?.ranking,
-    payload?.attributes?.ranking,
-    payload?.ranking
-  ]
-  for (const candidate of candidates) {
-    if (Array.isArray(candidate)) return candidate
-  }
-  return []
 }
 
 function countKey(postId) {
@@ -443,11 +324,7 @@ function normalizeVisitor(value) {
 }
 
 async function safeJson(request) {
-  try {
-    return await request.json()
-  } catch (_) {
-    return null
-  }
+  try { return await request.json() } catch (_) { return null }
 }
 
 function internalJson(data, status = 200) {
