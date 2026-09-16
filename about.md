@@ -7,58 +7,57 @@ nav: about
 
 <main class="about-page" id="content">
   <section class="about-profile" aria-labelledby="about-name">
-    <p class="about-kicker">ABOUT</p>
     <img class="about-portrait" src="{{ '/assets/images/about-shiori.jpg' | relative_url }}" alt="Shiori 的作者头像">
-    <h1 id="about-name">Shiori 栞</h1>
-    <p class="about-japanese">本とお酒を楽しめる女子 <span class="about-heart" aria-hidden="true">♡</span></p>
-    <p class="about-bio">坐标北美，平成废物<br>一般读者，又宅又腐<br>好好吃饭，随时摆烂</p>
 
-    <a class="about-podcast" href="https://open.spotify.com/show/6hUUlQ8zkJkx2CzdLXiI0F" target="_blank" rel="noopener">
-      <span>Podcast:</span> 普通读者
-    </a>
+    <div class="about-profile-copy">
+      <p class="about-kicker">ABOUT</p>
+      <h1 id="about-name">Shiori 栞</h1>
+      <p class="about-japanese">本とお酒を楽しめる女子 <span class="about-heart" aria-hidden="true">♡</span></p>
+      <p class="about-bio">坐标北美，平成废物<br>一般读者，又宅又腐<br>好好吃饭，随时摆烂</p>
+      <a class="about-podcast" href="https://open.spotify.com/show/6hUUlQ8zkJkx2CzdLXiI0F" target="_blank" rel="noopener"><span>Podcast:</span> 普通读者</a>
+    </div>
   </section>
 
-  
+  <section class="about-popular" id="about-popular" aria-labelledby="about-popular-label" hidden>
+    <div class="about-section-heading">
+      <p class="about-section-kicker" id="about-popular-label">POPULAR READS</p>
+      <span>PAST 30 DAYS</span>
+    </div>
+    <div class="about-popular-list" id="about-popular-list"></div>
+  </section>
 
-  <section class="about-section about-support" aria-labelledby="about-support-label">
-    <p class="about-section-kicker" id="about-support-label">SUPPORT</p>
-    <div class="about-support-row">
-      <p>如果喜欢这里，可以请我喝一杯咖啡。</p>
+  <div class="about-lower-grid">
+    <section class="about-support" aria-labelledby="about-support-label">
+      <p class="about-section-kicker" id="about-support-label">SUPPORT</p>
+      <p class="about-support-copy">如果喜欢这里，可以请我喝一杯咖啡。</p>
       <a class="about-kofi-button" href="https://ko-fi.com/shioriblog" target="_blank" rel="noopener">
         <img src="{{ '/assets/images/kofi-logo.png' | relative_url }}" alt="" aria-hidden="true">
         <span>Buy me a coffee</span>
       </a>
-    </div>
-  </section>
+    </section>
 
-  <section class="about-section about-subscribe" aria-labelledby="about-subscribe-label">
-    <p class="about-section-kicker" id="about-subscribe-label">SUBSCRIBE</p>
-    <p class="about-subscribe-copy">可以通过 Email 或 <a href="{{ '/feed.xml' | relative_url }}">RSS</a> 订阅这个博客的新文章。</p>
+    <section class="about-subscribe" aria-labelledby="about-subscribe-label">
+      <p class="about-section-kicker" id="about-subscribe-label">SUBSCRIBE</p>
+      <p class="about-subscribe-copy">可以通过 Email 或 <a href="{{ '/feed.xml' | relative_url }}">RSS</a> 订阅这个博客的新文章。</p>
 
-    <div id="about-subscribe-success" class="about-subscribe-status" role="status" hidden>
-      感谢订阅！您会在博客更新时收到邮件推送 ^_^
-    </div>
-
-    <form
-      id="about-subscribe-form"
-      class="about-subscribe-form"
-      action="https://3693b1ad.sibforms.com/serve/MUIFAJi0O7F8qH7agDpwSWg6oAHlzhb-LHTu98WhY3r3yl4pYcWiAApt44BkjoJrBlTeQHIAJRBKyCJLlhjq-y0oURNC0TfTIjtSMN0A_Ft5ATNSyb3dfEkz3_sxQ9YSL7eF-0Q37f-Mm-WN_-Aq0HFa6-1qqdu-e6LoV3T2ivgpGah7gtKfxP7jitbT8coO_FQfJm_yvkHp_6SzIQ=="
-      method="POST"
-      target="about-brevo-subscribe-target"
-    >
-      <label class="sr-only" for="about-brevo-email">Email address</label>
-      <div class="about-subscribe-form-row">
-        <input id="about-brevo-email" type="email" name="EMAIL" placeholder="Email address" autocomplete="email" required>
-        <button id="about-subscribe-button" type="submit">订阅</button>
+      <div id="about-subscribe-success" class="about-subscribe-status" role="status" hidden>
+        感谢订阅！您会在博客更新时收到邮件推送 ^_^
       </div>
-      <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;">
-      <input type="hidden" name="locale" value="en">
-    </form>
 
-    <iframe id="about-brevo-subscribe-target" name="about-brevo-subscribe-target" title="订阅提交结果" hidden></iframe>
+      <form id="about-subscribe-form" class="about-subscribe-form" action="https://3693b1ad.sibforms.com/serve/MUIFAJi0O7F8qH7agDpwSWg6oAHlzhb-LHTu98WhY3r3yl4pYcWiAApt44BkjoJrBlTeQHIAJRBKyCJLlhjq-y0oURNC0TfTIjtSMN0A_Ft5ATNSyb3dfEkz3_sxQ9YSL7eF-0Q37f-Mm-WN_-Aq0HFa6-1qqdu-e6LoV3T2ivgpGah7gtKfxP7jitbT8coO_FQfJm_yvkHp_6SzIQ==" method="POST" target="about-brevo-subscribe-target">
+        <label class="sr-only" for="about-brevo-email">Email address</label>
+        <div class="about-subscribe-form-row">
+          <input id="about-brevo-email" type="email" name="EMAIL" placeholder="Email address" autocomplete="email" required>
+          <button id="about-subscribe-button" type="submit">订阅</button>
+        </div>
+        <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;">
+        <input type="hidden" name="locale" value="en">
+      </form>
 
-    <p class="about-privacy-note">Email 仅用于发送博客更新通知，可以随时退订。关于本站如何处理访问统计、留言和订阅信息，可以阅读 <a href="{{ '/privacy/' | relative_url }}">Privacy</a>。</p>
-  </section>
+      <iframe id="about-brevo-subscribe-target" name="about-brevo-subscribe-target" title="订阅提交结果" hidden></iframe>
+      <p class="about-privacy-note">Email 仅用于发送博客更新通知，可以随时退订。关于本站如何处理访问统计、留言和订阅信息，可以阅读 <a href="{{ '/privacy/' | relative_url }}">Privacy</a>。</p>
+    </section>
+  </div>
 
   <script>
     (() => {
@@ -126,7 +125,6 @@ nav: about
       if (!form || !frame || !success || !button) return
 
       let submitted = false
-
       form.addEventListener('submit', () => {
         submitted = true
         button.disabled = true
@@ -148,14 +146,20 @@ nav: about
 
 <style>
   .about-page {
-    width: min(640px, calc(100% - 4rem));
+    width: min(760px, calc(100% - 4rem));
     margin: 0 auto;
-    padding: 3.8rem 0 5.5rem;
+    padding: 4rem 0 5.8rem;
   }
 
   .about-profile {
-    text-align: center;
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: center;
+    max-width: 610px;
   }
+
+  .about-profile-copy { text-align: left; }
 
   .about-kicker,
   .about-section-kicker {
@@ -167,15 +171,12 @@ nav: about
     letter-spacing: .17em;
   }
 
-  .about-kicker {
-    margin-bottom: 1.7rem;
-  }
+  .about-kicker { margin-bottom: .65rem; }
 
   .about-portrait {
     display: block;
     width: 160px;
     height: 160px;
-    margin: 0 auto 1.45rem;
     border-radius: 50%;
     object-fit: cover;
   }
@@ -184,67 +185,57 @@ nav: about
     margin: 0;
     color: var(--ink);
     font-family: var(--serif);
-    font-size: 2.15rem;
+    font-size: 2.2rem;
     font-weight: 500;
-    line-height: 1.25;
+    line-height: 1.2;
   }
 
   .about-japanese {
-    margin: .42rem 0 1.45rem;
+    margin: .38rem 0 1.15rem;
     color: var(--accent);
     font-family: var(--serif-ja);
-    font-size: .91rem;
-    line-height: 1.4;
+    font-size: .9rem;
+    line-height: 1.45;
   }
 
   .about-heart {
     display: inline-block;
-    margin-left: .12em;
+    margin-left: .1em;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: 1.22rem;
+    font-size: 1.18rem;
     line-height: 1;
-    vertical-align: -.08em;
+    vertical-align: -.07em;
   }
 
   .about-bio {
     margin: 0;
     color: var(--body);
-    font-size: .96rem;
-    line-height: 1.95;
+    font-size: .94rem;
+    line-height: 1.9;
   }
 
   .about-podcast {
     display: inline-block;
-    margin-top: 1.45rem;
+    margin-top: 1rem;
     color: var(--body);
     font-family: var(--sans);
-    font-size: .72rem;
+    font-size: .71rem;
     text-decoration: none;
   }
 
-  .about-podcast span {
-    color: var(--muted);
-  }
+  .about-podcast span { color: var(--muted); }
+  .about-podcast:hover { color: var(--accent); }
 
-  .about-podcast:hover {
-    color: var(--accent);
-  }
-
-  .about-popular {
-    margin-top: 4.2rem;
-  }
-
-  .about-popular[hidden] {
-    display: none;
-  }
+  .about-popular { margin-top: 4.5rem; }
+  .about-popular[hidden] { display: none; }
 
   .about-section-heading {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 1rem;
-    margin-bottom: .7rem;
+    margin-bottom: 1.3rem;
   }
 
   .about-section-heading > span {
@@ -255,7 +246,8 @@ nav: about
   }
 
   .about-popular-list {
-    border-top: 1px solid var(--line);
+    display: grid;
+    gap: 1.35rem;
   }
 
   .about-popular-item {
@@ -263,28 +255,27 @@ nav: about
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 1rem;
     align-items: center;
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--line);
   }
 
-  .about-popular-copy {
-    min-width: 0;
-  }
+  .about-popular-copy { min-width: 0; }
 
   .about-popular-copy a {
+    display: inline-block;
     color: var(--body);
     font-family: var(--serif);
-    font-size: 1.02rem;
+    font-size: 1.05rem;
     line-height: 1.45;
     text-decoration: none;
+    transition: color .15s ease, transform .15s ease;
   }
 
-  .about-popular-copy a:hover {
+  .about-popular-item:hover .about-popular-copy a {
     color: var(--accent);
+    transform: translateX(2px);
   }
 
   .about-popular-copy p {
-    margin: .2rem 0 0;
+    margin: .18rem 0 0;
     color: var(--muted);
     font-family: var(--sans);
     font-size: .61rem;
@@ -294,33 +285,33 @@ nav: about
   .about-popular-arrow {
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .7rem;
+    font-size: .72rem;
+    transition: color .15s ease, transform .15s ease;
   }
 
-  .about-section {
-    margin-top: 3.2rem;
-    padding-top: 1.6rem;
-    border-top: 1px solid var(--line);
+  .about-popular-item:hover .about-popular-arrow {
+    color: var(--accent);
+    transform: translate(2px, -2px);
   }
 
-  .about-support-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.2rem;
-    margin-top: .8rem;
+  .about-lower-grid {
+    display: grid;
+    grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr);
+    gap: 4rem;
+    align-items: start;
+    margin-top: 4.6rem;
   }
 
-  .about-support-row > p {
-    margin: 0;
+  .about-support-copy,
+  .about-subscribe-copy {
+    margin: .8rem 0 1rem;
     color: var(--body);
-    font-size: .94rem;
+    font-size: .91rem;
     line-height: 1.75;
   }
 
   .about-kofi-button {
     display: inline-flex;
-    flex: 0 0 auto;
     align-items: center;
     gap: .48rem;
     padding: .5rem .72rem;
@@ -346,22 +337,13 @@ nav: about
     object-fit: contain;
   }
 
-  .about-subscribe-copy {
-    margin: .8rem 0 1rem;
-    color: var(--body);
-    font-size: .94rem;
-    line-height: 1.8;
-  }
-
   .about-subscribe-copy a,
-  .about-privacy-note a {
-    color: var(--accent);
-  }
+  .about-privacy-note a { color: var(--accent); }
 
   .about-subscribe-form-row {
     display: flex;
     align-items: stretch;
-    width: min(100%, 430px);
+    width: 100%;
     gap: .5rem;
   }
 
@@ -400,7 +382,6 @@ nav: about
   }
 
   .about-subscribe-status {
-    width: min(100%, 430px);
     margin: 0 0 .9rem;
     padding: .6rem .7rem;
     border-left: 2px solid var(--accent);
@@ -412,18 +393,38 @@ nav: about
   }
 
   .about-privacy-note {
-    max-width: 36rem;
-    margin: .95rem 0 0;
+    margin: .9rem 0 0;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .63rem;
-    line-height: 1.7;
+    font-size: .61rem;
+    line-height: 1.65;
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 700px) {
     .about-page {
-      width: min(100% - 2rem, 34rem);
+      width: min(100% - 2rem, 36rem);
       padding-top: 3rem;
+    }
+
+    .about-profile {
+      grid-template-columns: 132px minmax(0, 1fr);
+      gap: 1.5rem;
+    }
+
+    .about-portrait {
+      width: 132px;
+      height: 132px;
+    }
+
+    .about-profile h1 { font-size: 1.9rem; }
+    .about-lower-grid { gap: 2.3rem; }
+  }
+
+  @media (max-width: 560px) {
+    .about-profile {
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+      max-width: 100%;
     }
 
     .about-portrait {
@@ -431,23 +432,13 @@ nav: about
       height: 148px;
     }
 
-    .about-popular {
-      margin-top: 3.5rem;
-    }
+    .about-profile-copy { text-align: left; }
+    .about-popular { margin-top: 3.7rem; }
 
-    .about-section {
-      margin-top: 2.7rem;
-      padding-top: 1.45rem;
-    }
-
-    .about-support-row {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: .9rem;
-    }
-
-    .about-subscribe-form-row {
-      width: 100%;
+    .about-lower-grid {
+      grid-template-columns: 1fr;
+      gap: 2.8rem;
+      margin-top: 3.8rem;
     }
   }
 </style>
