@@ -1,0 +1,23 @@
+name: Import legacy Lyket likes
+
+on:
+  push:
+    paths:
+      - '.github/workflows/import-lyket-likes.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  import-likes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Import likes into self-hosted store
+        run: |
+          set -euo pipefail
+          response=$(curl --fail-with-body --silent --show-error \
+            -X POST \
+            -H 'Content-Type: application/json' \
+            https://shiori-stats.shiorizh2021.workers.dev/likes/import)
+          echo "$response"
+          echo "$response" | python3 -c 'import json,sys; data=json.load(sys.stdin); assert "error" not in data, data; print(f"Found {data.get(\"found\", 0)} legacy buttons; imported/updated {data.get(\"imported\", 0)}.")'
