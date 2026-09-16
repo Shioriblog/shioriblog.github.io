@@ -92,7 +92,7 @@ nav: categories
                     {% when '食べる' %}{% assign tag_meaning = 'Eating' %}
                     {% when '話す' %}{% assign tag_meaning = 'Talking' %}
                   {% endcase %}
-                  <button class="tag-filter{% if tag_meaning != '' %} has-tooltip{% endif %}" type="button" data-tag-filter="{{ tag[0] | escape }}"{% if tag_meaning != '' %} data-tooltip="{{ tag_meaning }}" title="{{ tag_meaning }}" aria-label="{{ tag[0] }} — {{ tag_meaning }}"{% endif %}><span class="tag-label-ja" lang="ja">{{ tag[0] }}</span> <sup>{{ tag_count }}</sup></button>
+                  <button class="tag-filter{% if tag_meaning != '' %} has-tooltip{% endif %}" type="button" data-tag-filter="{{ tag[0] | escape }}"{% if tag_meaning != '' %} data-tooltip="{{ tag_meaning }}" aria-label="{{ tag[0] }} — {{ tag_meaning }}"{% endif %}><span class="tag-label-ja" lang="ja">{{ tag[0] }}</span> <sup>{{ tag_count }}</sup></button>
                 {% endif %}
               {% endunless %}
             {% endfor %}
@@ -283,23 +283,24 @@ nav: categories
     content: attr(data-tooltip);
     position: absolute;
     left: 50%;
-    bottom: calc(100% + .55rem);
+    bottom: calc(100% + .42rem);
     z-index: 10;
-    padding: .32rem .48rem;
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    background: var(--ink);
-    color: #fff;
+    padding: .22rem .38rem;
+    border: 1px solid rgba(111, 106, 100, .16);
+    border-radius: 3px;
+    background: rgba(247, 246, 243, .96);
+    color: var(--muted);
+    box-shadow: 0 2px 8px rgba(29, 28, 26, .06);
     font-family: var(--sans);
-    font-size: .64rem;
+    font-size: .6rem;
     font-weight: 400;
-    letter-spacing: .02em;
+    letter-spacing: .015em;
     line-height: 1.2;
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
-    transform: translate(-50%, .2rem);
-    transition: opacity .15s ease, transform .15s ease;
+    transform: translate(-50%, .12rem);
+    transition: opacity .12s ease, transform .12s ease;
   }
 
   .tag-filter.has-tooltip:hover::after,
