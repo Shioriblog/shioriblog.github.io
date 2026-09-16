@@ -2,5 +2,19 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "shiori-stats",
   "main": "src/index.js",
-  "compatibility_date": "2026-09-15"
+  "compatibility_date": "2026-09-15",
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "LIKES",
+        "class_name": "LikeStore"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1-likes",
+      "new_sqlite_classes": ["LikeStore"]
+    }
+  ]
 }
