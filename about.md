@@ -10,7 +10,7 @@ nav: about
     <p class="about-kicker">ABOUT</p>
     <img class="about-portrait" src="{{ '/assets/images/about-shiori.jpg' | relative_url }}" alt="Shiori 的作者头像">
     <h1 id="about-name">Shiori 栞</h1>
-    <p class="about-japanese">本とお酒を楽しめる女子 🍷</p>
+    <p class="about-japanese">本とお酒を楽しめる女子 <span class="about-heart" aria-hidden="true">♡</span></p>
     <p class="about-bio">坐标北美，平成废物<br>一般读者，又宅又腐<br>好好吃饭，随时摆烂</p>
 
     <a class="about-podcast" href="https://open.spotify.com/show/6hUUlQ8zkJkx2CzdLXiI0F" target="_blank" rel="noopener">
@@ -179,9 +179,9 @@ nav: about
 
   .about-portrait {
     display: block;
-    width: 116px;
-    height: 116px;
-    margin: 0 auto 1.3rem;
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 1.45rem;
     border-radius: 50%;
     object-fit: cover;
   }
@@ -200,6 +200,17 @@ nav: about
     color: var(--accent);
     font-family: var(--serif-ja);
     font-size: .91rem;
+    line-height: 1.4;
+  }
+
+  .about-heart {
+    display: inline-block;
+    margin-left: .12em;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: 1.22rem;
+    line-height: 1;
+    vertical-align: -.08em;
   }
 
   .about-bio {
@@ -419,6 +430,11 @@ nav: about
     .about-page {
       width: min(100% - 2rem, 34rem);
       padding-top: 3rem;
+    }
+
+    .about-portrait {
+      width: 148px;
+      height: 148px;
     }
 
     .about-popular {
