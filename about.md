@@ -18,13 +18,7 @@ nav: about
     </a>
   </section>
 
-  <section class="about-popular" id="about-popular" aria-labelledby="about-popular-label" hidden>
-    <div class="about-section-heading">
-      <p class="about-section-kicker" id="about-popular-label">POPULAR READS</p>
-      <span>PAST 30 DAYS</span>
-    </div>
-    <div class="about-popular-list" id="about-popular-list"></div>
-  </section>
+  
 
   <section class="about-section about-support" aria-labelledby="about-support-label">
     <p class="about-section-kicker" id="about-support-label">SUPPORT</p>
