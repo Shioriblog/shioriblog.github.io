@@ -128,54 +128,6 @@
       })()
     </script>
 
-    {% if page.nav == 'home' %}
-      <script>
-        (() => {
-          const section = document.getElementById('home-most-read')
-          const links = document.getElementById('home-most-read-links')
-          const endpoint = {{ site.dashboard_api_url | jsonify }}
-          if (!section || !links || !endpoint) return
-          if (!section.hidden && links.children.length) return
-
-          const titles = {
-            {% for post in site.posts %}{{ post.url | jsonify }}: {{ post.title | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}
-          }
-
-          fetch(`${endpoint.replace(/\/$/, '')}?days=7`, { headers: { Accept: 'application/json' } })
-            .then((response) => {
-              if (!response.ok) throw new Error(`HTTP ${response.status}`)
-              return response.json()
-            })
-            .then((data) => {
-              if (!section.hidden && links.children.length) return
-
-              const posts = (data.pages || [])
-                .filter((item) => titles[item.label])
-                .sort((a, b) => Number(b.views || 0) - Number(a.views || 0))
-                .slice(0, 5)
-              if (!posts.length) return
-
-              links.replaceChildren()
-              posts.forEach((item, index) => {
-                if (index > 0) {
-                  const separator = document.createElement('span')
-                  separator.className = 'home-most-read-separator'
-                  separator.textContent = '·'
-                  links.appendChild(separator)
-                }
-
-                const link = document.createElement('a')
-                link.href = item.label
-                link.textContent = titles[item.label]
-                links.appendChild(link)
-              })
-              section.hidden = false
-            })
-            .catch(() => {})
-        })()
-      </script>
-    {% endif %}
-
     {% if page.layout == 'post' %}
       <script>
         (() => {
