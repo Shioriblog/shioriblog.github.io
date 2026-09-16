@@ -32,6 +32,7 @@ nav: friends
       <li><a href="https://pensieve.wangxindi.org/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://pensieve.wangxindi.org&sz=32" alt="" loading="lazy">邓布利多的冥想盆</a></li>
       <li><a href="https://solanalifeblog.vercel.app/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://solanalifeblog.vercel.app&sz=32" alt="" loading="lazy">在世一日</a></li>
       <li><a href="https://fourxiajiao.github.io/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://fourxiajiao.github.io&sz=32" alt="" loading="lazy">一笼虾饺有四个</a></li>
+      <li><a href="https://blog.himikouchuu.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://blog.himikouchuu.com&sz=32" alt="" loading="lazy">愚人船</a></li>
     </ul>
   </section>
 
