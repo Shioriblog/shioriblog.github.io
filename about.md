@@ -68,6 +68,12 @@ nav: about
     </div>
   </section>
 
+  <section class="about-survey" aria-labelledby="about-survey-label">
+    <p class="about-section-kicker" id="about-survey-label">READER SURVEY</p>
+    <p class="about-survey-copy">如果你偶尔会来这里读东西，我很好奇你是怎么来到这里、喜欢看什么。愿意的话，可以花几分钟填写一份小问卷。</p>
+    <a class="about-survey-link" href="https://docs.google.com/forms/d/e/1FAIpQLSfvrh7kUD01h4HPE1ecbRLPFcDISm2tCY-r0zif0h6fe-2COA/viewform" target="_blank" rel="noopener">填写问卷 <span aria-hidden="true">↗</span></a>
+  </section>
+
   <section class="about-subscribe" aria-labelledby="about-subscribe-label">
     <p class="about-section-kicker" id="about-subscribe-label">SUBSCRIBE</p>
     <p class="about-subscribe-copy">通过 Email 订阅更新，或使用 <a href="{{ '/feed.xml' | relative_url }}">RSS</a>。</p>
@@ -414,20 +420,51 @@ nav: about
     transform: translate(2px, -2px);
   }
 
+  .about-survey,
   .about-subscribe {
     margin-top: 3.6rem;
   }
 
+  .about-survey > .about-section-kicker,
   .about-subscribe > .about-section-kicker {
     margin-bottom: .75rem;
   }
 
+  .about-survey-copy,
   .about-subscribe-copy {
     margin: 0 0 1rem;
     color: var(--muted);
     font-family: var(--sans);
     font-size: .86rem;
     line-height: 1.6;
+  }
+
+  .about-survey-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .28rem;
+    padding: .5rem .72rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: .72rem;
+    text-decoration: none;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+
+  .about-survey-link span {
+    transition: transform .15s ease;
+  }
+
+  .about-survey-link:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .about-survey-link:hover span {
+    transform: translate(2px, -2px);
   }
 
   @media (max-width: 700px) {
@@ -494,6 +531,7 @@ nav: about
       font-size: .83rem;
     }
 
+    .about-survey,
     .about-subscribe {
       margin-top: 3rem;
     }
