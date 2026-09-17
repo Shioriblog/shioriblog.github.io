@@ -34,7 +34,6 @@ nav: home
 
   {% if site.categories.size > 0 %}
     <div class="category-strip" aria-label="文章分类">
-      <span>Categories</span>
       {% assign sorted_categories = site.categories | sort %}
       {% for category in sorted_categories %}
         {% unless category[0] == '食べたり、歩いたり' %}
