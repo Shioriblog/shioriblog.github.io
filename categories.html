@@ -37,8 +37,6 @@ nav: categories
     {% endfor %}
   </div>
 
-  <p class="category-travel-note">旅行中的吃吃喝喝，单独收在<a href="{{ '/travel/' | relative_url }}">「食べたり、歩いたり」</a>。</p>
-
   {% for category_name in category_names %}
     {% assign category_posts = site.categories[category_name] %}
     {% if category_posts and category_posts.size > 0 %}
@@ -59,6 +57,7 @@ nav: categories
           <p class="category-description">岁月的泡沫</p>
         {% elsif category_name == '言葉と歩く日記' %}
           <p class="category-description">旅行随笔</p>
+          <p class="category-travel-note">旅行中的吃吃喝喝，单独收在<a href="{{ '/travel/' | relative_url }}">「食べたり、歩いたり」</a>。</p>
         {% endif %}
 
         {% assign has_visible_tags = false %}
@@ -267,7 +266,7 @@ nav: categories
   }
 
   .category-travel-note {
-    margin: .35rem 0 1.55rem;
+    margin: -1.35rem 0 1.55rem;
     color: var(--muted);
     font-family: var(--sans);
     font-size: .72rem;
