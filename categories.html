@@ -78,7 +78,8 @@ description: 按分类与主题翻看独居日记里的文章。
   }
 
   .category-index-list {
-    border-top: 1px solid var(--line);
+    display: grid;
+    gap: 1rem;
   }
 
   .category-index-card {
@@ -86,22 +87,33 @@ description: 按分类与主题翻看独居日记里的文章。
     align-items: center;
     justify-content: space-between;
     gap: 1.5rem;
-    padding: 1.45rem 0;
-    border-bottom: 1px solid var(--line);
+    padding: 1.35rem 1.45rem;
+    border: 1px solid rgba(79, 90, 73, .18);
+    border-radius: 8px;
+    background: rgba(79, 90, 73, .035);
     text-decoration: none;
+    transition: border-color .15s ease, background .15s ease, transform .15s ease;
+  }
+
+  .category-index-card:hover,
+  .category-index-card:focus-visible {
+    border-color: rgba(79, 90, 73, .34);
+    background: rgba(79, 90, 73, .065);
+    transform: translateY(-1px);
   }
 
   .category-index-copy {
     display: grid;
-    gap: .18rem;
+    gap: .22rem;
     min-width: 0;
   }
 
   .category-index-copy strong {
     color: var(--ink);
-    font-size: 1.35rem;
+    font-size: 1.34rem;
     font-weight: 500;
     line-height: 1.45;
+    transition: color .15s ease;
   }
 
   .category-index-copy > span {
@@ -117,14 +129,20 @@ description: 按分类与主题翻看独居日记里的文章。
     font-size: .72rem;
   }
 
-  .category-index-card:hover .category-index-copy strong {
+  .category-index-card:hover .category-index-copy strong,
+  .category-index-card:focus-visible .category-index-copy strong {
     color: var(--accent);
   }
 
   @media (max-width: 640px) {
+    .category-index-list {
+      gap: .8rem;
+    }
+
     .category-index-card {
       align-items: flex-end;
       gap: 1rem;
+      padding: 1.15rem 1.2rem;
     }
 
     .category-index-copy strong {
