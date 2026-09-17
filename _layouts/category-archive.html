@@ -2,11 +2,9 @@
 layout: default
 ---
 <main class="simple-page category-archive-page" id="content">
-  <h1 lang="ja">{{ page.category_name }}</h1>
-  <p class="category-archive-lede">{{ page.category_description }}</p>
-  {% if page.travel_note %}
-    <p class="category-archive-note">旅行中的吃吃喝喝，单独收在<a href="{{ '/travel/' | relative_url }}">「食べたり、歩いたり」</a>。</p>
-  {% endif %}
+  <p class="category-archive-kicker" lang="ja">{{ page.category_name }}</p>
+  <h1>{{ page.category_description }}</h1>
+  <a class="category-back" href="{{ '/categories/' | relative_url }}">← Categories</a>
 
   {% assign category_posts = site.categories[page.category_name] %}
 
@@ -54,20 +52,14 @@ layout: default
   {% for year in category_years %}
     <section class="category-archive-year-group" aria-label="{{ year.name }}年">
       <div class="category-archive-year"><span>{{ year.name }}</span></div>
-      {% assign category_months = year.items | group_by_exp: 'post', "post.date | date: '%m'" %}
-      {% for month in category_months %}
-        <div class="category-archive-month-group">
-          <div class="category-archive-month"><span>{{ month.name | plus: 0 }} 月</span></div>
-          <ul class="category-archive-posts">
-            {% for post in month.items %}
-              <li data-post-tags="{{ post.tags | join: '|' | escape }}">
-                <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%m.%d' }}</time>
-                <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
-      {% endfor %}
+      <ul class="category-archive-posts">
+        {% for post in year.items %}
+          <li data-post-tags="{{ post.tags | join: '|' | escape }}">
+            <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%m.%d' }}</time>
+            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
     </section>
   {% else %}
     <p class="empty-state">这里还没有文章。</p>
@@ -87,25 +79,17 @@ layout: default
         })
 
         yearGroups.forEach((yearGroup) => {
-          const monthGroups = Array.from(yearGroup.querySelectorAll('.category-archive-month-group'))
-          let yearVisibleCount = 0
+          const posts = Array.from(yearGroup.querySelectorAll('.category-archive-posts li'))
+          let visibleCount = 0
 
-          monthGroups.forEach((monthGroup) => {
-            const posts = Array.from(monthGroup.querySelectorAll('.category-archive-posts li'))
-            let monthVisibleCount = 0
-
-            posts.forEach((post) => {
-              const tags = (post.dataset.postTags || '').split('|').filter(Boolean)
-              const visible = tag === 'all' || tags.includes(tag)
-              post.hidden = !visible
-              if (visible) monthVisibleCount += 1
-            })
-
-            monthGroup.hidden = monthVisibleCount === 0
-            yearVisibleCount += monthVisibleCount
+          posts.forEach((post) => {
+            const tags = (post.dataset.postTags || '').split('|').filter(Boolean)
+            const visible = tag === 'all' || tags.includes(tag)
+            post.hidden = !visible
+            if (visible) visibleCount += 1
           })
 
-          yearGroup.hidden = yearVisibleCount === 0
+          yearGroup.hidden = visibleCount === 0
         })
 
         if (updateUrl) {
@@ -130,33 +114,37 @@ layout: default
 </main>
 
 <style>
-  .category-archive-page h1 {
-    margin-bottom: .35rem;
-  }
-
-  .category-archive-lede {
-    margin: 0 0 1.15rem;
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: .82rem;
-  }
-
-  .category-archive-note {
-    margin: -.55rem 0 1.35rem;
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: .72rem;
-    line-height: 1.65;
-  }
-
-  .category-archive-note a {
+  .category-archive-kicker {
+    margin: 0 0 .55rem;
     color: var(--accent);
-    text-decoration: none;
+    font-family: "Noto Serif JP", "Yu Mincho", serif;
+    font-size: .88rem;
+    letter-spacing: .08em;
   }
 
-  .category-archive-note a:hover {
-    text-decoration: underline;
-    text-underline-offset: .2em;
+  .category-archive-page h1 {
+    margin: 0 0 1.15rem;
+  }
+
+  .category-back {
+    display: inline-flex;
+    align-items: center;
+    margin: 0 0 2rem;
+    padding: .28rem .58rem;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .68rem;
+    letter-spacing: .035em;
+    text-decoration: none;
+    transition: border-color .15s ease, color .15s ease, background .15s ease;
+  }
+
+  .category-back:hover {
+    border-color: rgba(79, 90, 73, .34);
+    background: rgba(79, 90, 73, .05);
+    color: var(--accent);
   }
 
   .category-archive-tags {
@@ -252,25 +240,6 @@ layout: default
     background: var(--line);
   }
 
-  .category-archive-month-group {
-    margin-top: 1.2rem;
-  }
-
-  .category-archive-month {
-    display: inline-block;
-    margin: 0 0 .45rem;
-    padding: .28rem .6rem;
-    border: 1px solid rgba(79, 90, 73, .34);
-    border-radius: 4px;
-    background: rgba(79, 90, 73, .06);
-    color: var(--accent);
-    font-family: var(--sans);
-    font-size: .76rem;
-    font-weight: 500;
-    line-height: 1.45;
-    letter-spacing: .025em;
-  }
-
   .category-archive-posts {
     margin: 0;
     padding: 0;
@@ -307,12 +276,15 @@ layout: default
   }
 
   .category-archive-posts li[hidden],
-  .category-archive-month-group[hidden],
   .category-archive-year-group[hidden] {
     display: none;
   }
 
   @media (max-width: 640px) {
+    .category-archive-kicker {
+      font-size: .82rem;
+    }
+
     .category-archive-posts li {
       grid-template-columns: 3.6rem minmax(0, 1fr);
       gap: .75rem;
