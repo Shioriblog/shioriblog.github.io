@@ -37,6 +37,8 @@ nav: categories
     {% endfor %}
   </div>
 
+  <p class="category-travel-note">旅行中的吃吃喝喝，单独收在<a href="{{ '/travel/' | relative_url }}">「食べたり、歩いたり」</a>。</p>
+
   {% for category_name in category_names %}
     {% assign category_posts = site.categories[category_name] %}
     {% if category_posts and category_posts.size > 0 %}
@@ -262,6 +264,24 @@ nav: categories
   .category-page .category-month-group[hidden],
   .category-page .category-year-group[hidden] {
     display: none;
+  }
+
+  .category-travel-note {
+    margin: .35rem 0 1.55rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .72rem;
+    line-height: 1.65;
+  }
+
+  .category-travel-note a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .category-travel-note a:hover {
+    text-decoration: underline;
+    text-underline-offset: .2em;
   }
 
   .category-tab {
