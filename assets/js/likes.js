@@ -7,17 +7,41 @@
   const allImages = Array.from(content.querySelectorAll('img'))
   if (!allImages.length) return
 
+  const galleryForImage = new Map()
+  const galleryContainers = Array.from(content.querySelectorAll(
+    '.wp-block-jetpack-tiled-gallery, .wp-block-gallery, .article-image-pair-grid, .gallery, figure'
+  ))
+
+  galleryContainers.forEach((gallery) => {
+    const images = Array.from(gallery.querySelectorAll('img'))
+    if (images.length < 2) return
+
+    images.forEach((image) => {
+      if (!galleryForImage.has(image)) galleryForImage.set(image, images)
+    })
+  })
+
+  allImages.forEach((image) => {
+    if (galleryForImage.has(image)) return
+    image.classList.remove('article-zoomable-image')
+    image.removeAttribute('tabindex')
+    image.removeAttribute('role')
+    image.removeAttribute('aria-label')
+  })
+
   const previousButton = document.createElement('button')
   previousButton.type = 'button'
   previousButton.className = 'image-lightbox-nav image-lightbox-prev'
   previousButton.setAttribute('aria-label', '上一张图片')
   previousButton.textContent = '‹'
+  previousButton.hidden = true
 
   const nextButton = document.createElement('button')
   nextButton.type = 'button'
   nextButton.className = 'image-lightbox-nav image-lightbox-next'
   nextButton.setAttribute('aria-label', '下一张图片')
   nextButton.textContent = '›'
+  nextButton.hidden = true
 
   lightbox.append(previousButton, nextButton)
 
@@ -26,12 +50,6 @@
 
   const sourceFor = (image) => image.dataset.originalSrc || image.currentSrc || image.src
 
-  const imagesFor = (image) => {
-    const gallery = image.closest('.wp-block-jetpack-tiled-gallery, .wp-block-gallery')
-    if (gallery) return Array.from(gallery.querySelectorAll('img'))
-    return allImages
-  }
-
   const updateButtons = () => {
     const showNavigation = activeImages.length > 1
     previousButton.hidden = !showNavigation
@@ -39,7 +57,7 @@
   }
 
   const setActiveImage = (image) => {
-    activeImages = imagesFor(image)
+    activeImages = galleryForImage.get(image) || []
     activeIndex = Math.max(0, activeImages.indexOf(image))
     updateButtons()
   }
@@ -54,13 +72,27 @@
 
   content.addEventListener('click', (event) => {
     const image = event.target.closest('img')
-    if (image && content.contains(image)) setActiveImage(image)
+    if (!image || !content.contains(image)) return
+
+    if (!galleryForImage.has(image)) {
+      event.stopPropagation()
+      return
+    }
+
+    setActiveImage(image)
   }, true)
 
   content.addEventListener('keydown', (event) => {
     if (event.key !== 'Enter' && event.key !== ' ') return
     const image = event.target.closest('img')
-    if (image && content.contains(image)) setActiveImage(image)
+    if (!image || !content.contains(image)) return
+
+    if (!galleryForImage.has(image)) {
+      event.stopPropagation()
+      return
+    }
+
+    setActiveImage(image)
   }, true)
 
   previousButton.addEventListener('click', (event) => {
