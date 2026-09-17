@@ -16,9 +16,14 @@
 
     {% if page.layout == 'post' and page.image == nil and content contains '<img' %}
       {% assign social_image_parts = content | split: '<img' %}
-      {% assign social_image_tag = social_image_parts[1] %}
+      {% assign social_image_tag = social_image_parts[1] | split: '>' | first %}
+      {% assign social_image_src = nil %}
       {% if social_image_tag contains 'src="' %}
         {% assign social_image_src = social_image_tag | split: 'src="' | last | split: '"' | first %}
+      {% elsif social_image_tag contains "src='" %}
+        {% assign social_image_src = social_image_tag | split: "src='" | last | split: "'" | first %}
+      {% endif %}
+      {% if social_image_src %}
         {% if social_image_src contains '://' %}
           {% assign social_image_url = social_image_src %}
         {% else %}
