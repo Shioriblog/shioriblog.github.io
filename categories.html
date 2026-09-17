@@ -36,15 +36,6 @@ description: 按分类与主题翻看独居日记里的文章。
       </span>
       <small>{{ words_posts | size }} 篇 →</small>
     </a>
-
-    {% assign travel_posts = site.categories['食べたり、歩いたり'] %}
-    <a class="category-index-card" href="{{ '/travel/' | relative_url }}">
-      <span class="category-index-copy">
-        <strong lang="ja">食べたり、歩いたり</strong>
-        <span>旅行中的吃吃喝喝</span>
-      </span>
-      <small>{{ travel_posts | size }} 篇 →</small>
-    </a>
   </div>
 
   <script>
