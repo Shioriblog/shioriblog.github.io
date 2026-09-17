@@ -94,6 +94,22 @@ nav: home
 <style>
   .home-category-link {
     position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: .22rem .58rem;
+    border: 1px solid rgba(79, 90, 73, .34);
+    border-radius: 999px;
+    background: rgba(79, 90, 73, .045);
+    color: var(--accent);
+    text-decoration: none;
+    transition: border-color .15s ease, background .15s ease, color .15s ease;
+  }
+
+  .home-category-link:hover,
+  .home-category-link:focus-visible {
+    border-color: rgba(79, 90, 73, .58);
+    background: rgba(79, 90, 73, .09);
+    color: var(--accent);
   }
 
   .home-category-link.has-tooltip::after {
