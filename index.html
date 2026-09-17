@@ -21,7 +21,7 @@ nav: home
                   {% if post.categories.size > 0 %}<span> · {{ post.categories | join: ' · ' }}</span>{% endif %}
                 </div>
                 <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-                <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 90 }}</p>
+                <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 90 }} <a class="read-more" href="{{ post.url | relative_url }}">Read more...</a></p>
               </div>
             </article>
           {% endfor %}
@@ -67,7 +67,7 @@ nav: home
             {% if post.categories.size > 0 %}<span> · {{ post.categories | join: ' · ' }}</span>{% endif %}
           </div>
           <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-          <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 150 }}</p>
+          <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 150 }} <a class="read-more" href="{{ post.url | relative_url }}">Read more...</a></p>
         </article>
       {% endunless %}
     {% else %}
@@ -124,6 +124,20 @@ nav: home
   .home-category-link.has-tooltip:focus-visible::after {
     opacity: 1;
     transform: translate(-50%, 0);
+  }
+
+  .read-more {
+    margin-left: .25em;
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: .78em;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .read-more:hover {
+    text-decoration: underline;
+    text-underline-offset: .2em;
   }
 
   .home-site-note {
