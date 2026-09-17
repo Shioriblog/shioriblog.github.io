@@ -3,362 +3,141 @@ layout: default
 title: Categories
 permalink: /categories/
 nav: categories
+description: 按分类与主题翻看独居日记里的文章。
 ---
-<main class="simple-page category-page" id="content">
+<main class="simple-page category-index-page" id="content">
   <h1>Categories</h1>
+  <p class="category-index-lede">按主题翻看文章。</p>
 
-  {% assign preferred_category_names = '日記の練習|うたかたの日々|言葉と歩く日記' | split: '|' %}
-  {% assign category_order = '日記の練習|うたかたの日々|言葉と歩く日記' %}
-  {% assign sorted_categories = site.categories | sort %}
-  {% for category in sorted_categories %}
-    {% unless preferred_category_names contains category[0] or category[0] == '食べたり、歩いたり' %}
-      {% assign category_order = category_order | append: '|' | append: category[0] %}
-    {% endunless %}
-  {% endfor %}
-  {% assign category_names = category_order | split: '|' %}
+  <div class="category-index-list">
+    {% assign daily_posts = site.categories['日記の練習'] %}
+    <a class="category-index-card" href="{{ '/categories/daily/' | relative_url }}">
+      <span class="category-index-copy">
+        <strong lang="ja">日記の練習</strong>
+        <span>日常随笔</span>
+      </span>
+      <small>{{ daily_posts | size }} 篇 →</small>
+    </a>
 
-  <div class="category-tabs" role="tablist" aria-label="文章分类">
-    {% for category_name in category_names %}
-      {% assign category_posts = site.categories[category_name] %}
-      {% if category_posts and category_posts.size > 0 %}
-        {% if category_name == '日記の練習' %}
-          {% assign panel_id = 'category-daily' %}
-        {% elsif category_name == 'うたかたの日々' %}
-          {% assign panel_id = 'category-utakata' %}
-        {% elsif category_name == '言葉と歩く日記' %}
-          {% assign panel_id = 'category-travel' %}
-        {% else %}
-          {% capture panel_id %}category-{{ forloop.index }}{% endcapture %}
-        {% endif %}
-        <button class="category-tab{% if forloop.first %} is-active{% endif %}" id="{{ panel_id }}-tab" type="button" role="tab" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="{{ panel_id }}" data-category-target="{{ panel_id }}" data-category-name="{{ category_name | escape }}">
-          <span class="category-label-ja" lang="ja">{{ category_name }}</span> <sup>{{ category_posts | size }}</sup>
-        </button>
-      {% endif %}
-    {% endfor %}
+    {% assign utakata_posts = site.categories['うたかたの日々'] %}
+    <a class="category-index-card" href="{{ '/categories/utakata/' | relative_url }}">
+      <span class="category-index-copy">
+        <strong lang="ja">うたかたの日々</strong>
+        <span>岁月的泡沫</span>
+      </span>
+      <small>{{ utakata_posts | size }} 篇 →</small>
+    </a>
+
+    {% assign words_posts = site.categories['言葉と歩く日記'] %}
+    <a class="category-index-card" href="{{ '/categories/words/' | relative_url }}">
+      <span class="category-index-copy">
+        <strong lang="ja">言葉と歩く日記</strong>
+        <span>旅行随笔</span>
+      </span>
+      <small>{{ words_posts | size }} 篇 →</small>
+    </a>
+
+    {% assign travel_posts = site.categories['食べたり、歩いたり'] %}
+    <a class="category-index-card" href="{{ '/travel/' | relative_url }}">
+      <span class="category-index-copy">
+        <strong lang="ja">食べたり、歩いたり</strong>
+        <span>旅行中的吃吃喝喝</span>
+      </span>
+      <small>{{ travel_posts | size }} 篇 →</small>
+    </a>
   </div>
-
-  {% for category_name in category_names %}
-    {% assign category_posts = site.categories[category_name] %}
-    {% if category_posts and category_posts.size > 0 %}
-      {% if category_name == '日記の練習' %}
-        {% assign panel_id = 'category-daily' %}
-      {% elsif category_name == 'うたかたの日々' %}
-        {% assign panel_id = 'category-utakata' %}
-      {% elsif category_name == '言葉と歩く日記' %}
-        {% assign panel_id = 'category-travel' %}
-      {% else %}
-        {% capture panel_id %}category-{{ forloop.index }}{% endcapture %}
-      {% endif %}
-
-      <section class="category-panel" id="{{ panel_id }}" role="tabpanel" aria-labelledby="{{ panel_id }}-tab" data-category-name="{{ category_name | escape }}"{% unless forloop.first %} hidden{% endunless %}>
-        {% if category_name == '日記の練習' %}
-          <p class="category-description">日常随笔</p>
-        {% elsif category_name == 'うたかたの日々' %}
-          <p class="category-description">岁月的泡沫</p>
-        {% elsif category_name == '言葉と歩く日記' %}
-          <p class="category-description">旅行随笔</p>
-          <p class="category-travel-note">旅行中的吃吃喝喝，单独收在<a href="{{ '/travel/' | relative_url }}">「食べたり、歩いたり」</a>。</p>
-        {% endif %}
-
-        {% assign has_visible_tags = false %}
-        {% for tag in site.tags %}
-          {% unless tag[0] == 'featured' %}
-            {% for post in category_posts %}
-              {% if post.tags contains tag[0] %}
-                {% assign has_visible_tags = true %}
-              {% endif %}
-            {% endfor %}
-          {% endunless %}
-        {% endfor %}
-
-        {% if has_visible_tags %}
-          <div class="tag-filters" role="group" aria-label="按主题筛选文章">
-            <button class="tag-filter is-active" type="button" data-tag-filter="all"><span class="tag-label-ui">ALL</span> <sup>{{ category_posts | size }}</sup></button>
-            {% assign sorted_tags = site.tags | sort %}
-            {% for tag in sorted_tags %}
-              {% unless tag[0] == 'featured' %}
-                {% assign tag_count = 0 %}
-                {% for post in category_posts %}
-                  {% if post.tags contains tag[0] %}
-                    {% assign tag_count = tag_count | plus: 1 %}
-                  {% endif %}
-                {% endfor %}
-                {% if tag_count > 0 %}
-                  {% assign tag_meaning = '' %}
-                  {% case tag[0] %}
-                    {% when '暮らす' %}{% assign tag_meaning = 'Living' %}
-                    {% when '考える' %}{% assign tag_meaning = 'Thinking' %}
-                    {% when '言葉' %}{% assign tag_meaning = 'Words' %}
-                    {% when '読む・観る' %}{% assign tag_meaning = 'Reading & Watching' %}
-                    {% when '食べる' %}{% assign tag_meaning = 'Eating' %}
-                    {% when '話す' %}{% assign tag_meaning = 'Talking' %}
-                  {% endcase %}
-                  <button class="tag-filter{% if tag_meaning != '' %} has-tooltip{% endif %}" type="button" data-tag-filter="{{ tag[0] | escape }}"{% if tag_meaning != '' %} data-tooltip="{{ tag_meaning }}" aria-label="{{ tag[0] }} — {{ tag_meaning }}"{% endif %}><span class="tag-label-ja" lang="ja">{{ tag[0] }}</span> <sup>{{ tag_count }}</sup></button>
-                {% endif %}
-              {% endunless %}
-            {% endfor %}
-          </div>
-        {% endif %}
-
-        {% assign category_years = category_posts | group_by_exp: 'post', "post.date | date: '%Y'" %}
-        {% for year in category_years %}
-          <div class="category-year-group">
-            <div class="category-year"><span>{{ year.name }}</span></div>
-            {% assign category_months = year.items | group_by_exp: 'post', "post.date | date: '%m'" %}
-            {% for month in category_months %}
-              <div class="category-month-group">
-                <div class="category-month"><span>{{ month.name | plus: 0 }} 月</span></div>
-                <ul class="category-posts">
-                  {% for post in month.items %}
-                    <li data-post-tags="{{ post.tags | join: '|' | escape }}"><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
-                  {% endfor %}
-                </ul>
-              </div>
-            {% endfor %}
-          </div>
-        {% endfor %}
-      </section>
-    {% endif %}
-  {% endfor %}
 
   <script>
     (() => {
-      const tabs = Array.from(document.querySelectorAll('.category-tab'))
-      const panels = Array.from(document.querySelectorAll('.category-panel'))
-      if (tabs.length === 0 || panels.length === 0) return
-
-      const selectCategory = (target, updateUrl = false) => {
-        const selectedTab = tabs.find(tab => tab.dataset.categoryTarget === target)
-        if (!selectedTab) return
-
-        tabs.forEach((tab) => {
-          const active = tab === selectedTab
-          tab.classList.toggle('is-active', active)
-          tab.setAttribute('aria-selected', String(active))
-        })
-        panels.forEach((panel) => {
-          panel.hidden = panel.id !== target
-        })
-
-        if (updateUrl) {
-          const url = new URL(window.location.href)
-          url.searchParams.set('category', selectedTab.dataset.categoryName)
-          url.searchParams.delete('tag')
-          url.hash = target
-          history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`)
-        }
-      }
-
-      const filterPanel = (panel, tag, updateUrl = false) => {
-        const tagFilters = Array.from(panel.querySelectorAll('.tag-filter'))
-        const yearGroups = Array.from(panel.querySelectorAll('.category-year-group'))
-
-        tagFilters.forEach((button) => {
-          const active = button.dataset.tagFilter === tag
-          button.classList.toggle('is-active', active)
-          button.setAttribute('aria-pressed', String(active))
-        })
-
-        yearGroups.forEach((yearGroup) => {
-          const monthGroups = Array.from(yearGroup.querySelectorAll('.category-month-group'))
-          let yearVisibleCount = 0
-
-          monthGroups.forEach((monthGroup) => {
-            const posts = Array.from(monthGroup.querySelectorAll('.category-posts li'))
-            let monthVisibleCount = 0
-
-            posts.forEach((post) => {
-              const tags = (post.dataset.postTags || '').split('|').filter(Boolean)
-              const visible = tag === 'all' || tags.includes(tag)
-              post.hidden = !visible
-              if (visible) monthVisibleCount += 1
-            })
-
-            monthGroup.hidden = monthVisibleCount === 0
-            yearVisibleCount += monthVisibleCount
-          })
-
-          yearGroup.hidden = yearVisibleCount === 0
-        })
-
-        if (updateUrl) {
-          const url = new URL(window.location.href)
-          url.searchParams.set('category', panel.dataset.categoryName)
-          if (tag === 'all') url.searchParams.delete('tag')
-          else url.searchParams.set('tag', tag)
-          url.hash = panel.id
-          history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`)
-        }
-      }
-
-      tabs.forEach((tab) => {
-        tab.addEventListener('click', () => selectCategory(tab.dataset.categoryTarget, true))
-      })
-
-      panels.forEach((panel) => {
-        panel.querySelectorAll('.tag-filter').forEach((button) => {
-          button.setAttribute('aria-pressed', String(button.classList.contains('is-active')))
-          button.addEventListener('click', () => filterPanel(panel, button.dataset.tagFilter, true))
-        })
-      })
-
       const params = new URLSearchParams(window.location.search)
-      const requestedCategoryName = params.get('category')
-      const requestedTag = params.get('tag')
-      const requestedHash = window.location.hash.slice(1)
+      const category = params.get('category')
+      const tag = params.get('tag')
+      const hash = window.location.hash
 
-      let targetTab = null
-      if (requestedCategoryName) {
-        targetTab = tabs.find(tab => tab.dataset.categoryName === requestedCategoryName)
+      const routes = {
+        '日記の練習': '/categories/daily/',
+        'うたかたの日々': '/categories/utakata/',
+        '言葉と歩く日記': '/categories/words/'
       }
-      if (!targetTab && requestedHash) {
-        targetTab = tabs.find(tab => tab.dataset.categoryTarget === requestedHash)
-      }
-      if (!targetTab && requestedTag) {
-        const matchingPanel = panels.find(panel => Array.from(panel.querySelectorAll('.tag-filter')).some(button => button.dataset.tagFilter === requestedTag))
-        if (matchingPanel) targetTab = tabs.find(tab => tab.dataset.categoryTarget === matchingPanel.id)
-      }
-      if (!targetTab) targetTab = tabs[0]
 
-      selectCategory(targetTab.dataset.categoryTarget)
-      const activePanel = panels.find(panel => panel.id === targetTab.dataset.categoryTarget)
-      if (requestedTag && activePanel && Array.from(activePanel.querySelectorAll('.tag-filter')).some(button => button.dataset.tagFilter === requestedTag)) {
-        filterPanel(activePanel, requestedTag)
+      let target = category ? routes[category] : null
+      if (!target && hash === '#category-daily') target = routes['日記の練習']
+      if (!target && hash === '#category-utakata') target = routes['うたかたの日々']
+      if (!target && hash === '#category-travel') target = routes['言葉と歩く日記']
+
+      if (target) {
+        const url = new URL(target, window.location.origin)
+        if (tag) url.searchParams.set('tag', tag)
+        window.location.replace(`${url.pathname}${url.search}`)
       }
     })()
   </script>
 </main>
 
 <style>
-  .category-page .category-year {
-    color: var(--ink);
-    font-size: .9rem;
-    font-weight: 500;
+  .category-index-page h1 {
+    margin-bottom: .35rem;
   }
 
-  .category-page .category-year-group:not(:first-of-type) {
-    margin-top: 2.35rem;
-  }
-
-  .category-page .category-month-group {
-    margin-top: 1.15rem;
-  }
-
-  .category-page .category-month {
-    display: inline-block;
-    margin: 0 0 .55rem;
-    padding: .28rem .6rem;
-    border: 1px solid rgba(79, 90, 73, .34);
-    border-radius: 4px;
-    background: rgba(79, 90, 73, .06);
-    color: var(--accent);
-    font-family: var(--sans);
-    font-size: .76rem;
-    font-weight: 500;
-    line-height: 1.45;
-    letter-spacing: .025em;
-  }
-
-  .category-page .category-posts li[hidden],
-  .category-page .category-month-group[hidden],
-  .category-page .category-year-group[hidden] {
-    display: none;
-  }
-
-  .category-travel-note {
-    margin: -1.35rem 0 1.55rem;
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: .72rem;
-    line-height: 1.65;
-  }
-
-  .category-travel-note a {
-    color: var(--accent);
-    text-decoration: none;
-  }
-
-  .category-travel-note a:hover {
-    text-decoration: underline;
-    text-underline-offset: .2em;
-  }
-
-  .category-tab {
-    font-size: .82rem;
-  }
-
-  .tag-filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .55rem 1rem;
-    margin: -.15rem 0 2.2rem;
-  }
-
-  .tag-filter {
-    position: relative;
-    padding: 0;
-    border: 0;
-    background: transparent;
+  .category-index-lede {
+    margin: 0 0 2.8rem;
     color: var(--muted);
     font-family: var(--sans);
     font-size: .78rem;
-    letter-spacing: .035em;
-    cursor: pointer;
-    transition: color .15s ease;
   }
 
-  .tag-filter sup {
-    position: relative;
-    top: -.3em;
-    margin-left: .12rem;
+  .category-index-list {
+    border-top: 1px solid var(--line);
+  }
+
+  .category-index-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.45rem 0;
+    border-bottom: 1px solid var(--line);
+    text-decoration: none;
+  }
+
+  .category-index-copy {
+    display: grid;
+    gap: .18rem;
+    min-width: 0;
+  }
+
+  .category-index-copy strong {
+    color: var(--ink);
+    font-size: 1.35rem;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+
+  .category-index-copy > span {
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .56rem;
-    line-height: 1;
+    font-size: .74rem;
   }
 
-  .tag-label-ui {
+  .category-index-card small {
+    flex: 0 0 auto;
+    color: var(--accent);
     font-family: var(--sans);
+    font-size: .72rem;
   }
 
-  .tag-filter:hover,
-  .tag-filter.is-active {
+  .category-index-card:hover .category-index-copy strong {
     color: var(--accent);
   }
 
-  .tag-filter.is-active {
-    text-decoration: underline;
-    text-underline-offset: .28rem;
-    text-decoration-thickness: 1px;
-  }
+  @media (max-width: 640px) {
+    .category-index-card {
+      align-items: flex-end;
+      gap: 1rem;
+    }
 
-  .tag-filter.has-tooltip::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    left: 50%;
-    bottom: calc(100% + .42rem);
-    z-index: 10;
-    padding: .22rem .38rem;
-    border: 1px solid rgba(111, 106, 100, .16);
-    border-radius: 3px;
-    background: rgba(247, 246, 243, .96);
-    color: var(--muted);
-    box-shadow: 0 2px 8px rgba(29, 28, 26, .06);
-    font-family: var(--sans);
-    font-size: .6rem;
-    font-weight: 400;
-    letter-spacing: .015em;
-    line-height: 1.2;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transform: translate(-50%, .12rem);
-    transition: opacity .12s ease, transform .12s ease;
-  }
-
-  .tag-filter.has-tooltip:hover::after,
-  .tag-filter.has-tooltip:focus-visible::after {
-    opacity: 1;
-    transform: translate(-50%, 0);
+    .category-index-copy strong {
+      font-size: 1.2rem;
+    }
   }
 </style>
