@@ -44,7 +44,9 @@ layout: default
       </div>
     {% endif %}
 
-    {% if page.wordpress_id %}
+    {% if page.categories contains '食べたり、歩いたり' %}
+      {% assign lyket_id = page.date | date: 'post-%Y%m%d%H%M%S' %}
+    {% elsif page.wordpress_id %}
       {% assign lyket_id = 'post-' | append: page.wordpress_id %}
     {% else %}
       {% assign lyket_id = page.date | date: 'post-%Y%m%d%H%M%S' %}
