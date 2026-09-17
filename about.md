@@ -248,14 +248,14 @@ nav: about
   .about-mini-label {
     margin-bottom: .48rem;
     color: var(--muted);
-    font-size: .54rem;
+    font-size: .60rem;
   }
 
   .about-side-copy {
     margin: 0 0 .5rem;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .62rem;
+    font-size: .72rem;
     line-height: 1.5;
   }
 
@@ -280,7 +280,7 @@ nav: about
     background: var(--paper);
     color: var(--body);
     font-family: var(--sans);
-    font-size: .66rem;
+    font-size: .72rem;
   }
 
   .about-side-subscribe-form input:focus {
@@ -295,7 +295,7 @@ nav: about
     background: var(--accent);
     color: #fff;
     font-family: var(--sans);
-    font-size: .64rem;
+    font-size: .70rem;
     cursor: pointer;
   }
 
@@ -311,7 +311,7 @@ nav: about
     background: var(--soft);
     color: var(--body);
     font-family: var(--sans);
-    font-size: .61rem;
+    font-size: .68rem;
     line-height: 1.45;
   }
 
@@ -319,7 +319,7 @@ nav: about
     margin: .45rem 0 0;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .54rem;
+    font-size: .60rem;
     line-height: 1.5;
   }
 
@@ -337,7 +337,7 @@ nav: about
     background: var(--paper);
     color: var(--body);
     font-family: var(--sans);
-    font-size: .64rem;
+    font-size: .72rem;
     text-decoration: none;
     transition: border-color .15s ease, color .15s ease, transform .15s ease;
   }
