@@ -17,27 +17,7 @@ nav: about
       <a class="about-podcast" href="https://open.spotify.com/show/6hUUlQ8zkJkx2CzdLXiI0F" target="_blank" rel="noopener"><span>Podcast:</span> 普通读者</a>
     </div>
 
-    <aside class="about-profile-side" aria-label="Subscribe and support this blog">
-      <div class="about-side-block">
-        <p class="about-mini-label">SUBSCRIBE</p>
-        <p class="about-side-copy">Email 或 <a href="{{ '/feed.xml' | relative_url }}">RSS</a></p>
-
-        <div id="about-subscribe-success" class="about-subscribe-status" role="status" hidden>
-          感谢订阅！更新时会收到邮件 ^_^
-        </div>
-
-        <form id="about-subscribe-form" class="about-side-subscribe-form" action="https://3693b1ad.sibforms.com/serve/MUIFAJi0O7F8qH7agDpwSWg6oAHlzhb-LHTu98WhY3r3yl4pYcWiAApt44BkjoJrBlTeQHIAJRBKyCJLlhjq-y0oURNC0TfTIjtSMN0A_Ft5ATNSyb3dfEkz3_sxQ9YSL7eF-0Q37f-Mm-WN_-Aq0HFa6-1qqdu-e6LoV3T2ivgpGah7gtKfxP7jitbT8coO_FQfJm_yvkHp_6SzIQ==" method="POST" target="about-brevo-subscribe-target">
-          <label class="sr-only" for="about-brevo-email">Email address</label>
-          <input id="about-brevo-email" type="email" name="EMAIL" placeholder="Email address" autocomplete="email" required>
-          <button id="about-subscribe-button" type="submit">订阅</button>
-          <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;">
-          <input type="hidden" name="locale" value="en">
-        </form>
-
-        <iframe id="about-brevo-subscribe-target" name="about-brevo-subscribe-target" title="订阅提交结果" hidden></iframe>
-        <p class="about-side-privacy">仅用于博客更新通知 · <a href="{{ '/privacy/' | relative_url }}">Privacy</a></p>
-      </div>
-
+    <aside class="about-profile-side" aria-label="Support this blog">
       <div class="about-side-block about-side-support">
         <p class="about-mini-label">SUPPORT</p>
         <a class="about-kofi-button" href="https://ko-fi.com/shioriblog" target="_blank" rel="noopener">
@@ -86,6 +66,26 @@ nav: about
         </div>
       </article>
     </div>
+  </section>
+
+  <section class="about-subscribe" aria-labelledby="about-subscribe-label">
+    <p class="about-section-kicker" id="about-subscribe-label">SUBSCRIBE</p>
+    <p class="about-subscribe-copy">通过 Email 订阅更新，或使用 <a href="{{ '/feed.xml' | relative_url }}">RSS</a>。</p>
+
+    <div id="about-subscribe-success" class="about-subscribe-status" role="status" hidden>
+      感谢订阅！更新时会收到邮件 ^_^
+    </div>
+
+    <form id="about-subscribe-form" class="about-side-subscribe-form" action="https://3693b1ad.sibforms.com/serve/MUIFAJi0O7F8qH7agDpwSWg6oAHlzhb-LHTu98WhY3r3yl4pYcWiAApt44BkjoJrBlTeQHIAJRBKyCJLlhjq-y0oURNC0TfTIjtSMN0A_Ft5ATNSyb3dfEkz3_sxQ9YSL7eF-0Q37f-Mm-WN_-Aq0HFa6-1qqdu-e6LoV3T2ivgpGah7gtKfxP7jitbT8coO_FQfJm_yvkHp_6SzIQ==" method="POST" target="about-brevo-subscribe-target">
+      <label class="sr-only" for="about-brevo-email">Email address</label>
+      <input id="about-brevo-email" type="email" name="EMAIL" placeholder="Email address" autocomplete="email" required>
+      <button id="about-subscribe-button" type="submit">订阅</button>
+      <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;">
+      <input type="hidden" name="locale" value="en">
+    </form>
+
+    <iframe id="about-brevo-subscribe-target" name="about-brevo-subscribe-target" title="订阅提交结果" hidden></iframe>
+    <p class="about-side-privacy">仅用于博客更新通知 · <a href="{{ '/privacy/' | relative_url }}">Privacy</a></p>
   </section>
 
   <script>
@@ -226,24 +226,11 @@ nav: about
     font-size: .60rem;
   }
 
-  .about-side-copy {
-    margin: 0 0 .5rem;
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: .72rem;
-    line-height: 1.5;
-  }
-
-  .about-side-copy a,
-  .about-side-privacy a {
-    color: var(--accent);
-  }
-
   .about-side-subscribe-form {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: .4rem;
-    width: 100%;
+    width: min(100%, 360px);
   }
 
   .about-side-subscribe-form input {
@@ -280,7 +267,8 @@ nav: about
   }
 
   .about-subscribe-status {
-    margin: 0 0 .5rem;
+    width: min(100%, 360px);
+    margin: 0 0 .6rem;
     padding: .45rem .5rem;
     border-left: 2px solid var(--accent);
     background: var(--soft);
@@ -296,6 +284,11 @@ nav: about
     font-family: var(--sans);
     font-size: .60rem;
     line-height: 1.5;
+  }
+
+  .about-side-privacy a,
+  .about-subscribe-copy a {
+    color: var(--accent);
   }
 
   .about-side-support {
@@ -416,6 +409,22 @@ nav: about
     transform: translate(2px, -2px);
   }
 
+  .about-subscribe {
+    margin-top: 3.6rem;
+  }
+
+  .about-subscribe > .about-section-kicker {
+    margin-bottom: .65rem;
+  }
+
+  .about-subscribe-copy {
+    margin: 0 0 .85rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .72rem;
+    line-height: 1.55;
+  }
+
   @media (max-width: 700px) {
     .about-page {
       width: min(100% - 2rem, 36rem);
@@ -478,6 +487,10 @@ nav: about
 
     .about-timeline-copy p {
       font-size: .83rem;
+    }
+
+    .about-subscribe {
+      margin-top: 3rem;
     }
   }
 </style>
