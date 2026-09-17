@@ -34,9 +34,11 @@ layout: default
           {% if tag_count > 0 %}
             {% assign tag_meaning = '' %}
             {% case tag[0] %}
+              {% when '一年の終わり' %}{% assign tag_meaning = 'annual review' %}
               {% when '暮らす' %}{% assign tag_meaning = 'Living' %}
               {% when '考える' %}{% assign tag_meaning = 'Thinking' %}
               {% when '言葉' %}{% assign tag_meaning = 'Words' %}
+              {% when '誕生日' %}{% assign tag_meaning = 'B-Day' %}
               {% when '読む・観る' %}{% assign tag_meaning = 'Reading & Watching' %}
               {% when '食べる' %}{% assign tag_meaning = 'Eating' %}
               {% when '話す' %}{% assign tag_meaning = 'Talking' %}
