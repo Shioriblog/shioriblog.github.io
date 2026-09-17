@@ -83,10 +83,58 @@ nav: home
   {% endif %}
 
   {% if paginator.page == 1 %}
+    {% assign total_chars = 0 %}
+    {% for post in site.posts %}
+      {% assign post_text = post.content | strip_html | strip_newlines | replace: ' ', '' | replace: '　', '' %}
+      {% assign post_chars = post_text | size %}
+      {% assign total_chars = total_chars | plus: post_chars %}
+    {% endfor %}
+    {% assign total_wan = total_chars | divided_by: 10000 %}
+    {% assign total_remainder = total_chars | modulo: 10000 %}
+    {% assign total_qian = total_remainder | divided_by: 1000 %}
+
     <aside class="home-site-note" aria-label="本站说明">
+      <div class="home-site-stats">
+        <p>本博客已稳定运行 <strong id="blog-age" data-start="2026-09-14">计算中…</strong><span class="home-site-cats" aria-hidden="true">🐈　🐈‍⬛</span></p>
+        <p>已发表 <strong>{{ site.posts | size }}</strong> 篇文章 · 总计约 <strong>{% if total_wan > 0 %}{{ total_wan }}万{% if total_qian > 0 %}{{ total_qian }}千{% endif %}{% else %}{{ total_chars }}{% endif %}</strong> 字</p>
+      </div>
       <p>本站文章与图片除特别注明外，版权归 Shiori 栞所有。未经许可，请勿全文转载。</p>
       <p>关于本站如何处理访问统计、留言和订阅信息，可以阅读 <a href="{{ '/privacy/' | relative_url }}">Privacy</a>。</p>
     </aside>
+
+    <script>
+      (() => {
+        const output = document.getElementById('blog-age')
+        if (!output) return
+
+        const [year, month, day] = output.dataset.start.split('-').map(Number)
+        const start = new Date(year, month - 1, day)
+        const now = new Date()
+        const end = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        if (end < start) return
+
+        let years = end.getFullYear() - start.getFullYear()
+        let cursor = new Date(start.getFullYear() + years, start.getMonth(), start.getDate())
+        if (cursor > end) {
+          years -= 1
+          cursor = new Date(start.getFullYear() + years, start.getMonth(), start.getDate())
+        }
+
+        let months = (end.getFullYear() - cursor.getFullYear()) * 12 + end.getMonth() - cursor.getMonth()
+        let monthCursor = new Date(cursor.getFullYear(), cursor.getMonth() + months, cursor.getDate())
+        if (monthCursor > end) {
+          months -= 1
+          monthCursor = new Date(cursor.getFullYear(), cursor.getMonth() + months, cursor.getDate())
+        }
+
+        const days = Math.floor((Date.UTC(end.getFullYear(), end.getMonth(), end.getDate()) - Date.UTC(monthCursor.getFullYear(), monthCursor.getMonth(), monthCursor.getDate())) / 86400000)
+        const parts = []
+        if (years) parts.push(`${years}年`)
+        if (months) parts.push(`${months}个月`)
+        if (days || parts.length === 0) parts.push(`${days}天`)
+        output.textContent = parts.join('')
+      })()
+    </script>
   {% endif %}
 </main>
 
@@ -167,6 +215,22 @@ nav: home
 
   .home-site-note p {
     margin: 0 0 .35rem;
+  }
+
+  .home-site-stats {
+    margin-bottom: .8rem;
+    color: var(--body);
+    font-size: .76rem;
+  }
+
+  .home-site-stats strong {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .home-site-cats {
+    margin-left: .55rem;
+    white-space: nowrap;
   }
 
   .home-site-note a {
