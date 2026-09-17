@@ -10,7 +10,7 @@ nav: home
       <section class="featured-posts" aria-labelledby="featured-heading">
         <h1 class="page-title" id="featured-heading">Featured Posts</h1>
         <div class="featured-list">
-          {% for post in featured_posts limit: 3 %}
+          {% for post in featured_posts limit: 4 %}
             <article class="featured-preview">
               <a class="featured-image-link" href="{{ post.url | relative_url }}" aria-label="阅读：{{ post.title }}">
                 <img src="{{ post.featured_image }}" alt=""{% if forloop.first %} loading="eager"{% else %} loading="lazy"{% endif %}>
