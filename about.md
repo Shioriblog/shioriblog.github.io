@@ -48,73 +48,48 @@ nav: about
     </aside>
   </section>
 
-  <section class="about-popular" id="about-popular" aria-labelledby="about-popular-label" hidden>
-    <div class="about-section-heading">
-      <p class="about-section-kicker" id="about-popular-label">POPULAR READS</p>
-      <span>PAST 30 DAYS</span>
+  <section class="about-history" aria-labelledby="about-history-label">
+    <p class="about-section-kicker" id="about-history-label">BLOG HISTORY</p>
+
+    <div class="about-timeline">
+      <article class="about-timeline-item">
+        <time class="about-timeline-date" datetime="2022-06">2022.06</time>
+        <span class="about-timeline-dot" aria-hidden="true"></span>
+        <div class="about-timeline-copy">
+          <p>在 Notion 上重新开始写 blog。<br>最初只是想记录生活上的一些改变和新的开始。</p>
+          <a class="about-timeline-link" href="{{ '/2022/06/07/生活上的改变和新开始/' | relative_url }}">生活上的改变和新开始 <span aria-hidden="true">↗</span></a>
+        </div>
+      </article>
+
+      <article class="about-timeline-item">
+        <time class="about-timeline-date" datetime="2023-12">2023.12</time>
+        <span class="about-timeline-dot" aria-hidden="true"></span>
+        <div class="about-timeline-copy">
+          <p>从 Notion 搬到 WordPress。</p>
+        </div>
+      </article>
+
+      <article class="about-timeline-item">
+        <time class="about-timeline-date" datetime="2025-02">2025.02</time>
+        <span class="about-timeline-dot" aria-hidden="true"></span>
+        <div class="about-timeline-copy">
+          <p>改变了写 blog 的方式，更加日常随笔化，并正式把这里改名为「独居日记」。</p>
+          <a class="about-timeline-link" href="{{ '/2025/02/25/生活的基石/' | relative_url }}">生活的基石 <span aria-hidden="true">↗</span></a>
+        </div>
+      </article>
+
+      <article class="about-timeline-item">
+        <time class="about-timeline-date" datetime="2026-09">2026.09</time>
+        <span class="about-timeline-dot" aria-hidden="true"></span>
+        <div class="about-timeline-copy">
+          <p>从 WordPress 搬到 GitHub Pages。<br>和 ChatGPT 一起搭起了现在这个个人静态 blog。</p>
+        </div>
+      </article>
     </div>
-    <div class="about-popular-list" id="about-popular-list"></div>
   </section>
 
   <script>
     (() => {
-      const popularSection = document.getElementById('about-popular')
-      const popularList = document.getElementById('about-popular-list')
-      const endpoint = {{ site.dashboard_api_url | jsonify }}
-      const posts = {
-        {% for post in site.posts %}
-          {{ post.url | jsonify }}: {
-            title: {{ post.title | jsonify }},
-            date: {{ post.date | date: '%Y.%m.%d' | jsonify }},
-            category: {{ post.categories | first | default: '' | jsonify }}
-          }{% unless forloop.last %},{% endunless %}
-        {% endfor %}
-      }
-
-      if (popularSection && popularList && endpoint) {
-        fetch(`${endpoint.replace(/\/$/, '')}?days=30`, { headers: { Accept: 'application/json' } })
-          .then((response) => {
-            if (!response.ok) throw new Error(`HTTP ${response.status}`)
-            return response.json()
-          })
-          .then((data) => {
-            const popular = (data.pages || [])
-              .filter((item) => posts[item.label])
-              .sort((a, b) => Number(b.views || 0) - Number(a.views || 0))
-              .slice(0, 3)
-
-            if (!popular.length) return
-
-            popular.forEach((item) => {
-              const meta = posts[item.label]
-              const article = document.createElement('article')
-              article.className = 'about-popular-item'
-
-              const copy = document.createElement('div')
-              copy.className = 'about-popular-copy'
-
-              const link = document.createElement('a')
-              link.href = item.label
-              link.textContent = meta.title
-
-              const details = document.createElement('p')
-              details.textContent = [meta.date, meta.category].filter(Boolean).join(' · ')
-
-              const arrow = document.createElement('span')
-              arrow.className = 'about-popular-arrow'
-              arrow.setAttribute('aria-hidden', 'true')
-              arrow.textContent = '↗'
-
-              copy.append(link, details)
-              article.append(copy, arrow)
-              popularList.appendChild(article)
-            })
-
-            popularSection.hidden = false
-          })
-          .catch(() => {})
-      }
-
       const form = document.getElementById('about-subscribe-form')
       const frame = document.getElementById('about-brevo-subscribe-target')
       const success = document.getElementById('about-subscribe-success')
@@ -354,77 +329,90 @@ nav: about
     object-fit: contain;
   }
 
-  .about-popular {
+  .about-history {
     margin-top: 3.8rem;
   }
 
-  .about-popular[hidden] {
-    display: none;
+  .about-history > .about-section-kicker {
+    margin-bottom: 1.55rem;
   }
 
-  .about-section-heading {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.2rem;
+  .about-timeline {
+    position: relative;
   }
 
-  .about-section-heading > span {
+  .about-timeline::before {
+    content: '';
+    position: absolute;
+    top: .52rem;
+    bottom: .52rem;
+    left: 84px;
+    width: 1px;
+    background: var(--line);
+  }
+
+  .about-timeline-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 68px 32px minmax(0, 1fr);
+    align-items: start;
+    padding-bottom: 2.05rem;
+  }
+
+  .about-timeline-item:last-child {
+    padding-bottom: 0;
+  }
+
+  .about-timeline-date {
+    padding-top: .05rem;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .53rem;
-    letter-spacing: .09em;
+    font-size: .65rem;
+    letter-spacing: .04em;
+    line-height: 1.7;
+    white-space: nowrap;
   }
 
-  .about-popular-list {
-    display: grid;
-    gap: 1.25rem;
+  .about-timeline-dot {
+    z-index: 1;
+    justify-self: center;
+    width: 6px;
+    height: 6px;
+    margin-top: .47rem;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px var(--paper);
   }
 
-  .about-popular-item {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 1rem;
-    align-items: center;
-  }
-
-  .about-popular-copy {
+  .about-timeline-copy {
     min-width: 0;
   }
 
-  .about-popular-copy a {
-    display: inline-block;
+  .about-timeline-copy p {
+    margin: 0;
     color: var(--body);
     font-family: var(--serif);
-    font-size: 1rem;
-    line-height: 1.45;
-    text-decoration: none;
-    transition: color .15s ease, transform .15s ease;
+    font-size: .88rem;
+    line-height: 1.75;
   }
 
-  .about-popular-item:hover .about-popular-copy a {
+  .about-timeline-link {
+    display: inline-block;
+    margin-top: .58rem;
     color: var(--accent);
-    transform: translateX(2px);
-  }
-
-  .about-popular-copy p {
-    margin: .15rem 0 0;
-    color: var(--muted);
     font-family: var(--sans);
-    font-size: .58rem;
+    font-size: .67rem;
     line-height: 1.5;
+    text-decoration: none;
   }
 
-  .about-popular-arrow {
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: .68rem;
-    transition: color .15s ease, transform .15s ease;
+  .about-timeline-link span {
+    display: inline-block;
+    margin-left: .08rem;
+    transition: transform .15s ease;
   }
 
-  .about-popular-item:hover .about-popular-arrow {
-    color: var(--accent);
+  .about-timeline-link:hover span {
     transform: translate(2px, -2px);
   }
 
@@ -471,8 +459,25 @@ nav: about
       margin-top: .15rem;
     }
 
-    .about-popular {
+    .about-history {
       margin-top: 3.4rem;
+    }
+
+    .about-timeline::before {
+      left: 62px;
+    }
+
+    .about-timeline-item {
+      grid-template-columns: 48px 28px minmax(0, 1fr);
+      padding-bottom: 1.8rem;
+    }
+
+    .about-timeline-date {
+      font-size: .59rem;
+    }
+
+    .about-timeline-copy p {
+      font-size: .83rem;
     }
   }
 </style>
