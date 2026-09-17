@@ -21,14 +21,6 @@
     })
   })
 
-  allImages.forEach((image) => {
-    if (galleryForImage.has(image)) return
-    image.classList.remove('article-zoomable-image')
-    image.removeAttribute('tabindex')
-    image.removeAttribute('role')
-    image.removeAttribute('aria-label')
-  })
-
   const previousButton = document.createElement('button')
   previousButton.type = 'button'
   previousButton.className = 'image-lightbox-nav image-lightbox-prev'
@@ -57,7 +49,7 @@
   }
 
   const setActiveImage = (image) => {
-    activeImages = galleryForImage.get(image) || []
+    activeImages = galleryForImage.get(image) || [image]
     activeIndex = Math.max(0, activeImages.indexOf(image))
     updateButtons()
   }
@@ -73,12 +65,6 @@
   content.addEventListener('click', (event) => {
     const image = event.target.closest('img')
     if (!image || !content.contains(image)) return
-
-    if (!galleryForImage.has(image)) {
-      event.stopPropagation()
-      return
-    }
-
     setActiveImage(image)
   }, true)
 
@@ -86,12 +72,6 @@
     if (event.key !== 'Enter' && event.key !== ' ') return
     const image = event.target.closest('img')
     if (!image || !content.contains(image)) return
-
-    if (!galleryForImage.has(image)) {
-      event.stopPropagation()
-      return
-    }
-
     setActiveImage(image)
   }, true)
 
