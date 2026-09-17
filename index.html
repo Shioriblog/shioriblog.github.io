@@ -45,13 +45,13 @@ nav: home
             {% when '言葉と歩く日記' %}{% assign category_description = '旅行随笔' %}
           {% endcase %}
           {% if category[0] == '言葉と歩く日記' %}
-            <a class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}" href="{{ '/categories/' | relative_url }}#category-travel"{% if category_description != '' %} data-tooltip="{{ category_description }}" aria-label="{{ category[0] }} — {{ category_description }}"{% endif %}>{{ category[0] }}</a>
+            <a class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}" href="{{ '/categories/words/' | relative_url }}"{% if category_description != '' %} data-tooltip="{{ category_description }}" aria-label="{{ category[0] }} — {{ category_description }}"{% endif %}>{{ category[0] }}</a>
           {% elsif category[0] == '日記の練習' %}
-            <a class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}" href="{{ '/categories/' | relative_url }}#category-daily"{% if category_description != '' %} data-tooltip="{{ category_description }}" aria-label="{{ category[0] }} — {{ category_description }}"{% endif %}>{{ category[0] }}</a>
+            <a class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}" href="{{ '/categories/daily/' | relative_url }}"{% if category_description != '' %} data-tooltip="{{ category_description }}" aria-label="{{ category[0] }} — {{ category_description }}"{% endif %}>{{ category[0] }}</a>
           {% elsif category[0] == 'うたかたの日々' %}
-            <a class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}" href="{{ '/categories/' | relative_url }}#category-utakata"{% if category_description != '' %} data-tooltip="{{ category_description }}" aria-label="{{ category[0] }} — {{ category_description }}"{% endif %}>{{ category[0] }}</a>
+            <a class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}" href="{{ '/categories/utakata/' | relative_url }}"{% if category_description != '' %} data-tooltip="{{ category_description }}" aria-label="{{ category[0] }} — {{ category_description }}"{% endif %}>{{ category[0] }}</a>
           {% else %}
-            <a class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}" href="{{ '/categories/' | relative_url }}#{{ category[0] | slugify }}"{% if category_description != '' %} data-tooltip="{{ category_description }}" aria-label="{{ category[0] }} — {{ category_description }}"{% endif %}>{{ category[0] }}</a>
+            <a class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}" href="{{ '/categories/' | relative_url }}"{% if category_description != '' %} data-tooltip="{{ category_description }}" aria-label="{{ category[0] }} — {{ category_description }}"{% endif %}>{{ category[0] }}</a>
           {% endif %}
         {% endunless %}
       {% endfor %}
