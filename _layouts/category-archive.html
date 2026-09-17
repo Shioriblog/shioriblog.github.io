@@ -1,0 +1,325 @@
+---
+layout: default
+---
+<main class="simple-page category-archive-page" id="content">
+  <h1 lang="ja">{{ page.category_name }}</h1>
+  <p class="category-archive-lede">{{ page.category_description }}</p>
+  {% if page.travel_note %}
+    <p class="category-archive-note">旅行中的吃吃喝喝，单独收在<a href="{{ '/travel/' | relative_url }}">「食べたり、歩いたり」</a>。</p>
+  {% endif %}
+
+  {% assign category_posts = site.categories[page.category_name] %}
+
+  {% assign has_visible_tags = false %}
+  {% for tag in site.tags %}
+    {% unless tag[0] == 'featured' %}
+      {% for post in category_posts %}
+        {% if post.tags contains tag[0] %}
+          {% assign has_visible_tags = true %}
+        {% endif %}
+      {% endfor %}
+    {% endunless %}
+  {% endfor %}
+
+  {% if has_visible_tags %}
+    <div class="category-archive-tags" role="group" aria-label="按主题筛选文章">
+      <button class="category-archive-tag is-active" type="button" data-tag-filter="all"><span>ALL</span> <sup>{{ category_posts | size }}</sup></button>
+      {% assign sorted_tags = site.tags | sort %}
+      {% for tag in sorted_tags %}
+        {% unless tag[0] == 'featured' %}
+          {% assign tag_count = 0 %}
+          {% for post in category_posts %}
+            {% if post.tags contains tag[0] %}
+              {% assign tag_count = tag_count | plus: 1 %}
+            {% endif %}
+          {% endfor %}
+          {% if tag_count > 0 %}
+            {% assign tag_meaning = '' %}
+            {% case tag[0] %}
+              {% when '暮らす' %}{% assign tag_meaning = 'Living' %}
+              {% when '考える' %}{% assign tag_meaning = 'Thinking' %}
+              {% when '言葉' %}{% assign tag_meaning = 'Words' %}
+              {% when '読む・観る' %}{% assign tag_meaning = 'Reading & Watching' %}
+              {% when '食べる' %}{% assign tag_meaning = 'Eating' %}
+              {% when '話す' %}{% assign tag_meaning = 'Talking' %}
+            {% endcase %}
+            <button class="category-archive-tag{% if tag_meaning != '' %} has-tooltip{% endif %}" type="button" data-tag-filter="{{ tag[0] | escape }}"{% if tag_meaning != '' %} data-tooltip="{{ tag_meaning }}" aria-label="{{ tag[0] }} — {{ tag_meaning }}"{% endif %}><span lang="ja">{{ tag[0] }}</span> <sup>{{ tag_count }}</sup></button>
+          {% endif %}
+        {% endunless %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% assign category_years = category_posts | group_by_exp: 'post', "post.date | date: '%Y'" %}
+  {% for year in category_years %}
+    <section class="category-archive-year-group" aria-label="{{ year.name }}年">
+      <div class="category-archive-year"><span>{{ year.name }}</span></div>
+      {% assign category_months = year.items | group_by_exp: 'post', "post.date | date: '%m'" %}
+      {% for month in category_months %}
+        <div class="category-archive-month-group">
+          <div class="category-archive-month"><span>{{ month.name | plus: 0 }} 月</span></div>
+          <ul class="category-archive-posts">
+            {% for post in month.items %}
+              <li data-post-tags="{{ post.tags | join: '|' | escape }}">
+                <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%m.%d' }}</time>
+                <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    </section>
+  {% else %}
+    <p class="empty-state">这里还没有文章。</p>
+  {% endfor %}
+
+  <script>
+    (() => {
+      const filters = Array.from(document.querySelectorAll('.category-archive-tag'))
+      const yearGroups = Array.from(document.querySelectorAll('.category-archive-year-group'))
+      if (!filters.length || !yearGroups.length) return
+
+      const filterPosts = (tag, updateUrl = false) => {
+        filters.forEach((button) => {
+          const active = button.dataset.tagFilter === tag
+          button.classList.toggle('is-active', active)
+          button.setAttribute('aria-pressed', String(active))
+        })
+
+        yearGroups.forEach((yearGroup) => {
+          const monthGroups = Array.from(yearGroup.querySelectorAll('.category-archive-month-group'))
+          let yearVisibleCount = 0
+
+          monthGroups.forEach((monthGroup) => {
+            const posts = Array.from(monthGroup.querySelectorAll('.category-archive-posts li'))
+            let monthVisibleCount = 0
+
+            posts.forEach((post) => {
+              const tags = (post.dataset.postTags || '').split('|').filter(Boolean)
+              const visible = tag === 'all' || tags.includes(tag)
+              post.hidden = !visible
+              if (visible) monthVisibleCount += 1
+            })
+
+            monthGroup.hidden = monthVisibleCount === 0
+            yearVisibleCount += monthVisibleCount
+          })
+
+          yearGroup.hidden = yearVisibleCount === 0
+        })
+
+        if (updateUrl) {
+          const url = new URL(window.location.href)
+          if (tag === 'all') url.searchParams.delete('tag')
+          else url.searchParams.set('tag', tag)
+          history.replaceState(null, '', `${url.pathname}${url.search}`)
+        }
+      }
+
+      filters.forEach((button) => {
+        button.setAttribute('aria-pressed', String(button.classList.contains('is-active')))
+        button.addEventListener('click', () => filterPosts(button.dataset.tagFilter, true))
+      })
+
+      const requestedTag = new URLSearchParams(window.location.search).get('tag')
+      if (requestedTag && filters.some(button => button.dataset.tagFilter === requestedTag)) {
+        filterPosts(requestedTag)
+      }
+    })()
+  </script>
+</main>
+
+<style>
+  .category-archive-page h1 {
+    margin-bottom: .35rem;
+  }
+
+  .category-archive-lede {
+    margin: 0 0 1.15rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .82rem;
+  }
+
+  .category-archive-note {
+    margin: -.55rem 0 1.35rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .72rem;
+    line-height: 1.65;
+  }
+
+  .category-archive-note a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .category-archive-note a:hover {
+    text-decoration: underline;
+    text-underline-offset: .2em;
+  }
+
+  .category-archive-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .55rem 1rem;
+    margin: 0 0 2.8rem;
+  }
+
+  .category-archive-tag {
+    position: relative;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .78rem;
+    letter-spacing: .035em;
+    cursor: pointer;
+    transition: color .15s ease;
+  }
+
+  .category-archive-tag sup {
+    position: relative;
+    top: -.3em;
+    margin-left: .12rem;
+    color: var(--muted);
+    font-size: .56rem;
+    line-height: 1;
+  }
+
+  .category-archive-tag:hover,
+  .category-archive-tag.is-active {
+    color: var(--accent);
+  }
+
+  .category-archive-tag.is-active {
+    text-decoration: underline;
+    text-underline-offset: .28rem;
+    text-decoration-thickness: 1px;
+  }
+
+  .category-archive-tag.has-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + .42rem);
+    z-index: 10;
+    padding: .22rem .38rem;
+    border: 1px solid rgba(111, 106, 100, .16);
+    border-radius: 3px;
+    background: rgba(247, 246, 243, .96);
+    color: var(--muted);
+    box-shadow: 0 2px 8px rgba(29, 28, 26, .06);
+    font-size: .6rem;
+    font-weight: 400;
+    letter-spacing: .015em;
+    line-height: 1.2;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, .12rem);
+    transition: opacity .12s ease, transform .12s ease;
+  }
+
+  .category-archive-tag.has-tooltip:hover::after,
+  .category-archive-tag.has-tooltip:focus-visible::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  .category-archive-year {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    margin: 2.8rem 0 .45rem;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: .9rem;
+    font-weight: 500;
+    letter-spacing: .12em;
+  }
+
+  .category-archive-year-group:first-of-type .category-archive-year {
+    margin-top: 0;
+  }
+
+  .category-archive-year::after {
+    content: "";
+    display: block;
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .category-archive-month-group {
+    margin-top: 1.2rem;
+  }
+
+  .category-archive-month {
+    display: inline-block;
+    margin: 0 0 .45rem;
+    padding: .28rem .6rem;
+    border: 1px solid rgba(79, 90, 73, .34);
+    border-radius: 4px;
+    background: rgba(79, 90, 73, .06);
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: .76rem;
+    font-weight: 500;
+    line-height: 1.45;
+    letter-spacing: .025em;
+  }
+
+  .category-archive-posts {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .category-archive-posts li {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    gap: 1rem;
+    align-items: baseline;
+    padding: .78rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .category-archive-posts time {
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .72rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .category-archive-posts a {
+    color: var(--body);
+    font-size: 1.08rem;
+    line-height: 1.55;
+    text-decoration-color: transparent;
+    transition: color .15s ease, text-decoration-color .15s ease;
+  }
+
+  .category-archive-posts a:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+
+  .category-archive-posts li[hidden],
+  .category-archive-month-group[hidden],
+  .category-archive-year-group[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    .category-archive-posts li {
+      grid-template-columns: 3.6rem minmax(0, 1fr);
+      gap: .75rem;
+    }
+
+    .category-archive-posts a {
+      font-size: 1rem;
+    }
+  }
+</style>
