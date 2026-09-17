@@ -16,7 +16,7 @@ description: 按分类与主题翻看独居日记里的文章。
         <strong lang="ja">日記の練習</strong>
         <span>日常随笔</span>
       </span>
-      <small>{{ daily_posts | size }} 篇 →</small>
+      <small>{{ daily_posts | size }} 篇 <span aria-hidden="true">→</span></small>
     </a>
 
     {% assign utakata_posts = site.categories['うたかたの日々'] %}
@@ -25,7 +25,7 @@ description: 按分类与主题翻看独居日记里的文章。
         <strong lang="ja">うたかたの日々</strong>
         <span>岁月的泡沫</span>
       </span>
-      <small>{{ utakata_posts | size }} 篇 →</small>
+      <small>{{ utakata_posts | size }} 篇 <span aria-hidden="true">→</span></small>
     </a>
 
     {% assign words_posts = site.categories['言葉と歩く日記'] %}
@@ -34,7 +34,7 @@ description: 按分类与主题翻看独居日记里的文章。
         <strong lang="ja">言葉と歩く日記</strong>
         <span>旅行随笔</span>
       </span>
-      <small>{{ words_posts | size }} 篇 →</small>
+      <small>{{ words_posts | size }} 篇 <span aria-hidden="true">→</span></small>
     </a>
   </div>
 
@@ -66,51 +66,45 @@ description: 按分类与主题翻看独居日记里的文章。
 </main>
 
 <style>
+  .category-index-page {
+    width: min(760px, calc(100% - 4rem));
+  }
+
   .category-index-page h1 {
     margin-bottom: .35rem;
   }
 
   .category-index-lede {
-    margin: 0 0 2.8rem;
+    margin: 0 0 3.25rem;
     color: var(--muted);
     font-family: var(--sans);
     font-size: .78rem;
   }
 
   .category-index-list {
-    display: grid;
-    gap: 1rem;
+    border-top: 1px solid var(--line);
   }
 
   .category-index-card {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.5rem;
-    padding: 1.35rem 1.45rem;
-    border: 1px solid rgba(79, 90, 73, .18);
-    border-radius: 8px;
-    background: rgba(79, 90, 73, .035);
+    gap: 2rem;
+    padding: 1.6rem .1rem 1.55rem;
+    border-bottom: 1px solid var(--line);
+    color: inherit;
     text-decoration: none;
-    transition: border-color .15s ease, background .15s ease, transform .15s ease;
-  }
-
-  .category-index-card:hover,
-  .category-index-card:focus-visible {
-    border-color: rgba(79, 90, 73, .34);
-    background: rgba(79, 90, 73, .065);
-    transform: translateY(-1px);
   }
 
   .category-index-copy {
     display: grid;
-    gap: .22rem;
+    gap: .26rem;
     min-width: 0;
   }
 
   .category-index-copy strong {
     color: var(--ink);
-    font-size: 1.34rem;
+    font-size: 1.3rem;
     font-weight: 500;
     line-height: 1.45;
     transition: color .15s ease;
@@ -119,14 +113,26 @@ description: 按分类与主题翻看独居日记里的文章。
   .category-index-copy > span {
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .74rem;
+    font-size: .72rem;
+    line-height: 1.5;
   }
 
   .category-index-card small {
+    display: inline-flex;
+    align-items: center;
+    gap: .38rem;
     flex: 0 0 auto;
     color: var(--accent);
     font-family: var(--sans);
-    font-size: .72rem;
+    font-size: .68rem;
+    font-weight: 400;
+    letter-spacing: .015em;
+    white-space: nowrap;
+  }
+
+  .category-index-card small span {
+    display: inline-block;
+    transition: transform .15s ease;
   }
 
   .category-index-card:hover .category-index-copy strong,
@@ -134,19 +140,31 @@ description: 按分类与主题翻看独居日记里的文章。
     color: var(--accent);
   }
 
+  .category-index-card:hover small span,
+  .category-index-card:focus-visible small span {
+    transform: translateX(.18rem);
+  }
+
   @media (max-width: 640px) {
-    .category-index-list {
-      gap: .8rem;
+    .category-index-page {
+      width: min(100% - 2.2rem, 760px);
+    }
+
+    .category-index-lede {
+      margin-bottom: 2.6rem;
     }
 
     .category-index-card {
-      align-items: flex-end;
-      gap: 1rem;
-      padding: 1.15rem 1.2rem;
+      gap: 1.2rem;
+      padding: 1.35rem .05rem 1.3rem;
     }
 
     .category-index-copy strong {
-      font-size: 1.2rem;
+      font-size: 1.16rem;
+    }
+
+    .category-index-card small {
+      font-size: .64rem;
     }
   }
 </style>
