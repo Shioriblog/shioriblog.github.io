@@ -33,6 +33,7 @@ nav: friends
       <li><a href="https://aliangx.blog/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://aliangx.blog&sz=32" alt="" loading="lazy">蛰洲</a></li>
       <li><a href="https://solanalifeblog.vercel.app/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://solanalifeblog.vercel.app&sz=32" alt="" loading="lazy">在世一日</a></li>
       <li><a href="https://www.gigigatgat.ca/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://www.gigigatgat.ca&sz=32" alt="" loading="lazy">嘰嘰乞乞</a></li>
+      <li><a href="https://mokuyo.neocities.org/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://mokuyo.neocities.org&sz=32" alt="" loading="lazy">光明岛</a></li>
     </ul>
   </section>
 
