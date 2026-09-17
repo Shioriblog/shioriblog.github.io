@@ -9,279 +9,35 @@ nav: travel
   <h1>游记</h1>
   <p class="travel-lede">旅行流水账。在城市里逛一逛，吃一吃。</p>
 
-  <section class="travel-log" aria-labelledby="travel-log-label">
-    <p class="travel-log-label" id="travel-log-label">TRAVEL LOG</p>
+  {% assign travel_posts = site.categories['食べたり、歩いたり'] | sort: 'travel_date' | reverse %}
+  {% assign travel_years = travel_posts | group_by_exp: 'post', "post.travel_date | date: '%Y'" %}
 
-    {% assign travel_years = site.data.travel_log | group_by: 'year' %}
-
-    {% for year in travel_years %}
-      <div class="travel-year"><span>{{ year.name }}</span></div>
-      <div class="travel-timeline" aria-label="{{ year.name }} travel log">
-        {% for item in year.items %}
-          {% assign linked_post = nil %}
-          {% if item.post_url %}
-            {% assign linked_post = site.posts | where: 'url', item.post_url | first %}
-          {% endif %}
-
-          <article class="travel-entry{% unless item.post_url %} travel-entry--place-only{% endunless %}">
-            <time class="travel-entry-date">{{ item.month }}</time>
-            <span class="travel-entry-dot" aria-hidden="true"></span>
-
-            <div class="travel-entry-content">
-              <p class="travel-entry-place">{{ item.place }}</p>
-
-              {% if item.post_url %}
-                <div class="travel-entry-post{% unless linked_post.travel_image %} travel-entry-post--no-image{% endunless %}">
-                  <div class="travel-entry-body">
-                    <h2><a href="{{ item.post_url | relative_url }}">{% if item.post_title %}{{ item.post_title }}{% elsif linked_post %}{{ linked_post.title }}{% endif %} <span aria-hidden="true">↗</span></a></h2>
-                    {% if linked_post %}
-                      <p class="travel-entry-excerpt">{% if linked_post.travel_excerpt %}{{ linked_post.travel_excerpt }}{% else %}{{ linked_post.excerpt | strip_html | normalize_whitespace | truncate: 90 }}{% endif %}</p>
-                    {% endif %}
-                  </div>
-
-                  {% if linked_post.travel_image %}
-                    <a class="travel-entry-image" href="{{ item.post_url | relative_url }}" aria-label="阅读：{{ item.post_title }}">
-                      <img src="{{ linked_post.travel_image }}" alt="" loading="lazy">
-                    </a>
-                  {% endif %}
-                </div>
-              {% endif %}
-            </div>
-          </article>
-        {% endfor %}
-      </div>
-    {% endfor %}
-  </section>
+  {% for year in travel_years %}
+    <div class="travel-year"><span>{{ year.name }}</span></div>
+    <section class="travel-timeline" aria-label="{{ year.name }}年游记">
+      {% for post in year.items %}
+        <article class="travel-entry">
+          <time datetime="{{ post.travel_date | date_to_xmlschema }}">{{ post.travel_date | date: '%m.%d' }}</time>
+          <a class="travel-entry-image" href="{{ post.url | relative_url }}" aria-label="阅读：{{ post.title }}">
+            <img src="{{ post.travel_image }}" alt="" loading="lazy">
+          </a>
+          <div class="travel-entry-body">
+            {% if post.travel_place %}<p class="travel-entry-place">{{ post.travel_place }}</p>{% endif %}
+            <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+            <p class="travel-entry-excerpt">{% if post.travel_excerpt %}{{ post.travel_excerpt }}{% else %}{{ post.excerpt | strip_html | normalize_whitespace | truncate: 90 }}{% endif %}</p>
+          </div>
+        </article>
+      {% endfor %}
+    </section>
+  {% else %}
+    <p class="empty-state">游记会从这里慢慢积累。</p>
+  {% endfor %}
 </main>
 
 <style>
-  .travel-page {
-    width: min(760px, calc(100% - 4rem));
-  }
-
-  .travel-page h1 {
-    margin-bottom: .35rem;
-  }
-
-  .travel-kicker {
-    margin: 0 0 .45rem;
-    color: var(--accent);
-    font-family: "Noto Serif JP", "Yu Mincho", serif;
-    font-size: .78rem;
-    letter-spacing: .08em;
-  }
-
-  .travel-lede {
-    margin: 0;
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: .76rem;
-  }
-
-  .travel-log {
-    margin-top: 3.6rem;
-  }
-
-  .travel-log-label {
-    margin: 0 0 1.7rem;
-    color: var(--accent);
-    font-family: var(--sans);
-    font-size: .61rem;
-    font-weight: 500;
-    letter-spacing: .17em;
-  }
-
-  .travel-year {
-    display: flex;
-    align-items: center;
-    gap: .8rem;
-    margin: 3.1rem 0 1.1rem;
+  .travel-page .travel-year {
     color: var(--ink);
-    font-family: var(--sans);
-    font-size: .76rem;
+    font-size: .9rem;
     font-weight: 500;
-    letter-spacing: .12em;
-  }
-
-  .travel-year:first-of-type {
-    margin-top: 0;
-  }
-
-  .travel-year::after {
-    content: "";
-    display: block;
-    flex: 1;
-    height: 1px;
-    background: var(--line);
-  }
-
-  .travel-timeline {
-    position: relative;
-  }
-
-  .travel-timeline::before {
-    content: "";
-    position: absolute;
-    top: .55rem;
-    bottom: .8rem;
-    left: 48px;
-    width: 1px;
-    background: var(--line);
-  }
-
-  .travel-entry {
-    position: relative;
-    display: grid;
-    grid-template-columns: 32px 32px minmax(0, 1fr);
-    align-items: start;
-    min-height: 2.2rem;
-    padding-bottom: 2.4rem;
-  }
-
-  .travel-entry:last-child {
-    padding-bottom: .35rem;
-  }
-
-  .travel-entry-date {
-    padding-top: .05rem;
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: .65rem;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: .04em;
-    line-height: 1.7;
-    white-space: nowrap;
-  }
-
-  .travel-entry-dot {
-    z-index: 1;
-    justify-self: center;
-    width: 6px;
-    height: 6px;
-    margin-top: .48rem;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 0 4px var(--paper);
-  }
-
-  .travel-entry-content {
-    min-width: 0;
-  }
-
-  .travel-entry-place {
-    margin: 0;
-    color: var(--ink);
-    font-family: var(--serif);
-    font-size: 1rem;
-    font-weight: 500;
-    line-height: 1.55;
-  }
-
-  .travel-entry-post {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 148px;
-    gap: 1.25rem;
-    align-items: start;
-    margin-top: .72rem;
-  }
-
-  .travel-entry-post--no-image {
-    display: block;
-  }
-
-  .travel-entry-body {
-    min-width: 0;
-  }
-
-  .travel-entry-body h2 {
-    margin: 0 0 .36rem;
-    color: var(--body);
-    font-family: var(--serif);
-    font-size: .91rem;
-    font-weight: 500;
-    line-height: 1.55;
-  }
-
-  .travel-entry-body h2 a {
-    text-decoration: none;
-  }
-
-  .travel-entry-body h2 span {
-    margin-left: .2em;
-    color: var(--accent);
-    font-family: var(--sans);
-    font-size: .74em;
-  }
-
-  .travel-entry-excerpt {
-    margin: 0;
-    color: var(--muted);
-    font-size: .79rem;
-    line-height: 1.7;
-  }
-
-  .travel-entry-image {
-    display: block;
-    overflow: hidden;
-    text-decoration: none;
-  }
-
-  .travel-entry-image img {
-    display: block;
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    transition: transform .2s ease;
-  }
-
-  .travel-entry-image:hover img {
-    transform: scale(1.025);
-  }
-
-  .travel-entry--place-only {
-    padding-bottom: 1.8rem;
-  }
-
-  @media (max-width: 640px) {
-    .travel-page {
-      width: min(100% - 2.2rem, 760px);
-    }
-
-    .travel-log {
-      margin-top: 3rem;
-    }
-
-    .travel-timeline::before {
-      left: 38px;
-    }
-
-    .travel-entry {
-      grid-template-columns: 24px 28px minmax(0, 1fr);
-      padding-bottom: 2rem;
-    }
-
-    .travel-entry-post {
-      grid-template-columns: minmax(0, 1fr) 104px;
-      gap: .9rem;
-    }
-
-    .travel-entry-place {
-      font-size: .94rem;
-    }
-
-    .travel-entry-excerpt {
-      display: none;
-    }
-  }
-
-  @media (max-width: 430px) {
-    .travel-entry-post {
-      display: block;
-    }
-
-    .travel-entry-image {
-      width: min(180px, 100%);
-      margin-top: .8rem;
-    }
   }
 </style>
