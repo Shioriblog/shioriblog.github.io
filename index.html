@@ -5,7 +5,7 @@ nav: home
 ---
 <main class="home-main" id="content">
   {% if paginator.page == 1 %}
-    {% assign featured_posts = site.posts | where: "featured", true %}
+    {% assign featured_posts = site.posts | where: "featured", true | sort: "featured_order" %}
     {% if featured_posts.size > 0 %}
       <section class="featured-posts" aria-labelledby="featured-heading">
         <h1 class="page-title" id="featured-heading">Featured Posts</h1>
