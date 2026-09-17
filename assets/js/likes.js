@@ -1,4 +1,4 @@
-(() => {
+;(() => {
   const content = document.querySelector('.article-content')
   const lightbox = document.getElementById('image-lightbox')
   const lightboxImage = document.getElementById('image-lightbox-image')
@@ -97,7 +97,7 @@
   })
 })()
 
-(() => {
+;(() => {
   const script = document.currentScript
   const apiBase = (script?.dataset.api || '').replace(/\/$/, '')
   const container = document.querySelector('.article-like [data-lyket-type="like"]')
