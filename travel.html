@@ -1,43 +1,192 @@
 ---
 layout: default
-title: 食べたり、歩いたり
+title: 旅行
 permalink: /travel/
 nav: travel
 ---
 <main class="simple-page travel-page" id="content">
   <p class="travel-kicker">食べたり、歩いたり</p>
-  <h1>游记</h1>
+  <h1>旅行</h1>
   <p class="travel-lede">旅行流水账。在城市里逛一逛，吃一吃。</p>
 
-  {% assign travel_posts = site.categories['食べたり、歩いたり'] | sort: 'travel_date' | reverse %}
-  {% assign travel_years = travel_posts | group_by_exp: 'post', "post.travel_date | date: '%Y'" %}
+  <div class="travel-page-grid">
+    <div class="travel-posts">
+      {% assign travel_posts = site.categories['食べたり、歩いたり'] | sort: 'travel_date' | reverse %}
+      {% assign travel_years = travel_posts | group_by_exp: 'post', "post.travel_date | date: '%Y'" %}
 
-  {% for year in travel_years %}
-    <div class="travel-year"><span>{{ year.name }}</span></div>
-    <section class="travel-timeline" aria-label="{{ year.name }}年游记">
-      {% for post in year.items %}
-        <article class="travel-entry">
-          <time datetime="{{ post.travel_date | date_to_xmlschema }}">{{ post.travel_date | date: '%m.%d' }}</time>
-          <a class="travel-entry-image" href="{{ post.url | relative_url }}" aria-label="阅读：{{ post.title }}">
-            <img src="{{ post.travel_image }}" alt="" loading="lazy">
-          </a>
-          <div class="travel-entry-body">
-            {% if post.travel_place %}<p class="travel-entry-place">{{ post.travel_place }}</p>{% endif %}
-            <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-            <p class="travel-entry-excerpt">{% if post.travel_excerpt %}{{ post.travel_excerpt }}{% else %}{{ post.excerpt | strip_html | normalize_whitespace | truncate: 90 }}{% endif %}</p>
-          </div>
-        </article>
+      {% for year in travel_years %}
+        <div class="travel-year"><span>{{ year.name }}</span></div>
+        <section class="travel-timeline" aria-label="{{ year.name }}年游记">
+          {% for post in year.items %}
+            <article class="travel-entry">
+              <time datetime="{{ post.travel_date | date_to_xmlschema }}">{{ post.travel_date | date: '%m.%d' }}</time>
+              <a class="travel-entry-image" href="{{ post.url | relative_url }}" aria-label="阅读：{{ post.title }}">
+                <img src="{{ post.travel_image }}" alt="" loading="lazy">
+              </a>
+              <div class="travel-entry-body">
+                {% if post.travel_place %}<p class="travel-entry-place">{{ post.travel_place }}</p>{% endif %}
+                <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+                <p class="travel-entry-excerpt">{% if post.travel_excerpt %}{{ post.travel_excerpt }}{% else %}{{ post.excerpt | strip_html | normalize_whitespace | truncate: 90 }}{% endif %}</p>
+              </div>
+            </article>
+          {% endfor %}
+        </section>
+      {% else %}
+        <p class="empty-state">游记会从这里慢慢积累。</p>
       {% endfor %}
-    </section>
-  {% else %}
-    <p class="empty-state">游记会从这里慢慢积累。</p>
-  {% endfor %}
+    </div>
+
+    <aside class="travel-log" aria-labelledby="travel-log-title">
+      <p class="travel-log-title" id="travel-log-title">TRAVEL LOG</p>
+
+      <div class="travel-log-year">
+        <p>2023</p>
+        <div class="travel-log-row"><span>Mar</span><span>Boston</span></div>
+      </div>
+
+      <div class="travel-log-year">
+        <p>2024</p>
+        <div class="travel-log-row"><span>Mar</span><span>Seattle</span></div>
+        <div class="travel-log-row"><span>Apr</span><span>Paris</span></div>
+        <div class="travel-log-row"><span>Jun</span><span>Taipei · Beijing</span></div>
+      </div>
+
+      <div class="travel-log-year">
+        <p>2025</p>
+        <div class="travel-log-row"><span>Mar</span><span>Columbus, Ohio</span></div>
+        <div class="travel-log-row"><span>Apr</span><span>Berlin · Prague</span></div>
+        <div class="travel-log-row"><span>Jul</span><span>Hong Kong · Macau</span></div>
+        <div class="travel-log-row"><span>Jul</span><span>Chicago</span></div>
+      </div>
+
+      <div class="travel-log-year">
+        <p>2026</p>
+        <div class="travel-log-row"><span>Feb</span><span>Tainan · Taipei</span></div>
+        <div class="travel-log-row"><span>Mar</span><span>Vancouver</span></div>
+        <div class="travel-log-row"><span>Jun</span><span>Shanxi</span></div>
+      </div>
+    </aside>
+  </div>
 </main>
 
 <style>
+  .travel-page {
+    width: min(980px, calc(100% - 4rem));
+  }
+
   .travel-page .travel-year {
     color: var(--ink);
     font-size: .9rem;
     font-weight: 500;
+  }
+
+  .travel-page-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 188px;
+    gap: 3.7rem;
+    align-items: start;
+    margin-top: 2.8rem;
+  }
+
+  .travel-posts .travel-year:first-child {
+    margin-top: 0;
+  }
+
+  .travel-log {
+    position: sticky;
+    top: 2rem;
+    min-width: 0;
+    padding-top: .1rem;
+  }
+
+  .travel-log-title {
+    margin: 0 0 1.5rem;
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: .61rem;
+    font-weight: 500;
+    letter-spacing: .17em;
+  }
+
+  .travel-log-year {
+    position: relative;
+    margin: 0 0 1.55rem;
+    padding-left: .85rem;
+  }
+
+  .travel-log-year::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 1.55rem;
+    bottom: .28rem;
+    width: 1px;
+    background: var(--line);
+  }
+
+  .travel-log-year > p {
+    margin: 0 0 .48rem;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: .66rem;
+    font-weight: 500;
+    letter-spacing: .08em;
+    line-height: 1.4;
+  }
+
+  .travel-log-row {
+    display: grid;
+    grid-template-columns: 2.15rem minmax(0, 1fr);
+    gap: .45rem;
+    align-items: baseline;
+    margin: .28rem 0;
+  }
+
+  .travel-log-row span:first-child {
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .6rem;
+    letter-spacing: .025em;
+  }
+
+  .travel-log-row span:last-child {
+    color: var(--body);
+    font-family: var(--serif);
+    font-size: .77rem;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 760px) {
+    .travel-page {
+      width: min(860px, calc(100% - 2.2rem));
+    }
+
+    .travel-page-grid {
+      display: block;
+      margin-top: 2.8rem;
+    }
+
+    .travel-log {
+      position: static;
+      margin-top: 4rem;
+      padding-top: 1.4rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .travel-log-year {
+      padding-left: 0;
+    }
+
+    .travel-log-year::before {
+      display: none;
+    }
+
+    .travel-log-row {
+      grid-template-columns: 2.6rem minmax(0, 1fr);
+    }
+
+    .travel-log-row span:last-child {
+      font-size: .82rem;
+    }
   }
 </style>
