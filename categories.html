@@ -103,11 +103,17 @@ nav: categories
         {% for year in category_years %}
           <div class="category-year-group">
             <div class="category-year"><span>{{ year.name }}</span></div>
-            <ul class="category-posts">
-              {% for post in year.items %}
-                <li data-post-tags="{{ post.tags | join: '|' | escape }}"><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
-              {% endfor %}
-            </ul>
+            {% assign category_months = year.items | group_by_exp: 'post', "post.date | date: '%m'" %}
+            {% for month in category_months %}
+              <div class="category-month-group">
+                <div class="category-month"><span>{{ month.name | plus: 0 }} 月</span></div>
+                <ul class="category-posts">
+                  {% for post in month.items %}
+                    <li data-post-tags="{{ post.tags | join: '|' | escape }}"><a href="{{ post.url | relative_url }}">{{ post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time></li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endfor %}
           </div>
         {% endfor %}
       </section>
@@ -144,7 +150,7 @@ nav: categories
 
       const filterPanel = (panel, tag, updateUrl = false) => {
         const tagFilters = Array.from(panel.querySelectorAll('.tag-filter'))
-        const groups = Array.from(panel.querySelectorAll('.category-year-group'))
+        const yearGroups = Array.from(panel.querySelectorAll('.category-year-group'))
 
         tagFilters.forEach((button) => {
           const active = button.dataset.tagFilter === tag
@@ -152,18 +158,26 @@ nav: categories
           button.setAttribute('aria-pressed', String(active))
         })
 
-        groups.forEach((group) => {
-          const posts = Array.from(group.querySelectorAll('.category-posts li'))
-          let visibleCount = 0
+        yearGroups.forEach((yearGroup) => {
+          const monthGroups = Array.from(yearGroup.querySelectorAll('.category-month-group'))
+          let yearVisibleCount = 0
 
-          posts.forEach((post) => {
-            const tags = (post.dataset.postTags || '').split('|').filter(Boolean)
-            const visible = tag === 'all' || tags.includes(tag)
-            post.hidden = !visible
-            if (visible) visibleCount += 1
+          monthGroups.forEach((monthGroup) => {
+            const posts = Array.from(monthGroup.querySelectorAll('.category-posts li'))
+            let monthVisibleCount = 0
+
+            posts.forEach((post) => {
+              const tags = (post.dataset.postTags || '').split('|').filter(Boolean)
+              const visible = tag === 'all' || tags.includes(tag)
+              post.hidden = !visible
+              if (visible) monthVisibleCount += 1
+            })
+
+            monthGroup.hidden = monthVisibleCount === 0
+            yearVisibleCount += monthVisibleCount
           })
 
-          group.hidden = visibleCount === 0
+          yearGroup.hidden = yearVisibleCount === 0
         })
 
         if (updateUrl) {
@@ -225,7 +239,20 @@ nav: categories
     margin-top: 2.35rem;
   }
 
+  .category-page .category-month-group {
+    margin-top: 1.15rem;
+  }
+
+  .category-page .category-month {
+    margin: 0 0 .25rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .68rem;
+    letter-spacing: .08em;
+  }
+
   .category-page .category-posts li[hidden],
+  .category-page .category-month-group[hidden],
   .category-page .category-year-group[hidden] {
     display: none;
   }
