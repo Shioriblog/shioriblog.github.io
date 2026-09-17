@@ -65,50 +65,109 @@ layout: default
     <p class="empty-state">这里还没有文章。</p>
   {% endfor %}
 
+  <nav class="category-pagination" id="category-pagination" aria-label="分类文章分页" hidden>
+    <button class="category-pagination-button" id="category-page-prev" type="button">← 更新</button>
+    <span id="category-page-status" aria-live="polite">1 / 1</span>
+    <button class="category-pagination-button" id="category-page-next" type="button">更早 →</button>
+  </nav>
+
   <script>
     (() => {
+      const pageSize = 10
       const filters = Array.from(document.querySelectorAll('.category-archive-tag'))
       const yearGroups = Array.from(document.querySelectorAll('.category-archive-year-group'))
-      if (!filters.length || !yearGroups.length) return
+      const posts = yearGroups.flatMap(group => Array.from(group.querySelectorAll('.category-archive-posts li')))
+      const pagination = document.getElementById('category-pagination')
+      const previousButton = document.getElementById('category-page-prev')
+      const nextButton = document.getElementById('category-page-next')
+      const status = document.getElementById('category-page-status')
+      if (!yearGroups.length || !posts.length || !pagination || !previousButton || !nextButton || !status) return
 
-      const filterPosts = (tag, updateUrl = false) => {
+      const params = new URLSearchParams(window.location.search)
+      const requestedTag = params.get('tag')
+      const requestedPage = Number.parseInt(params.get('page') || '1', 10)
+      let activeTag = requestedTag && filters.some(button => button.dataset.tagFilter === requestedTag)
+        ? requestedTag
+        : 'all'
+      let currentPage = Number.isFinite(requestedPage) && requestedPage > 0 ? requestedPage : 1
+
+      const matchesTag = (post, tag) => {
+        if (tag === 'all') return true
+        const tags = (post.dataset.postTags || '').split('|').filter(Boolean)
+        return tags.includes(tag)
+      }
+
+      const syncUrl = () => {
+        const url = new URL(window.location.href)
+        if (activeTag === 'all') url.searchParams.delete('tag')
+        else url.searchParams.set('tag', activeTag)
+        if (currentPage === 1) url.searchParams.delete('page')
+        else url.searchParams.set('page', String(currentPage))
+        history.replaceState(null, '', `${url.pathname}${url.search}`)
+      }
+
+      const updateFilterState = () => {
         filters.forEach((button) => {
-          const active = button.dataset.tagFilter === tag
+          const active = button.dataset.tagFilter === activeTag
           button.classList.toggle('is-active', active)
           button.setAttribute('aria-pressed', String(active))
         })
+      }
 
-        yearGroups.forEach((yearGroup) => {
-          const posts = Array.from(yearGroup.querySelectorAll('.category-archive-posts li'))
-          let visibleCount = 0
+      const render = (updateUrl = false, moveToList = false) => {
+        const matchingPosts = posts.filter(post => matchesTag(post, activeTag))
+        const totalPages = Math.max(1, Math.ceil(matchingPosts.length / pageSize))
+        currentPage = Math.min(Math.max(currentPage, 1), totalPages)
 
-          posts.forEach((post) => {
-            const tags = (post.dataset.postTags || '').split('|').filter(Boolean)
-            const visible = tag === 'all' || tags.includes(tag)
-            post.hidden = !visible
-            if (visible) visibleCount += 1
-          })
+        const start = (currentPage - 1) * pageSize
+        const visiblePosts = new Set(matchingPosts.slice(start, start + pageSize))
 
-          yearGroup.hidden = visibleCount === 0
+        posts.forEach((post) => {
+          post.hidden = !visiblePosts.has(post)
         })
 
-        if (updateUrl) {
-          const url = new URL(window.location.href)
-          if (tag === 'all') url.searchParams.delete('tag')
-          else url.searchParams.set('tag', tag)
-          history.replaceState(null, '', `${url.pathname}${url.search}`)
+        yearGroups.forEach((yearGroup) => {
+          const hasVisiblePost = Array.from(yearGroup.querySelectorAll('.category-archive-posts li')).some(post => !post.hidden)
+          yearGroup.hidden = !hasVisiblePost
+        })
+
+        status.textContent = `${currentPage} / ${totalPages}`
+        previousButton.disabled = currentPage <= 1
+        nextButton.disabled = currentPage >= totalPages
+        pagination.hidden = totalPages <= 1
+
+        updateFilterState()
+        if (updateUrl) syncUrl()
+
+        if (moveToList) {
+          const firstVisibleYear = yearGroups.find(group => !group.hidden)
+          if (firstVisibleYear) firstVisibleYear.scrollIntoView({ block: 'start' })
         }
       }
 
       filters.forEach((button) => {
-        button.setAttribute('aria-pressed', String(button.classList.contains('is-active')))
-        button.addEventListener('click', () => filterPosts(button.dataset.tagFilter, true))
+        button.addEventListener('click', () => {
+          activeTag = button.dataset.tagFilter
+          currentPage = 1
+          render(true)
+        })
       })
 
-      const requestedTag = new URLSearchParams(window.location.search).get('tag')
-      if (requestedTag && filters.some(button => button.dataset.tagFilter === requestedTag)) {
-        filterPosts(requestedTag)
-      }
+      previousButton.addEventListener('click', () => {
+        if (currentPage <= 1) return
+        currentPage -= 1
+        render(true, true)
+      })
+
+      nextButton.addEventListener('click', () => {
+        const matchingCount = posts.filter(post => matchesTag(post, activeTag)).length
+        const totalPages = Math.max(1, Math.ceil(matchingCount / pageSize))
+        if (currentPage >= totalPages) return
+        currentPage += 1
+        render(true, true)
+      })
+
+      render(false)
     })()
   </script>
 </main>
@@ -278,6 +337,48 @@ layout: default
   .category-archive-posts li[hidden],
   .category-archive-year-group[hidden] {
     display: none;
+  }
+
+  .category-pagination {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2.6rem;
+    padding-top: 1.15rem;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .72rem;
+  }
+
+  .category-pagination[hidden] {
+    display: none;
+  }
+
+  .category-pagination-button {
+    width: max-content;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .category-pagination-button:last-child {
+    justify-self: end;
+  }
+
+  .category-pagination-button:hover:not(:disabled) {
+    text-decoration: underline;
+    text-underline-offset: .22em;
+  }
+
+  .category-pagination-button:disabled {
+    color: var(--muted);
+    cursor: default;
+    opacity: .42;
   }
 
   @media (max-width: 640px) {
