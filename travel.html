@@ -12,34 +12,36 @@ nav: travel
   <section class="travel-log" aria-labelledby="travel-log-label">
     <p class="travel-log-label" id="travel-log-label">TRAVEL LOG</p>
 
-    {% assign travel_posts = site.categories['食べたり、歩いたり'] %}
-    {% assign travel_places = site.data.travel_places %}
-    {% assign travel_items = travel_posts | concat: travel_places | sort: 'travel_date' | reverse %}
-    {% assign travel_years = travel_items | group_by_exp: 'item', "item.travel_date | date: '%Y'" %}
+    {% assign travel_years = site.data.travel_log | group_by: 'year' %}
 
     {% for year in travel_years %}
       <div class="travel-year"><span>{{ year.name }}</span></div>
       <div class="travel-timeline" aria-label="{{ year.name }} travel log">
         {% for item in year.items %}
-          <article class="travel-entry{% unless item.url %} travel-entry--place-only{% endunless %}">
-            <time class="travel-entry-date" datetime="{{ item.travel_date | date: '%Y-%m' }}">{{ item.travel_date | date: '%m' }}</time>
+          {% assign linked_post = nil %}
+          {% if item.post_url %}
+            {% assign linked_post = site.posts | where: 'url', item.post_url | first %}
+          {% endif %}
+
+          <article class="travel-entry{% unless item.post_url %} travel-entry--place-only{% endunless %}">
+            <time class="travel-entry-date">{{ item.month }}</time>
             <span class="travel-entry-dot" aria-hidden="true"></span>
 
             <div class="travel-entry-content">
-              {% if item.travel_place %}
-                <p class="travel-entry-place">{{ item.travel_place }}</p>
-              {% endif %}
+              <p class="travel-entry-place">{{ item.place }}</p>
 
-              {% if item.url %}
-                <div class="travel-entry-post{% unless item.travel_image %} travel-entry-post--no-image{% endunless %}">
+              {% if item.post_url %}
+                <div class="travel-entry-post{% unless linked_post.travel_image %} travel-entry-post--no-image{% endunless %}">
                   <div class="travel-entry-body">
-                    <h2><a href="{{ item.url | relative_url }}">{{ item.title }} <span aria-hidden="true">↗</span></a></h2>
-                    <p class="travel-entry-excerpt">{% if item.travel_excerpt %}{{ item.travel_excerpt }}{% else %}{{ item.excerpt | strip_html | normalize_whitespace | truncate: 90 }}{% endif %}</p>
+                    <h2><a href="{{ item.post_url | relative_url }}">{% if item.post_title %}{{ item.post_title }}{% elsif linked_post %}{{ linked_post.title }}{% endif %} <span aria-hidden="true">↗</span></a></h2>
+                    {% if linked_post %}
+                      <p class="travel-entry-excerpt">{% if linked_post.travel_excerpt %}{{ linked_post.travel_excerpt }}{% else %}{{ linked_post.excerpt | strip_html | normalize_whitespace | truncate: 90 }}{% endif %}</p>
+                    {% endif %}
                   </div>
 
-                  {% if item.travel_image %}
-                    <a class="travel-entry-image" href="{{ item.url | relative_url }}" aria-label="阅读：{{ item.title }}">
-                      <img src="{{ item.travel_image }}" alt="" loading="lazy">
+                  {% if linked_post.travel_image %}
+                    <a class="travel-entry-image" href="{{ item.post_url | relative_url }}" aria-label="阅读：{{ item.post_title }}">
+                      <img src="{{ linked_post.travel_image }}" alt="" loading="lazy">
                     </a>
                   {% endif %}
                 </div>
@@ -48,8 +50,6 @@ nav: travel
           </article>
         {% endfor %}
       </div>
-    {% else %}
-      <p class="empty-state">旅行会从这里慢慢积累。</p>
     {% endfor %}
   </section>
 </main>
@@ -150,6 +150,7 @@ nav: travel
     font-variant-numeric: tabular-nums;
     letter-spacing: .04em;
     line-height: 1.7;
+    white-space: nowrap;
   }
 
   .travel-entry-dot {
