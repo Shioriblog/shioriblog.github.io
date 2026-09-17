@@ -229,20 +229,20 @@ nav: about
   .about-side-subscribe-form {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: .4rem;
-    width: min(100%, 360px);
+    gap: .5rem;
+    width: min(100%, 440px);
   }
 
   .about-side-subscribe-form input {
     min-width: 0;
     width: 100%;
-    padding: .52rem .58rem;
+    padding: .68rem .72rem;
     border: 1px solid var(--line);
     border-radius: 3px;
     background: var(--paper);
     color: var(--body);
     font-family: var(--sans);
-    font-size: .72rem;
+    font-size: .82rem;
   }
 
   .about-side-subscribe-form input:focus {
@@ -251,13 +251,13 @@ nav: about
   }
 
   .about-side-subscribe-form button {
-    padding: .52rem .62rem;
+    padding: .68rem .84rem;
     border: 1px solid var(--accent);
     border-radius: 3px;
     background: var(--accent);
     color: #fff;
     font-family: var(--sans);
-    font-size: .70rem;
+    font-size: .80rem;
     cursor: pointer;
   }
 
@@ -267,28 +267,33 @@ nav: about
   }
 
   .about-subscribe-status {
-    width: min(100%, 360px);
-    margin: 0 0 .6rem;
-    padding: .45rem .5rem;
+    width: min(100%, 440px);
+    margin: 0 0 .65rem;
+    padding: .55rem .62rem;
     border-left: 2px solid var(--accent);
     background: var(--soft);
     color: var(--body);
     font-family: var(--sans);
-    font-size: .68rem;
-    line-height: 1.45;
+    font-size: .76rem;
+    line-height: 1.5;
   }
 
   .about-side-privacy {
-    margin: .45rem 0 0;
+    margin: .55rem 0 0;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .60rem;
+    font-size: .66rem;
     line-height: 1.5;
   }
 
   .about-side-privacy a,
   .about-subscribe-copy a {
     color: var(--accent);
+  }
+
+  .about-subscribe-copy a {
+    font-weight: 600;
+    text-underline-offset: 2px;
   }
 
   .about-side-support {
@@ -414,15 +419,15 @@ nav: about
   }
 
   .about-subscribe > .about-section-kicker {
-    margin-bottom: .65rem;
+    margin-bottom: .75rem;
   }
 
   .about-subscribe-copy {
-    margin: 0 0 .85rem;
+    margin: 0 0 1rem;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .72rem;
-    line-height: 1.55;
+    font-size: .86rem;
+    line-height: 1.6;
   }
 
   @media (max-width: 700px) {
@@ -491,6 +496,10 @@ nav: about
 
     .about-subscribe {
       margin-top: 3rem;
+    }
+
+    .about-side-subscribe-form {
+      width: 100%;
     }
   }
 </style>
