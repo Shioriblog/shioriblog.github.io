@@ -5,6 +5,8 @@ nav: home
 ---
 <main class="home-main" id="content">
   {% if paginator.page == 1 %}
+    <p class="home-marginalia">如果我的生活是一本书的话，这里的随笔就是它的 <em>marginalia</em>，偶尔还有几只暴躁的中世纪兔子 🐰</p>
+
     {% assign featured_posts = site.posts | where: "featured", true | sort: "featured_order" %}
     {% if featured_posts.size > 0 %}
       <section class="featured-posts" aria-labelledby="featured-heading">
@@ -139,6 +141,19 @@ nav: home
 </main>
 
 <style>
+  .home-marginalia {
+    max-width: 31rem;
+    margin: .25rem 0 3.4rem auto;
+    color: var(--muted);
+    font-size: .8rem;
+    line-height: 1.8;
+    opacity: .82;
+  }
+
+  .home-marginalia em {
+    font-style: italic;
+  }
+
   .home-category-link {
     position: relative;
     display: inline-flex;
