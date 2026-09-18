@@ -7,7 +7,6 @@ categories:
 - 日記の練習
 tags:
 - 食べる
-- 考える
 - エッセイ
 wordpress_id: 1698
 comments: true
