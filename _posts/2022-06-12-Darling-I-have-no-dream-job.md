@@ -8,6 +8,7 @@ categories:
 tags:
 - 読む・観る
 - 考える
+- エッセイ
 comments: true
 ---
 
