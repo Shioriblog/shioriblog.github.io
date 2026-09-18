@@ -8,6 +8,7 @@ categories:
 tags:
 - 食べる
 - 考える
+- エッセイ
 wordpress_id: 1698
 comments: true
 ---
