@@ -4,7 +4,7 @@ title: 归档
 permalink: /archive/
 nav: archive
 ---
-<main class="simple-page" id="content">
+<main class="simple-page archive-page" id="content">
   <h1>Archives</h1>
 
   {% assign posts_by_year = site.posts | group_by_exp: 'post', 'post.date | date: "%Y"' %}
@@ -12,7 +12,7 @@ nav: archive
   <section class="archive-calendar" aria-label="文章日历">
     <div class="calendar-years" role="tablist" aria-label="选择年份">
       {% for year in posts_by_year %}
-        <button class="calendar-year{% if forloop.first %} is-active{% endif %}" type="button" role="tab" data-year="{{ year.name }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+        <button class="calendar-year{% if forloop.first %} is-active{% endif %}" type="button" role="tab" data-year="{{ year.name }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="archive-year-{{ year.name }}">
           {{ year.name }} <span>({{ year.items | size }})</span>
         </button>
       {% endfor %}
@@ -31,20 +31,28 @@ nav: archive
     </div>
   </section>
 
-  {% for year in posts_by_year %}
-    <h2 class="archive-year" id="archive-year-{{ year.name }}">{{ year.name }}</h2>
-    <ul class="archive-list">
-      {% for post in year.items %}
-        <li>
-          <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%m月%d日' }}</time>
-          <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-          <small>{{ post.categories | join: ' · ' }}</small>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p class="empty-state">文章迁移完成后，会在这里按年份归档。</p>
-  {% endfor %}
+  <div class="archive-year-panels">
+    {% for year in posts_by_year %}
+      <section class="archive-year-panel" id="archive-year-{{ year.name }}" data-year-panel="{{ year.name }}"{% unless forloop.first %} hidden{% endunless %}>
+        <div class="archive-year-heading">
+          <h2 class="archive-year">{{ year.name }}</h2>
+          <span>{{ year.items | size }} POSTS</span>
+        </div>
+
+        <ul class="archive-list">
+          {% for post in year.items %}
+            <li>
+              <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%m.%d' }}</time>
+              <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+              <small>{{ post.categories | join: ' · ' }}</small>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% else %}
+      <p class="empty-state">文章迁移完成后，会在这里按年份归档。</p>
+    {% endfor %}
+  </div>
 
   <script id="archive-post-data" type="application/json">
     [
@@ -53,12 +61,14 @@ nav: archive
       {% endfor %}
     ]
   </script>
+
   <script>
     (() => {
       const dataElement = document.getElementById('archive-post-data')
       const grid = document.querySelector('.calendar-grid')
       const months = document.querySelector('.calendar-months')
       const yearButtons = Array.from(document.querySelectorAll('.calendar-year'))
+      const yearPanels = Array.from(document.querySelectorAll('[data-year-panel]'))
       if (!dataElement || !grid || !months || yearButtons.length === 0) return
 
       const posts = JSON.parse(dataElement.textContent)
@@ -133,6 +143,10 @@ nav: archive
           button.classList.toggle('is-active', active)
           button.setAttribute('aria-selected', String(active))
         })
+
+        yearPanels.forEach((panel) => {
+          panel.hidden = panel.dataset.yearPanel !== String(year)
+        })
       }
 
       yearButtons.forEach((button) => {
@@ -145,3 +159,94 @@ nav: archive
     })()
   </script>
 </main>
+
+<style>
+  .archive-page {
+    width: min(860px, calc(100% - 4rem));
+  }
+
+  .archive-calendar {
+    margin-bottom: 3.2rem;
+  }
+
+  .archive-year-panel[hidden] {
+    display: none;
+  }
+
+  .archive-year-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: .9rem;
+  }
+
+  .archive-year-heading .archive-year {
+    margin: 0;
+  }
+
+  .archive-year-heading > span {
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .62rem;
+    letter-spacing: .12em;
+    white-space: nowrap;
+  }
+
+  .archive-list {
+    margin-top: 0;
+  }
+
+  .archive-list li {
+    grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+    padding: .82rem 0;
+  }
+
+  .archive-list time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .archive-list a {
+    color: var(--body);
+    font-size: 1.02rem;
+    line-height: 1.5;
+    text-decoration-color: transparent;
+    transition: color .15s ease, text-decoration-color .15s ease;
+  }
+
+  .archive-list a:hover,
+  .archive-list a:focus-visible {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+
+  .archive-list small {
+    max-width: 11rem;
+    text-align: right;
+    line-height: 1.45;
+  }
+
+  @media (max-width: 640px) {
+    .archive-page {
+      width: min(100% - 2.2rem, 860px);
+    }
+
+    .archive-calendar {
+      margin-bottom: 2.6rem;
+    }
+
+    .archive-list li {
+      grid-template-columns: 3.6rem minmax(0, 1fr);
+      gap: .75rem;
+      padding: .72rem 0;
+    }
+
+    .archive-list small {
+      display: none;
+    }
+
+    .archive-list a {
+      font-size: .98rem;
+    }
+  }
+</style>
