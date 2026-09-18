@@ -136,6 +136,12 @@ async function handleDashboard(request, env, url) {
             sum { visits }
             dimensions { refererHost }
           }
+          referrerPosts: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 500, orderBy: [count_DESC]) {
+            count
+            avg { sampleInterval }
+            sum { visits }
+            dimensions { requestPath refererHost }
+          }
           countries: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 40, orderBy: [count_DESC]) {
             count
             avg { sampleInterval }
@@ -168,6 +174,15 @@ async function handleDashboard(request, env, url) {
       visits: Math.round(row.sum?.visits || 0)
     }))
 
+    const referrerPostMap = mergeRows(account.referrerPosts, (row) => {
+      const path = normalizeRequestPath(row.dimensions?.requestPath || '')
+      const referrer = row.dimensions?.refererHost || 'Direct'
+      return path ? `${path}\u0000${referrer}` : ''
+    }, (row) => ({
+      views: estimate(row),
+      visits: Math.round(row.sum?.visits || 0)
+    }))
+
     const likes = await getLikeSummary(env)
 
     return json({
@@ -189,6 +204,12 @@ async function handleDashboard(request, env, url) {
         .sort((a, b) => b.views - a.views),
       referrers: Array.from(referrerMap.entries())
         .map(([label, value]) => ({ label, ...value }))
+        .sort((a, b) => (b.visits - a.visits) || (b.views - a.views)),
+      referrerPosts: Array.from(referrerPostMap.entries())
+        .map(([key, value]) => {
+          const [path, referrer] = key.split('\u0000')
+          return { path, referrer, ...value }
+        })
         .sort((a, b) => (b.visits - a.visits) || (b.views - a.views)),
       countries: mergeNumeric(account.countries, (row) => row.dimensions?.countryName || 'Unknown', (row) => estimate(row))
         .map(([label, value]) => ({ label, views: value }))
