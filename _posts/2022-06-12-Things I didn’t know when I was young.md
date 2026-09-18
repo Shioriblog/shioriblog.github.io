@@ -6,7 +6,6 @@ permalink: /2022/06/12/Things I didn’t know when I was young/
 categories:
 - 日記の練習
 tags:
-- 考える
 - エッセイ
 comments: true
 ---
