@@ -76,6 +76,16 @@ subscription: false
     <p class="stats-response-note">Like density = 当前累计点赞数 ÷ 所选时间段的浏览量 × 100；适合比较文章反馈强弱，但不是严格的转化率。</p>
   </section>
 
+  <section class="stats-comments" aria-labelledby="recent-comments-title">
+    <div class="stats-panel-heading">
+      <h2 id="recent-comments-title">Recent comments</h2>
+      <span>LATEST 8</span>
+    </div>
+    <ol class="stats-comments-list" id="stats-comments">
+      <li class="stats-comments-loading">正在读取留言…</li>
+    </ol>
+  </section>
+
   <div class="stats-grid">
     <section class="stats-panel">
       <div class="stats-panel-heading"><h2>Top posts</h2><span>VIEWS · VISITS · ♥</span></div>
@@ -114,6 +124,7 @@ subscription: false
 <script>
   window.SHIO_STATS_CONFIG = {
     endpoint: {{ site.dashboard_api_url | jsonify }},
+    twikooEnvId: {{ site.twikoo_env_id | jsonify }},
     titles: {
       {% for post in site.posts %}{{ post.url | jsonify }}: {{ post.title | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}
     },
@@ -132,6 +143,7 @@ subscription: false
     }
   }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.7.22/dist/twikoo.all.min.js"></script>
 <script src="{{ '/assets/js/dashboard.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 
 <style>
@@ -177,6 +189,19 @@ subscription: false
   .stats-response-grid small { display: block; margin-top: .25rem; color: var(--muted); font-size: .62rem; font-variant-numeric: tabular-nums; }
   .stats-response-note { margin: .55rem 0 0; color: var(--muted); font-size: .61rem; line-height: 1.55; }
 
+  .stats-comments { margin: 0 0 3rem; }
+  .stats-comments-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+  .stats-comment-item { min-width: 0; padding: .9rem 1.2rem 1rem 0; border-bottom: 1px solid var(--line); }
+  .stats-comment-item:nth-child(even) { padding-right: 0; padding-left: 1.2rem; border-left: 1px solid var(--line); }
+  .stats-comment-meta { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: .35rem; }
+  .stats-comment-nick { overflow: hidden; color: var(--ink); font-size: .7rem; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+  .stats-comment-time { flex: 0 0 auto; color: var(--muted); font-size: .6rem; white-space: nowrap; }
+  .stats-comment-text { display: -webkit-box; overflow: hidden; margin: 0 0 .35rem; color: var(--body); font-family: var(--serif); font-size: .83rem; line-height: 1.65; text-decoration: none; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .stats-comment-text:hover { color: var(--accent); }
+  .stats-comment-post { display: block; overflow: hidden; color: var(--muted); font-size: .61rem; line-height: 1.45; text-decoration: none; text-overflow: ellipsis; white-space: nowrap; }
+  .stats-comment-post:hover { color: var(--accent); }
+  .stats-comments-loading, .stats-comments-empty { grid-column: 1 / -1; padding: .9rem 0; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .72rem; }
+
   .stats-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3rem 3.5rem; }
   .stats-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
   .stats-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; align-items: baseline; padding: .7rem 0; border-bottom: 1px solid var(--line); color: var(--body); font-size: .76rem; }
@@ -193,6 +218,8 @@ subscription: false
     .stats-summary article, .stats-summary article:first-child,
     .stats-response-grid article, .stats-response-grid article:first-child { padding: 1rem 0; border-right: 0; border-bottom: 1px solid var(--line); }
     .stats-summary article:last-child, .stats-response-grid article:last-child { border-bottom: 0; }
+    .stats-comments-list { grid-template-columns: 1fr; }
+    .stats-comment-item, .stats-comment-item:nth-child(even) { padding: .85rem 0 .9rem; border-left: 0; }
     .stats-grid { grid-template-columns: 1fr; gap: 2.6rem; }
     .stats-chart { gap: .35rem; height: 160px; }
     .stats-bar-item time { font-size: .5rem; }
