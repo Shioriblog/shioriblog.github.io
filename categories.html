@@ -11,30 +11,30 @@ description: 按分类与主题翻看独居日记里的文章。
 
   <div class="category-index-list">
     {% assign daily_posts = site.categories['日記の練習'] %}
-    <a class="category-index-card" href="{{ '/categories/daily/' | relative_url }}">
-      <span class="category-index-copy">
+    <a class="category-index-entry" href="{{ '/categories/daily/' | relative_url }}">
+      <div class="category-index-title-row">
         <strong lang="ja">日記の練習</strong>
-        <span>日常随笔</span>
-      </span>
-      <small>{{ daily_posts | size }} 篇 <span aria-hidden="true">→</span></small>
+        <span>{{ daily_posts | size }}</span>
+      </div>
+      <p>日常随笔。<br>生活、吃饭、读书、思考。</p>
     </a>
 
     {% assign utakata_posts = site.categories['うたかたの日々'] %}
-    <a class="category-index-card" href="{{ '/categories/utakata/' | relative_url }}">
-      <span class="category-index-copy">
+    <a class="category-index-entry category-index-entry--offset" href="{{ '/categories/utakata/' | relative_url }}">
+      <div class="category-index-title-row">
         <strong lang="ja">うたかたの日々</strong>
-        <span>岁月的泡沫</span>
-      </span>
-      <small>{{ utakata_posts | size }} 篇 <span aria-hidden="true">→</span></small>
+        <span>{{ utakata_posts | size }}</span>
+      </div>
+      <p>岁月的泡沫。<br>对话与日记。</p>
     </a>
 
     {% assign words_posts = site.categories['言葉と歩く日記'] %}
-    <a class="category-index-card" href="{{ '/categories/words/' | relative_url }}">
-      <span class="category-index-copy">
+    <a class="category-index-entry" href="{{ '/categories/words/' | relative_url }}">
+      <div class="category-index-title-row">
         <strong lang="ja">言葉と歩く日記</strong>
-        <span>旅行随笔</span>
-      </span>
-      <small>{{ words_posts | size }} 篇 <span aria-hidden="true">→</span></small>
+        <span>{{ words_posts | size }}</span>
+      </div>
+      <p>旅行随笔。<br>在城市里走一走，吃一吃。</p>
     </a>
   </div>
 
@@ -75,74 +75,68 @@ description: 按分类与主题翻看独居日记里的文章。
   }
 
   .category-index-lede {
-    margin: 0 0 3.25rem;
+    margin: 0 0 3.4rem;
     color: var(--muted);
     font-family: var(--sans);
     font-size: .78rem;
   }
 
   .category-index-list {
-    border-top: 1px solid var(--line);
+    display: grid;
+    gap: 0;
   }
 
-  .category-index-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 2rem;
-    padding: 1.6rem .1rem 1.55rem;
-    border-bottom: 1px solid var(--line);
+  .category-index-entry {
+    display: block;
+    padding: 1.8rem 0 1.9rem;
+    border-top: 1px solid var(--line);
     color: inherit;
     text-decoration: none;
   }
 
-  .category-index-copy {
-    display: grid;
-    gap: .26rem;
-    min-width: 0;
+  .category-index-entry:last-child {
+    border-bottom: 1px solid var(--line);
   }
 
-  .category-index-copy strong {
+  .category-index-entry--offset {
+    margin-left: 4.8rem;
+    padding-right: 1.2rem;
+  }
+
+  .category-index-title-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2rem;
+    align-items: baseline;
+    margin-bottom: .65rem;
+  }
+
+  .category-index-title-row strong {
     color: var(--ink);
-    font-size: 1.3rem;
+    font-size: 1.34rem;
     font-weight: 500;
     line-height: 1.45;
     transition: color .15s ease;
   }
 
-  .category-index-copy > span {
+  .category-index-title-row span {
     color: var(--muted);
     font-family: var(--sans);
     font-size: .72rem;
-    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
   }
 
-  .category-index-card small {
-    display: inline-flex;
-    align-items: center;
-    gap: .38rem;
-    flex: 0 0 auto;
-    color: var(--accent);
+  .category-index-entry p {
+    margin: 0;
+    color: var(--muted);
     font-family: var(--sans);
-    font-size: .68rem;
-    font-weight: 400;
-    letter-spacing: .015em;
-    white-space: nowrap;
+    font-size: .76rem;
+    line-height: 1.8;
   }
 
-  .category-index-card small span {
-    display: inline-block;
-    transition: transform .15s ease;
-  }
-
-  .category-index-card:hover .category-index-copy strong,
-  .category-index-card:focus-visible .category-index-copy strong {
+  .category-index-entry:hover .category-index-title-row strong,
+  .category-index-entry:focus-visible .category-index-title-row strong {
     color: var(--accent);
-  }
-
-  .category-index-card:hover small span,
-  .category-index-card:focus-visible small span {
-    transform: translateX(.18rem);
   }
 
   @media (max-width: 640px) {
@@ -151,20 +145,28 @@ description: 按分类与主题翻看独居日记里的文章。
     }
 
     .category-index-lede {
-      margin-bottom: 2.6rem;
+      margin-bottom: 2.8rem;
     }
 
-    .category-index-card {
-      gap: 1.2rem;
-      padding: 1.35rem .05rem 1.3rem;
+    .category-index-entry {
+      padding: 1.5rem 0 1.6rem;
     }
 
-    .category-index-copy strong {
-      font-size: 1.16rem;
+    .category-index-entry--offset {
+      margin-left: 2rem;
+      padding-right: 0;
     }
 
-    .category-index-card small {
-      font-size: .64rem;
+    .category-index-title-row {
+      gap: 1rem;
+    }
+
+    .category-index-title-row strong {
+      font-size: 1.18rem;
+    }
+
+    .category-index-entry p {
+      font-size: .72rem;
     }
   }
 </style>
