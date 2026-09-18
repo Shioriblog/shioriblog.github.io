@@ -200,72 +200,78 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
 
 /* Reading post: reusable NeoDB book cards */
 .book-card-list {
-  margin: 1.55rem 0 1.8rem;
+  margin: 1.65rem 0 2rem;
 }
 .book-card-pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: .8rem;
-  margin: 1.55rem 0 1.8rem;
+  gap: 1.25rem;
+  margin: 1.65rem 0 2rem;
 }
 .article-content .book-card {
-  display: block;
-  margin: 0 0 1rem;
-  padding: 1rem 1.1rem 1.05rem;
-  color: var(--body);
-  border: 1px solid var(--line);
-  background: var(--soft);
-  text-decoration: none;
-  transition: border-color .15s ease, transform .15s ease;
-}
-.book-card-pair .book-card {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
   margin: 0;
-}
-.article-content .book-card:hover {
+  padding: .1rem 0 1rem;
   color: var(--body);
-  border-color: #bfc6b9;
-  transform: translateY(-1px);
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  text-decoration: none;
 }
-.book-card-label {
-  margin-bottom: .38rem;
-  color: var(--accent);
-  font-family: var(--sans);
-  font-size: .62rem;
-  letter-spacing: .12em;
-  text-transform: uppercase;
+.book-card-cover {
+  display: block;
+  width: 86px;
+  height: 126px;
+  flex: 0 0 86px;
+  margin: 0 !important;
+  object-fit: cover;
+  background: var(--soft);
+}
+.book-card-body {
+  min-width: 0;
+  padding-top: .05rem;
 }
 .book-card-title {
   color: var(--ink);
-  font-size: 1.05rem;
+  font-size: 1.06rem;
   font-weight: 500;
-  line-height: 1.5;
+  line-height: 1.48;
 }
 .book-card-byline {
-  margin-top: .18rem;
+  margin-top: .22rem;
   color: var(--body);
-  font-size: .84rem;
-  line-height: 1.55;
+  font-size: .86rem;
+  line-height: 1.5;
 }
-.book-card-meta,
-.book-card-link {
+.book-card-meta {
+  margin-top: .5rem;
   color: var(--muted);
   font-family: var(--sans);
   font-size: .68rem;
-  line-height: 1.65;
-}
-.book-card-meta {
-  margin-top: .42rem;
+  line-height: 1.55;
 }
 .book-card-link {
-  margin-top: .55rem;
+  margin-top: .48rem;
+  color: var(--accent);
+  font-family: var(--sans);
+  font-size: .66rem;
+  line-height: 1.5;
+}
+.article-content .book-card:hover .book-card-title,
+.article-content .book-card:hover .book-card-link {
+  color: var(--accent);
+}
+.book-card-no-cover .book-card-cover {
+  display: none;
 }
 @media (max-width: 640px) {
   .book-card-pair {
     grid-template-columns: 1fr;
   }
-}
-@media (prefers-reduced-motion: reduce) {
-  .article-content .book-card {
-    transition: none;
+  .book-card-cover {
+    width: 78px;
+    height: 116px;
+    flex-basis: 78px;
   }
 }
