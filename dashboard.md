@@ -76,6 +76,18 @@ subscription: false
     <p class="stats-response-note">Like density = 当前累计点赞数 ÷ 所选时间段的浏览量 × 100；适合比较文章反馈强弱，但不是严格的转化率。</p>
   </section>
 
+  <div class="stats-grid stats-insight-grid">
+    <section class="stats-panel">
+      <div class="stats-panel-heading"><h2>Old post discovery</h2><span>POST VIEWS · SHARE</span></div>
+      <ol class="stats-list" id="stats-post-age"></ol>
+    </section>
+
+    <section class="stats-panel">
+      <div class="stats-panel-heading"><h2>How readers found posts</h2><span>VISITS</span></div>
+      <ol class="stats-list stats-referrer-post-list" id="stats-referrer-posts"></ol>
+    </section>
+  </div>
+
   <section class="stats-comments" aria-labelledby="recent-comments-title">
     <div class="stats-panel-heading">
       <h2 id="recent-comments-title">Recent comments</h2>
@@ -103,7 +115,7 @@ subscription: false
     </section>
 
     <section class="stats-panel">
-      <div class="stats-panel-heading"><h2>Categories</h2><span>VIEWS</span></div>
+      <div class="stats-panel-heading"><h2>Categories</h2><span>VIEWS · AVG / POST</span></div>
       <ol class="stats-list" id="stats-categories"></ol>
     </section>
 
@@ -130,6 +142,9 @@ subscription: false
     },
     categories: {
       {% for post in site.posts %}{{ post.url | jsonify }}: {{ post.categories | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}
+    },
+    dates: {
+      {% for post in site.posts %}{{ post.url | jsonify }}: {{ post.date | date_to_xmlschema | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}
     },
     likeIds: {
       {% for post in site.posts %}
@@ -188,6 +203,11 @@ subscription: false
   .stats-response-grid a:hover { color: var(--accent); }
   .stats-response-grid small { display: block; margin-top: .25rem; color: var(--muted); font-size: .62rem; font-variant-numeric: tabular-nums; }
   .stats-response-note { margin: .55rem 0 0; color: var(--muted); font-size: .61rem; line-height: 1.55; }
+
+  .stats-insight-grid { margin: 0 0 3rem; }
+  .stats-referrer-post-list li > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .stats-referrer-post-list a { display: inline; white-space: normal; }
+  .stats-source-label { color: var(--muted); }
 
   .stats-comments { margin: 0 0 3rem; }
   .stats-comments-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
