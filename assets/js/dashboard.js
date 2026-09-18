@@ -5,6 +5,7 @@
   const titles = config.titles || {}
   const categoriesByPath = config.categories || {}
   const likeIdsByPath = config.likeIds || {}
+  const datesByPath = config.dates || {}
   const siteHost = 'shioriblog.org'
 
   const setup = document.getElementById('stats-setup')
@@ -23,6 +24,8 @@
   const categories = document.getElementById('stats-categories')
   const sitePages = document.getElementById('stats-site-pages')
   const countries = document.getElementById('stats-countries')
+  const postAge = document.getElementById('stats-post-age')
+  const referrerPosts = document.getElementById('stats-referrer-posts')
   const comments = document.getElementById('stats-comments')
   const rangeButtons = Array.from(document.querySelectorAll('[data-days]'))
 
@@ -56,7 +59,9 @@
   }
 
   const clearLists = () => {
-    ;[posts, referrers, sources, categories, sitePages, countries].forEach((list) => { list.innerHTML = '' })
+    ;[posts, referrers, sources, categories, sitePages, countries, postAge, referrerPosts].forEach((list) => {
+      if (list) list.innerHTML = ''
+    })
     chart.innerHTML = ''
   }
 
@@ -214,6 +219,17 @@
 
   const categoryRows = (pageItems) => {
     const totals = new Map()
+    const postsPerCategory = new Map()
+
+    Object.entries(categoriesByPath).forEach(([path, postCategories]) => {
+      if (!Array.isArray(postCategories)) return
+      postCategories.forEach((category) => {
+        if (category === '食べたり、歩いたり') return
+        if (!postsPerCategory.has(category)) postsPerCategory.set(category, new Set())
+        postsPerCategory.get(category).add(path)
+      })
+    })
+
     ;(pageItems || []).forEach((item) => {
       const postCategories = categoriesByPath[item.label]
       if (!Array.isArray(postCategories)) return
@@ -222,9 +238,115 @@
         totals.set(category, (totals.get(category) || 0) + Number(item.views || 0))
       })
     })
-    return Array.from(totals.entries())
-      .map(([label, views]) => ({ label, views }))
+
+    return Array.from(postsPerCategory.entries())
+      .map(([label, paths]) => {
+        const views = totals.get(label) || 0
+        const postCount = paths.size || 0
+        return { label, views, avgPerPost: postCount ? views / postCount : 0, postCount }
+      })
       .sort((a, b) => b.views - a.views)
+  }
+
+  const renderCategoryRows = (items) => {
+    categories.innerHTML = ''
+    if (!items?.length) {
+      showEmpty(categories)
+      return
+    }
+
+    items.slice(0, 10).forEach((item) => {
+      const li = document.createElement('li')
+      const label = document.createElement('span')
+      label.textContent = item.label
+      const metric = document.createElement('span')
+      metric.className = 'stats-value'
+      metric.textContent = `${number.format(item.views || 0)} · ${item.avgPerPost.toFixed(1)} avg/post`
+      li.append(label, metric)
+      categories.appendChild(li)
+    })
+  }
+
+  const postAgeRows = (postRows) => {
+    const now = Date.now()
+    const buckets = [
+      { label: '≤ 7 days', min: 0, max: 7 },
+      { label: '8–30 days', min: 8, max: 30 },
+      { label: '1–6 months', min: 31, max: 183 },
+      { label: '6–12 months', min: 184, max: 365 },
+      { label: '> 1 year', min: 366, max: Infinity }
+    ]
+
+    const rows = buckets.map((bucket) => ({ ...bucket, views: 0 }))
+    ;(postRows || []).forEach((row) => {
+      const published = new Date(datesByPath[row.label] || '')
+      if (Number.isNaN(published.getTime())) return
+      const ageDays = Math.max(0, Math.floor((now - published.getTime()) / 86400000))
+      const bucket = rows.find((item) => ageDays >= item.min && ageDays <= item.max)
+      if (bucket) bucket.views += Number(row.views || 0)
+    })
+
+    const total = rows.reduce((sum, row) => sum + row.views, 0)
+    return rows.map((row) => ({
+      label: row.label,
+      views: row.views,
+      share: total ? (row.views / total) * 100 : 0
+    }))
+  }
+
+  const renderPostAge = (items) => {
+    postAge.innerHTML = ''
+    if (!items?.some((item) => item.views > 0)) {
+      showEmpty(postAge)
+      return
+    }
+    items.forEach((item) => {
+      const li = document.createElement('li')
+      const label = document.createElement('span')
+      label.textContent = item.label
+      const metric = document.createElement('span')
+      metric.className = 'stats-value'
+      metric.textContent = `${number.format(item.views)} · ${item.share.toFixed(0)}%`
+      li.append(label, metric)
+      postAge.appendChild(li)
+    })
+  }
+
+  const renderReferrerPosts = (items) => {
+    referrerPosts.innerHTML = ''
+    const filtered = (items || [])
+      .filter((item) => Object.prototype.hasOwnProperty.call(titles, item.path))
+      .filter((item) => {
+        const host = normalizeHost(item.referrer)
+        return !host || host !== siteHost
+      })
+      .sort((a, b) => (b.visits - a.visits) || (b.views - a.views))
+      .slice(0, 10)
+
+    if (!filtered.length) {
+      showEmpty(referrerPosts)
+      return
+    }
+
+    filtered.forEach((item) => {
+      const li = document.createElement('li')
+      const left = document.createElement('span')
+      const source = document.createElement('span')
+      source.className = 'stats-source-label'
+      source.textContent = item.referrer || 'Direct'
+      const arrow = document.createTextNode(' → ')
+      const link = document.createElement('a')
+      link.href = item.path
+      link.textContent = pathLabel(item.path)
+      left.append(source, arrow, link)
+
+      const metric = document.createElement('span')
+      metric.className = 'stats-value'
+      metric.textContent = number.format(item.visits || 0)
+
+      li.append(left, metric)
+      referrerPosts.appendChild(li)
+    })
   }
 
   const setResponseCard = (link, meta, row, text) => {
@@ -389,7 +511,9 @@
       .sort((a, b) => (b.visits - a.visits) || (b.views - a.views))
     addItems(referrers, external, { value: 'visits' })
     addItems(sources, groupSources(data.referrers || []), { value: 'visits' })
-    addItems(categories, categoryRows(data.pages || []), { value: 'views' })
+    renderCategoryRows(categoryRows(data.pages || []))
+    renderPostAge(postAgeRows(postRows))
+    renderReferrerPosts(data.referrerPosts || [])
     addItems(countries, data.countries || [], { country: true, value: 'views' })
   }
 
@@ -423,7 +547,9 @@
   if (!endpoint) {
     setup.hidden = false
     clearLists()
-    ;[posts, referrers, sources, categories, sitePages, countries].forEach(showEmpty)
+    ;[posts, referrers, sources, categories, sitePages, countries, postAge, referrerPosts].forEach((list) => {
+      if (list) showEmpty(list)
+    })
     return
   }
 
