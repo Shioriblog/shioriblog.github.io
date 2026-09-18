@@ -19,80 +19,82 @@ layout: default
     {% endunless %}
   {% endfor %}
 
-  {% if has_visible_tags %}
-    <div class="category-archive-tags" role="group" aria-label="按主题筛选文章">
-      <button class="category-archive-tag is-active" type="button" data-tag-filter="all"><span>ALL</span> <sup>{{ category_posts | size }}</sup></button>
-      {% assign sorted_tags = site.tags | sort %}
-      {% for tag in sorted_tags %}
-        {% unless tag[0] == 'featured' %}
-          {% assign tag_count = 0 %}
-          {% for post in category_posts %}
-            {% if post.tags contains tag[0] %}
-              {% assign tag_count = tag_count | plus: 1 %}
-            {% endif %}
-          {% endfor %}
-          {% if tag_count > 0 %}
-            {% assign tag_meaning = '' %}
-            {% case tag[0] %}
-              {% when '一年の終わり' %}{% assign tag_meaning = 'annual review' %}
-              {% when 'ライフログ' %}{% assign tag_meaning = 'LifeLog' %}
-              {% when '暮らす' %}{% assign tag_meaning = 'Living' %}
-              {% when '考える' %}{% assign tag_meaning = 'Thinking' %}
-              {% when '言葉' %}{% assign tag_meaning = 'Words' %}
-              {% when '誕生日' %}{% assign tag_meaning = 'B-Day' %}
-              {% when '読む・観る' %}{% assign tag_meaning = 'Reading & Watching' %}
-              {% when '食べる' %}{% assign tag_meaning = 'Eating' %}
-              {% when '話す' %}{% assign tag_meaning = 'Talking' %}
-            {% endcase %}
-            <button class="category-archive-tag{% if tag_meaning != '' %} has-tooltip{% endif %}" type="button" data-tag-filter="{{ tag[0] | escape }}"{% if tag_meaning != '' %} data-tooltip="{{ tag_meaning }}" aria-label="{{ tag[0] }} — {{ tag_meaning }}"{% endif %}><span lang="ja">{{ tag[0] }}</span> <sup>{{ tag_count }}</sup></button>
-          {% endif %}
-        {% endunless %}
+  <div class="category-archive-grid">
+    <div class="category-archive-main">
+      {% assign category_years = category_posts | group_by_exp: 'post', "post.date | date: '%Y'" %}
+      {% for year in category_years %}
+        <section class="category-archive-year-group" aria-label="{{ year.name }}年">
+          <div class="category-archive-year"><span>{{ year.name }}</span></div>
+          <ul class="category-archive-posts">
+            {% for post in year.items %}
+              <li data-post-tags="{{ post.tags | join: '|' | escape }}">
+                <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%m.%d' }}</time>
+                <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </section>
+      {% else %}
+        <p class="empty-state">这里还没有文章。</p>
       {% endfor %}
     </div>
-  {% endif %}
 
-  {% assign category_years = category_posts | group_by_exp: 'post', "post.date | date: '%Y'" %}
-  {% for year in category_years %}
-    <section class="category-archive-year-group" aria-label="{{ year.name }}年">
-      <div class="category-archive-year"><span>{{ year.name }}</span></div>
-      <ul class="category-archive-posts">
-        {% for post in year.items %}
-          <li data-post-tags="{{ post.tags | join: '|' | escape }}">
-            <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%m.%d' }}</time>
-            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-          </li>
-        {% endfor %}
-      </ul>
-    </section>
-  {% else %}
-    <p class="empty-state">这里还没有文章。</p>
-  {% endfor %}
+    {% if has_visible_tags %}
+      <aside class="category-tag-sidebar" aria-labelledby="category-tags-title">
+        <p class="category-tag-title" id="category-tags-title">TAGS</p>
 
-  <nav class="category-pagination" id="category-pagination" aria-label="分类文章分页" hidden>
-    <button class="category-pagination-button" id="category-page-prev" type="button">← 更新</button>
-    <span id="category-page-status" aria-live="polite">1 / 1</span>
-    <button class="category-pagination-button" id="category-page-next" type="button">更早 →</button>
-  </nav>
+        <div class="category-tag-list" role="group" aria-label="按主题筛选文章">
+          <button class="category-archive-tag is-active" type="button" data-tag-filter="all">
+            <span>ALL</span><sup>{{ category_posts | size }}</sup>
+          </button>
+
+          {% assign sorted_tags = site.tags | sort %}
+          {% for tag in sorted_tags %}
+            {% unless tag[0] == 'featured' %}
+              {% assign tag_count = 0 %}
+              {% for post in category_posts %}
+                {% if post.tags contains tag[0] %}
+                  {% assign tag_count = tag_count | plus: 1 %}
+                {% endif %}
+              {% endfor %}
+
+              {% if tag_count > 0 %}
+                {% assign tag_meaning = '' %}
+                {% case tag[0] %}
+                  {% when '一年の終わり' %}{% assign tag_meaning = 'annual review' %}
+                  {% when 'ライフログ' %}{% assign tag_meaning = 'LifeLog' %}
+                  {% when '暮らす' %}{% assign tag_meaning = 'Living' %}
+                  {% when '考える' %}{% assign tag_meaning = 'Thinking' %}
+                  {% when '言葉' %}{% assign tag_meaning = 'Words' %}
+                  {% when '誕生日' %}{% assign tag_meaning = 'B-Day' %}
+                  {% when '読む・観る' %}{% assign tag_meaning = 'Reading & Watching' %}
+                  {% when '食べる' %}{% assign tag_meaning = 'Eating' %}
+                  {% when '話す' %}{% assign tag_meaning = 'Talking' %}
+                {% endcase %}
+
+                <button class="category-archive-tag{% if tag_meaning != '' %} has-tooltip{% endif %}" type="button" data-tag-filter="{{ tag[0] | escape }}"{% if tag_meaning != '' %} data-tooltip="{{ tag_meaning }}" aria-label="{{ tag[0] }} — {{ tag_meaning }}"{% endif %}>
+                  <span lang="ja">{{ tag[0] }}</span><sup>{{ tag_count }}</sup>
+                </button>
+              {% endif %}
+            {% endunless %}
+          {% endfor %}
+        </div>
+      </aside>
+    {% endif %}
+  </div>
 
   <script>
     (() => {
-      const pageSize = 10
       const filters = Array.from(document.querySelectorAll('.category-archive-tag'))
       const yearGroups = Array.from(document.querySelectorAll('.category-archive-year-group'))
       const posts = yearGroups.flatMap(group => Array.from(group.querySelectorAll('.category-archive-posts li')))
-      const pagination = document.getElementById('category-pagination')
-      const previousButton = document.getElementById('category-page-prev')
-      const nextButton = document.getElementById('category-page-next')
-      const status = document.getElementById('category-page-status')
-      if (!yearGroups.length || !posts.length || !pagination || !previousButton || !nextButton || !status) return
+      if (!yearGroups.length || !posts.length || !filters.length) return
 
       const params = new URLSearchParams(window.location.search)
       const requestedTag = params.get('tag')
-      const requestedPage = Number.parseInt(params.get('page') || '1', 10)
       let activeTag = requestedTag && filters.some(button => button.dataset.tagFilter === requestedTag)
         ? requestedTag
         : 'all'
-      let currentPage = Number.isFinite(requestedPage) && requestedPage > 0 ? requestedPage : 1
 
       const matchesTag = (post, tag) => {
         if (tag === 'all') return true
@@ -104,29 +106,12 @@ layout: default
         const url = new URL(window.location.href)
         if (activeTag === 'all') url.searchParams.delete('tag')
         else url.searchParams.set('tag', activeTag)
-        if (currentPage === 1) url.searchParams.delete('page')
-        else url.searchParams.set('page', String(currentPage))
         history.replaceState(null, '', `${url.pathname}${url.search}`)
       }
 
-      const updateFilterState = () => {
-        filters.forEach((button) => {
-          const active = button.dataset.tagFilter === activeTag
-          button.classList.toggle('is-active', active)
-          button.setAttribute('aria-pressed', String(active))
-        })
-      }
-
-      const render = (updateUrl = false, moveToList = false) => {
-        const matchingPosts = posts.filter(post => matchesTag(post, activeTag))
-        const totalPages = Math.max(1, Math.ceil(matchingPosts.length / pageSize))
-        currentPage = Math.min(Math.max(currentPage, 1), totalPages)
-
-        const start = (currentPage - 1) * pageSize
-        const visiblePosts = new Set(matchingPosts.slice(start, start + pageSize))
-
+      const render = (updateUrl = false) => {
         posts.forEach((post) => {
-          post.hidden = !visiblePosts.has(post)
+          post.hidden = !matchesTag(post, activeTag)
         })
 
         yearGroups.forEach((yearGroup) => {
@@ -134,40 +119,20 @@ layout: default
           yearGroup.hidden = !hasVisiblePost
         })
 
-        status.textContent = `${currentPage} / ${totalPages}`
-        previousButton.disabled = currentPage <= 1
-        nextButton.disabled = currentPage >= totalPages
-        pagination.hidden = totalPages <= 1
+        filters.forEach((button) => {
+          const active = button.dataset.tagFilter === activeTag
+          button.classList.toggle('is-active', active)
+          button.setAttribute('aria-pressed', String(active))
+        })
 
-        updateFilterState()
         if (updateUrl) syncUrl()
-
-        if (moveToList) {
-          const firstVisibleYear = yearGroups.find(group => !group.hidden)
-          if (firstVisibleYear) firstVisibleYear.scrollIntoView({ block: 'start' })
-        }
       }
 
       filters.forEach((button) => {
         button.addEventListener('click', () => {
           activeTag = button.dataset.tagFilter
-          currentPage = 1
           render(true)
         })
-      })
-
-      previousButton.addEventListener('click', () => {
-        if (currentPage <= 1) return
-        currentPage -= 1
-        render(true, true)
-      })
-
-      nextButton.addEventListener('click', () => {
-        const matchingCount = posts.filter(post => matchesTag(post, activeTag)).length
-        const totalPages = Math.max(1, Math.ceil(matchingCount / pageSize))
-        if (currentPage >= totalPages) return
-        currentPage += 1
-        render(true, true)
       })
 
       render(false)
@@ -176,6 +141,10 @@ layout: default
 </main>
 
 <style>
+  .category-archive-page {
+    width: min(980px, calc(100% - 4rem));
+  }
+
   .category-archive-kicker {
     margin: 0 0 .55rem;
     color: var(--accent);
@@ -191,69 +160,95 @@ layout: default
   .category-back {
     display: inline-flex;
     align-items: center;
-    margin: 0 0 2rem;
-    padding: .28rem .58rem;
-    border: 1px solid var(--line);
-    border-radius: 4px;
+    margin: 0;
     color: var(--muted);
     font-family: var(--sans);
     font-size: .68rem;
     letter-spacing: .035em;
     text-decoration: none;
-    transition: border-color .15s ease, color .15s ease, background .15s ease;
+    transition: color .15s ease;
   }
 
-  .category-back:hover {
-    border-color: rgba(79, 90, 73, .34);
-    background: rgba(79, 90, 73, .05);
+  .category-back:hover,
+  .category-back:focus-visible {
     color: var(--accent);
   }
 
-  .category-archive-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .55rem 1rem;
-    margin: 0 0 2.8rem;
+  .category-archive-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 188px;
+    gap: 3.7rem;
+    align-items: start;
+    margin-top: 2.8rem;
+  }
+
+  .category-tag-sidebar {
+    position: sticky;
+    top: 2rem;
+    min-width: 0;
+    padding-top: .1rem;
+  }
+
+  .category-tag-title {
+    margin: 0 0 1.35rem;
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: .61rem;
+    font-weight: 500;
+    letter-spacing: .17em;
+  }
+
+  .category-tag-list {
+    display: grid;
+    gap: .58rem;
   }
 
   .category-archive-tag {
     position: relative;
+    width: fit-content;
+    max-width: 100%;
     padding: 0;
     border: 0;
     background: transparent;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .78rem;
-    letter-spacing: .035em;
+    font-size: .72rem;
+    line-height: 1.45;
+    text-align: left;
     cursor: pointer;
     transition: color .15s ease;
   }
 
+  .category-archive-tag span {
+    overflow-wrap: anywhere;
+  }
+
   .category-archive-tag sup {
     position: relative;
-    top: -.3em;
-    margin-left: .12rem;
+    top: -.28em;
+    margin-left: .24rem;
     color: var(--muted);
-    font-size: .56rem;
+    font-size: .53rem;
     line-height: 1;
   }
 
   .category-archive-tag:hover,
+  .category-archive-tag:focus-visible,
   .category-archive-tag.is-active {
     color: var(--accent);
   }
 
-  .category-archive-tag.is-active {
+  .category-archive-tag.is-active span {
     text-decoration: underline;
-    text-underline-offset: .28rem;
+    text-underline-offset: .25rem;
     text-decoration-thickness: 1px;
   }
 
   .category-archive-tag.has-tooltip::after {
     content: attr(data-tooltip);
     position: absolute;
-    left: 50%;
-    bottom: calc(100% + .42rem);
+    left: 0;
+    bottom: calc(100% + .38rem);
     z-index: 10;
     padding: .22rem .38rem;
     border: 1px solid rgba(111, 106, 100, .16);
@@ -268,14 +263,14 @@ layout: default
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
-    transform: translate(-50%, .12rem);
+    transform: translateY(.12rem);
     transition: opacity .12s ease, transform .12s ease;
   }
 
   .category-archive-tag.has-tooltip:hover::after,
   .category-archive-tag.has-tooltip:focus-visible::after {
     opacity: 1;
-    transform: translate(-50%, 0);
+    transform: translateY(0);
   }
 
   .category-archive-year {
@@ -290,7 +285,7 @@ layout: default
     letter-spacing: .12em;
   }
 
-  .category-archive-year-group:first-of-type .category-archive-year {
+  .category-archive-year-group:first-child .category-archive-year {
     margin-top: 0;
   }
 
@@ -342,51 +337,39 @@ layout: default
     display: none;
   }
 
-  .category-pagination {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 2.6rem;
-    padding-top: 1.15rem;
-    border-top: 1px solid var(--line);
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: .72rem;
-  }
+  @media (max-width: 760px) {
+    .category-archive-page {
+      width: min(860px, calc(100% - 2.2rem));
+    }
 
-  .category-pagination[hidden] {
-    display: none;
-  }
+    .category-archive-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      margin-top: 2.5rem;
+    }
 
-  .category-pagination-button {
-    width: max-content;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: var(--accent);
-    font: inherit;
-    cursor: pointer;
-  }
+    .category-tag-sidebar {
+      position: static;
+      order: -1;
+      width: 100%;
+      padding: 1.2rem 0 1.35rem;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
 
-  .category-pagination-button:last-child {
-    justify-self: end;
-  }
+    .category-tag-title {
+      margin-bottom: .9rem;
+    }
 
-  .category-pagination-button:hover:not(:disabled) {
-    text-decoration: underline;
-    text-underline-offset: .22em;
-  }
+    .category-tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .55rem 1rem;
+    }
 
-  .category-pagination-button:disabled {
-    color: var(--muted);
-    cursor: default;
-    opacity: .42;
-  }
-
-  @media (max-width: 640px) {
-    .category-archive-kicker {
-      font-size: .82rem;
+    .category-archive-tag {
+      font-size: .7rem;
     }
 
     .category-archive-posts li {
