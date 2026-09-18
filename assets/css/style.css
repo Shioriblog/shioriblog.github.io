@@ -196,3 +196,76 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
   html { scroll-behavior: auto; }
   .category-posts a { transition: none; }
 }
+
+
+/* Reading post: reusable NeoDB book cards */
+.book-card-list {
+  margin: 1.55rem 0 1.8rem;
+}
+.book-card-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .8rem;
+  margin: 1.55rem 0 1.8rem;
+}
+.article-content .book-card {
+  display: block;
+  margin: 0 0 1rem;
+  padding: 1rem 1.1rem 1.05rem;
+  color: var(--body);
+  border: 1px solid var(--line);
+  background: var(--soft);
+  text-decoration: none;
+  transition: border-color .15s ease, transform .15s ease;
+}
+.book-card-pair .book-card {
+  margin: 0;
+}
+.article-content .book-card:hover {
+  color: var(--body);
+  border-color: #bfc6b9;
+  transform: translateY(-1px);
+}
+.book-card-label {
+  margin-bottom: .38rem;
+  color: var(--accent);
+  font-family: var(--sans);
+  font-size: .62rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.book-card-title {
+  color: var(--ink);
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.book-card-byline {
+  margin-top: .18rem;
+  color: var(--body);
+  font-size: .84rem;
+  line-height: 1.55;
+}
+.book-card-meta,
+.book-card-link {
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: .68rem;
+  line-height: 1.65;
+}
+.book-card-meta {
+  margin-top: .42rem;
+}
+.book-card-link {
+  margin-top: .55rem;
+}
+@media (max-width: 640px) {
+  .book-card-pair {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .article-content .book-card {
+    transition: none;
+  }
+}
