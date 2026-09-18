@@ -200,22 +200,25 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
 
 /* Reading post: reusable NeoDB book cards */
 .book-card-list {
-  margin: 1.65rem 0 2rem;
+  margin: 3.4rem 0 1.55rem;
 }
 .book-card-pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.25rem;
-  margin: 1.65rem 0 2rem;
+  margin: 3.4rem 0 1.55rem;
+}
+.article-content > .book-card-list:first-of-type {
+  margin-top: 1.6rem;
 }
 .article-content .book-card {
   display: flex;
   gap: 1rem;
   align-items: flex-start;
   margin: 0;
-  padding: .1rem 0 1rem;
+  padding: .1rem 0 0;
   color: var(--body);
-  border-bottom: 1px solid var(--line);
+  border-bottom: none;
   background: transparent;
   text-decoration: none;
 }
