@@ -1,6 +1,7 @@
 (() => {
   const config = window.SHIO_STATS_CONFIG || {}
   const endpoint = config.endpoint || ''
+  const twikooEnvId = config.twikooEnvId || ''
   const titles = config.titles || {}
   const categoriesByPath = config.categories || {}
   const likeIdsByPath = config.likeIds || {}
@@ -22,6 +23,7 @@
   const categories = document.getElementById('stats-categories')
   const sitePages = document.getElementById('stats-site-pages')
   const countries = document.getElementById('stats-countries')
+  const comments = document.getElementById('stats-comments')
   const rangeButtons = Array.from(document.querySelectorAll('[data-days]'))
 
   const responseMostRead = document.getElementById('response-most-read')
@@ -254,6 +256,115 @@
       (row) => `${row.likeDensity.toFixed(1)} likes / 100 selected-period views`)
   }
 
+
+  const plainComment = (html) => {
+    const box = document.createElement('div')
+    box.innerHTML = String(html || '')
+    box.querySelectorAll('img').forEach((node) => node.replaceWith(document.createTextNode(' [图片] ')))
+    box.querySelectorAll('pre').forEach((node) => node.replaceWith(document.createTextNode(' [代码] ')))
+    return (box.textContent || '').replace(/\s+/g, ' ').trim()
+  }
+
+  const commentPath = (value) => {
+    try {
+      return new URL(value || '/', window.location.origin).pathname
+    } catch (_) {
+      return String(value || '/').split('#')[0].split('?')[0] || '/'
+    }
+  }
+
+  const titleForComment = (path) => {
+    if (titles[path]) return titles[path]
+    try {
+      const decoded = decodeURIComponent(path)
+      if (titles[decoded]) return titles[decoded]
+    } catch (_) {}
+    return pathLabel(path)
+  }
+
+  const relativeTime = (value) => {
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return ''
+    const seconds = (date.getTime() - Date.now()) / 1000
+    const abs = Math.abs(seconds)
+    const rtf = new Intl.RelativeTimeFormat('zh-CN', { numeric: 'auto' })
+
+    if (abs < 60) return rtf.format(Math.round(seconds), 'second')
+    if (abs < 3600) return rtf.format(Math.round(seconds / 60), 'minute')
+    if (abs < 86400) return rtf.format(Math.round(seconds / 3600), 'hour')
+    if (abs < 604800) return rtf.format(Math.round(seconds / 86400), 'day')
+    if (abs < 2592000) return rtf.format(Math.round(seconds / 604800), 'week')
+    if (abs < 31536000) return rtf.format(Math.round(seconds / 2592000), 'month')
+    return rtf.format(Math.round(seconds / 31536000), 'year')
+  }
+
+  const renderRecentComments = (items) => {
+    comments.innerHTML = ''
+    if (!items?.length) {
+      const empty = document.createElement('li')
+      empty.className = 'stats-comments-empty'
+      empty.textContent = '暂无留言'
+      comments.appendChild(empty)
+      return
+    }
+
+    items.slice(0, 8).forEach((item) => {
+      const path = commentPath(item.url)
+      const href = item.id ? `${path}#${item.id}` : path
+
+      const li = document.createElement('li')
+      li.className = 'stats-comment-item'
+
+      const meta = document.createElement('div')
+      meta.className = 'stats-comment-meta'
+
+      const nick = document.createElement('span')
+      nick.className = 'stats-comment-nick'
+      nick.textContent = item.nick || 'Anonymous'
+
+      const time = document.createElement('time')
+      time.className = 'stats-comment-time'
+      time.dateTime = item.created || ''
+      time.textContent = relativeTime(item.created)
+
+      meta.append(nick, time)
+
+      const textLink = document.createElement('a')
+      textLink.className = 'stats-comment-text'
+      textLink.href = href
+      textLink.textContent = plainComment(item.comment) || '（空留言）'
+
+      const postLink = document.createElement('a')
+      postLink.className = 'stats-comment-post'
+      postLink.href = href
+      postLink.textContent = `→ ${titleForComment(path)}`
+
+      li.append(meta, textLink, postLink)
+      comments.appendChild(li)
+    })
+  }
+
+  const loadRecentComments = async () => {
+    if (!comments) return
+
+    if (!twikooEnvId || typeof window.twikoo?.getRecentComments !== 'function') {
+      comments.innerHTML = '<li class="stats-comments-empty">留言暂时无法读取</li>'
+      return
+    }
+
+    try {
+      const items = await window.twikoo.getRecentComments({
+        envId: twikooEnvId,
+        pageSize: 8,
+        includeReply: true
+      })
+      renderRecentComments(items)
+    } catch (error) {
+      console.warn('Unable to load recent comments', error)
+      comments.innerHTML = '<li class="stats-comments-empty">留言读取失败</li>'
+    }
+  }
+
   const render = (data) => {
     const currentPpv = data.visits ? data.views / data.visits : null
     const previousPpv = data.previous?.pagesPerVisit
@@ -306,6 +417,8 @@
   rangeButtons.forEach((button) => {
     button.addEventListener('click', () => load(Number(button.dataset.days)))
   })
+
+  loadRecentComments()
 
   if (!endpoint) {
     setup.hidden = false
