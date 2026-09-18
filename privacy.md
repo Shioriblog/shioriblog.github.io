@@ -7,30 +7,35 @@ permalink: /privacy/
 <main class="privacy-page" id="content">
   <p class="privacy-kicker">PRIVACY</p>
   <h1>关于隐私</h1>
-  <p class="privacy-intro">这个博客会收集少量信息，用来了解网站使用情况，以及提供留言、订阅和点赞功能。</p>
+  <p class="privacy-intro">这个博客会处理少量信息，用来了解网站使用情况，并提供留言、订阅和点赞功能。本站不会出售读者的个人信息。</p>
 
   <section>
     <h2>访问统计</h2>
-    <p>本站使用 Cloudflare Web Analytics 统计访问量、热门页面和大致的访问来源，用于了解博客的阅读情况。</p>
+    <p>本站使用 Cloudflare Web Analytics 了解页面访问量、热门页面、访问来源、大致的国家或地区，以及网页性能。Cloudflare Web Analytics 不使用 cookie 或 localStorage 来追踪访问者，也不会跨网站追踪个人。</p>
   </section>
 
   <section>
     <h2>留言</h2>
-    <p>留言功能由 Twikoo 提供。你在留言时主动填写的昵称、邮箱、网站等信息会用于显示留言及回复通知；邮箱不会公开显示。</p>
+    <p>留言功能由 Twikoo 提供，后端部署在 Netlify。你在留言时主动填写的昵称、邮箱、网站和留言内容会用于显示留言及回复通知；邮箱不会公开显示。Twikoo 和 Netlify 会处理提交、保存和显示留言所需的信息。</p>
   </section>
 
   <section>
     <h2>邮件订阅</h2>
-    <p>如果你主动订阅新文章，填写的邮箱地址会提交给 Brevo，用于发送博客更新通知。你可以随时通过邮件中的退订链接取消订阅。</p>
+    <p>如果你主动订阅新文章，填写的邮箱地址会提交给 Brevo，并由 Brevo 保存相关的订阅记录，用于发送本站的新文章通知。你可以随时通过邮件中的退订链接取消订阅。</p>
   </section>
 
   <section>
-    <h2>第三方服务</h2>
-    <p>本站还使用 Lyket 提供文章点赞功能。这些第三方服务可能会按照各自的隐私政策处理提供服务所需的技术信息。</p>
+    <h2>点赞</h2>
+    <p>文章点赞使用本站自己的 Cloudflare Worker 和 Durable Object。浏览器会在 localStorage 中保存一个随机生成的访客标识，用来记住这个浏览器是否已经给某篇文章点过赞，并避免重复计数。这个标识不包含姓名或邮箱，也不会与留言或订阅信息关联。</p>
   </section>
 
-  <p class="privacy-note">本站不会出售读者的个人信息。</p>
-  <p class="privacy-updated">Last updated: September 2026</p>
+  <section>
+    <h2>网站托管与外部资源</h2>
+    <p>本站托管在 GitHub Pages，并通过 Cloudflare 提供网络和图片优化服务。页面还会从 Google Fonts 和 jsDelivr 加载字体或前端脚本；这些服务可能会接收到浏览器请求资源时产生的常规技术信息。</p>
+  </section>
+
+  <p class="privacy-note">如果本站以后增加或更换会影响读者隐私的功能，这一页也会随之更新。</p>
+  <p class="privacy-updated">Last updated: September 17, 2026</p>
 </main>
 
 <style>
