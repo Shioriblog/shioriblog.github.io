@@ -51,6 +51,14 @@ subscription: false
     <div class="stats-chart" id="stats-chart" aria-label="每日浏览量图表"></div>
   </section>
 
+  <section class="stats-panel stats-recent-panel">
+    <div class="stats-panel-heading">
+      <h2>Recent posts</h2>
+      <span>VIEWS · VISITS · ♥</span>
+    </div>
+    <ol class="stats-list" id="stats-recent-posts"></ol>
+  </section>
+
   <section class="stats-response" aria-labelledby="reader-response-title">
     <div class="stats-panel-heading stats-response-heading">
       <h2 id="reader-response-title">Reader response</h2>
@@ -183,6 +191,7 @@ subscription: false
   .stats-change.is-down { color: #8a625a; }
   .stats-panel { min-width: 0; }
   .stats-chart-panel { margin-bottom: 3rem; }
+  .stats-recent-panel { margin-bottom: 3rem; }
   .stats-panel-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: .85rem; }
   .stats-panel-heading h2 { margin: 0; color: var(--ink); font-family: var(--serif); font-size: 1.05rem; font-weight: 500; }
   .stats-panel-heading span { color: var(--muted); font-size: .62rem; letter-spacing: .08em; }
