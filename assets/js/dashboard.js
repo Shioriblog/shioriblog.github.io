@@ -19,6 +19,7 @@
   const chart = document.getElementById('stats-chart')
   const periodLabel = document.getElementById('stats-period-label')
   const posts = document.getElementById('stats-posts')
+  const recentPosts = document.getElementById('stats-recent-posts')
   const referrers = document.getElementById('stats-referrers')
   const sources = document.getElementById('stats-sources')
   const categories = document.getElementById('stats-categories')
@@ -59,7 +60,7 @@
   }
 
   const clearLists = () => {
-    ;[posts, referrers, sources, categories, sitePages, countries, postAge, referrerPosts].forEach((list) => {
+    ;[posts, recentPosts, referrers, sources, categories, sitePages, countries, postAge, referrerPosts].forEach((list) => {
       if (list) list.innerHTML = ''
     })
     chart.innerHTML = ''
@@ -139,8 +140,8 @@
 
       const time = document.createElement('time')
       time.dateTime = item.date
-      const date = new Date(`${item.date}T12:00:00Z`)
-      time.textContent = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })
+      const date = new Date(`${item.date}T12:00:00`)
+      time.textContent = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/Chicago' })
 
       node.appendChild(wrap)
       node.appendChild(time)
@@ -215,6 +216,23 @@
     postRows.sort((a, b) => b.views - a.views)
     siteRows.sort((a, b) => b.views - a.views)
     return { postRows, siteRows }
+  }
+
+  const recentPostRows = (pageItems, likes) => {
+    const pageMap = new Map((pageItems || []).map((item) => [item.label, item]))
+    return Object.keys(datesByPath)
+      .sort((a, b) => new Date(datesByPath[b]) - new Date(datesByPath[a]))
+      .slice(0, 5)
+      .map((path) => {
+        const item = pageMap.get(path) || {}
+        const likeId = likeIdsByPath[path]
+        return {
+          label: path,
+          views: Number(item.views || 0),
+          visits: Number(item.visits || 0),
+          likes: Number(likes?.[likeId] || 0)
+        }
+      })
   }
 
   const categoryRows = (pageItems) => {
@@ -504,6 +522,7 @@
 
     const { postRows, siteRows } = splitPages(data.pages || [], data.likes || {})
     renderReaderResponse(postRows)
+    addItems(recentPosts, recentPostRows(data.pages || [], data.likes || {}), { link: true, triple: true })
     addItems(posts, postRows, { link: true, triple: true })
     addItems(sitePages, siteRows, { link: true, dual: true })
 
@@ -547,7 +566,7 @@
   if (!endpoint) {
     setup.hidden = false
     clearLists()
-    ;[posts, referrers, sources, categories, sitePages, countries, postAge, referrerPosts].forEach((list) => {
+    ;[posts, recentPosts, referrers, sources, categories, sitePages, countries, postAge, referrerPosts].forEach((list) => {
       if (list) showEmpty(list)
     })
     return
