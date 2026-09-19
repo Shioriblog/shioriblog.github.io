@@ -16,6 +16,7 @@ description: 按分类与主题翻看独居日记里的文章。
         <strong lang="ja">日記の練習</strong>
         <span>{{ daily_posts | size }}</span>
       </div>
+      <small class="category-index-subtitle">日常随笔</small>
     </a>
 
     {% assign utakata_posts = site.categories['うたかたの日々'] %}
@@ -24,6 +25,7 @@ description: 按分类与主题翻看独居日记里的文章。
         <strong lang="ja">うたかたの日々</strong>
         <span>{{ utakata_posts | size }}</span>
       </div>
+      <small class="category-index-subtitle">岁月的泡沫</small>
     </a>
 
     {% assign words_posts = site.categories['言葉と歩く日記'] %}
@@ -32,6 +34,7 @@ description: 按分类与主题翻看独居日记里的文章。
         <strong lang="ja">言葉と歩く日記</strong>
         <span>{{ words_posts | size }}</span>
       </div>
+      <small class="category-index-subtitle">旅行随笔</small>
     </a>
   </div>
 
@@ -113,6 +116,16 @@ description: 按分类与主题翻看独居日记里的文章。
     font-family: var(--sans);
     font-size: .68rem;
     font-variant-numeric: tabular-nums;
+  }
+
+  .category-index-subtitle {
+    display: block;
+    margin-top: .3rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .67rem;
+    font-weight: 400;
+    line-height: 1.5;
   }
 
   .category-index-entry:hover .category-index-title-row strong,
