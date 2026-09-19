@@ -1,6 +1,7 @@
 const GRAPHQL_ENDPOINT = 'https://api.cloudflare.com/client/v4/graphql'
 const SITE_HOST = 'shioriblog.org'
 const ALLOWED_ORIGIN = 'https://shioriblog.org'
+const SITE_TIME_ZONE = 'America/Chicago'
 const LIKE_STORE_NAME = 'shioriblog-post-likes'
 const POST_PATH = /^\/\d{4}\/\d{2}\/\d{2}\//
 
@@ -119,10 +120,10 @@ async function handleDashboard(request, env, url) {
             avg { sampleInterval }
             sum { visits }
           }
-          series: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 60, orderBy: [date_ASC]) {
+          series: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 1000, orderBy: [datetimeHour_ASC]) {
             count
             avg { sampleInterval }
-            dimensions { date }
+            dimensions { datetimeHour }
           }
           pages: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 200, orderBy: [count_DESC]) {
             count
@@ -196,7 +197,7 @@ async function handleDashboard(request, env, url) {
       },
       label: days === 1 ? 'Last 24 hours' : `Last ${days} days`,
       comparisonLabel: days === 1 ? 'vs previous 24h' : `vs previous ${days} days`,
-      series: mergeNumeric(account.series, (row) => row.dimensions?.date || '', (row) => estimate(row))
+      series: mergeNumeric(account.series, (row) => localDateKey(row.dimensions?.datetimeHour), (row) => estimate(row))
         .sort((a, b) => a[0].localeCompare(b[0]))
         .map(([date, value]) => ({ date, views: value })),
       pages: Array.from(pageMap.entries())
@@ -213,7 +214,7 @@ async function handleDashboard(request, env, url) {
         .sort((a, b) => (b.visits - a.visits) || (b.views - a.views)),
       countries: mergeNumeric(account.countries, (row) => row.dimensions?.countryName || 'Unknown', (row) => estimate(row))
         .map(([label, value]) => ({ label, views: value }))
-    }, 200, request)
+    }, 200, request, 60)
   } catch (error) {
     return json({ error: error.message || 'Unexpected Worker error' }, 500, request)
   }
@@ -324,6 +325,20 @@ function rumFilter(start, end) {
     requestHost: ${JSON.stringify(SITE_HOST)}
     bot: 0
   }`
+}
+
+function localDateKey(value) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: SITE_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(date)
+  const byType = Object.fromEntries(parts.map((part) => [part.type, part.value]))
+  return `${byType.year}-${byType.month}-${byType.day}`
 }
 
 function normalizeRequestPath(value) {
