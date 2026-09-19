@@ -2,10 +2,33 @@
   const config = window.SHIO_STATS_CONFIG || {}
   const endpoint = config.endpoint || ''
   const twikooEnvId = config.twikooEnvId || ''
-  const titles = config.titles || {}
-  const categoriesByPath = config.categories || {}
-  const likeIdsByPath = config.likeIds || {}
-  const datesByPath = config.dates || {}
+
+  const normalizePath = (value) => {
+    const raw = String(value || '').trim()
+    if (!raw) return '/'
+
+    let path = raw
+    try {
+      path = new URL(raw, window.location.origin).pathname
+    } catch (_) {
+      path = raw.split('#')[0].split('?')[0]
+    }
+
+    try { path = decodeURIComponent(path) } catch (_) {}
+    if (!path.startsWith('/')) path = `/${path}`
+    path = path.replace(/\/{2,}/g, '/')
+    if (path.length > 1) path = path.replace(/\/+$/, '')
+    return path || '/'
+  }
+
+  const normalizePathMap = (map) => Object.fromEntries(
+    Object.entries(map || {}).map(([path, value]) => [normalizePath(path), value])
+  )
+
+  const titles = normalizePathMap(config.titles)
+  const categoriesByPath = normalizePathMap(config.categories)
+  const likeIdsByPath = normalizePathMap(config.likeIds)
+  const datesByPath = normalizePathMap(config.dates)
   const siteHost = 'shioriblog.org'
 
   const setup = document.getElementById('stats-setup')
@@ -73,7 +96,22 @@
     list.appendChild(item)
   }
 
-  const pathLabel = (path) => titles[path] || decodeURIComponent(path).replace(/\/$/, '') || '/'
+  const pathLabel = (path) => {
+    const normalized = normalizePath(path)
+    return titles[normalized] || normalized || '/'
+  }
+
+  const normalizePageItems = (items) => {
+    const totals = new Map()
+    ;(items || []).forEach((item) => {
+      const label = normalizePath(item.label)
+      const existing = totals.get(label) || { label, views: 0, visits: 0 }
+      existing.views += Number(item.views || 0)
+      existing.visits += Number(item.visits || 0)
+      totals.set(label, existing)
+    })
+    return Array.from(totals.values())
+  }
 
   const addItems = (list, items, options = {}) => {
     const { link = false, country = false, value = 'views', dual = false, triple = false } = options
@@ -205,12 +243,13 @@
   const splitPages = (items, likes) => {
     const postRows = []
     const siteRows = []
-    ;(items || []).forEach((item) => {
-      if (Object.prototype.hasOwnProperty.call(titles, item.label)) {
-        const likeId = likeIdsByPath[item.label]
-        postRows.push({ ...item, likes: Number(likes?.[likeId] || 0) })
+    normalizePageItems(items).forEach((item) => {
+      const path = normalizePath(item.label)
+      if (Object.prototype.hasOwnProperty.call(titles, path)) {
+        const likeId = likeIdsByPath[path]
+        postRows.push({ ...item, label: path, likes: Number(likes?.[likeId] || 0) })
       } else {
-        siteRows.push(item)
+        siteRows.push({ ...item, label: path })
       }
     })
     postRows.sort((a, b) => b.views - a.views)
@@ -219,15 +258,16 @@
   }
 
   const recentPostRows = (pageItems, likes) => {
-    const pageMap = new Map((pageItems || []).map((item) => [item.label, item]))
+    const pageMap = new Map(normalizePageItems(pageItems).map((item) => [normalizePath(item.label), item]))
     return Object.keys(datesByPath)
       .sort((a, b) => new Date(datesByPath[b]) - new Date(datesByPath[a]))
       .slice(0, 5)
       .map((path) => {
-        const item = pageMap.get(path) || {}
-        const likeId = likeIdsByPath[path]
+        const normalized = normalizePath(path)
+        const item = pageMap.get(normalized) || {}
+        const likeId = likeIdsByPath[normalized]
         return {
-          label: path,
+          label: normalized,
           views: Number(item.views || 0),
           visits: Number(item.visits || 0),
           likes: Number(likes?.[likeId] || 0)
@@ -248,8 +288,8 @@
       })
     })
 
-    ;(pageItems || []).forEach((item) => {
-      const postCategories = categoriesByPath[item.label]
+    normalizePageItems(pageItems).forEach((item) => {
+      const postCategories = categoriesByPath[normalizePath(item.label)]
       if (!Array.isArray(postCategories)) return
       postCategories.forEach((category) => {
         if (category === '食べたり、歩いたり') return
@@ -333,7 +373,7 @@
   const renderReferrerPosts = (items) => {
     referrerPosts.innerHTML = ''
     const filtered = (items || [])
-      .filter((item) => Object.prototype.hasOwnProperty.call(titles, item.path))
+      .filter((item) => Object.prototype.hasOwnProperty.call(titles, normalizePath(item.path)))
       .filter((item) => {
         const host = normalizeHost(item.referrer)
         return !host || host !== siteHost
@@ -354,7 +394,7 @@
       source.textContent = item.referrer || 'Direct'
       const arrow = document.createTextNode(' → ')
       const link = document.createElement('a')
-      link.href = item.path
+      link.href = normalizePath(item.path)
       link.textContent = pathLabel(item.path)
       left.append(source, arrow, link)
 
@@ -414,12 +454,8 @@
   }
 
   const titleForComment = (path) => {
-    if (titles[path]) return titles[path]
-    try {
-      const decoded = decodeURIComponent(path)
-      if (titles[decoded]) return titles[decoded]
-    } catch (_) {}
-    return pathLabel(path)
+    const normalized = normalizePath(path)
+    return titles[normalized] || pathLabel(normalized)
   }
 
   const relativeTime = (value) => {
