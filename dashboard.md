@@ -66,11 +66,6 @@ subscription: false
     </div>
     <div class="stats-response-grid">
       <article>
-        <span>MOST READ</span>
-        <a id="response-most-read" href="#">—</a>
-        <small id="response-most-read-meta">—</small>
-      </article>
-      <article>
         <span>MOST LIKED</span>
         <a id="response-most-liked" href="#">—</a>
         <small id="response-most-liked-meta">—</small>
@@ -96,25 +91,10 @@ subscription: false
     </section>
   </div>
 
-  <section class="stats-comments" aria-labelledby="recent-comments-title">
-    <div class="stats-panel-heading">
-      <h2 id="recent-comments-title">Recent comments</h2>
-      <span>LATEST 8</span>
-    </div>
-    <ol class="stats-comments-list" id="stats-comments">
-      <li class="stats-comments-loading">正在读取留言…</li>
-    </ol>
-  </section>
-
-  <div class="stats-grid">
+  <div class="stats-grid stats-main-grid">
     <section class="stats-panel">
       <div class="stats-panel-heading"><h2>Top posts</h2><span>VIEWS · VISITS · ♥</span></div>
       <ol class="stats-list" id="stats-posts"></ol>
-    </section>
-
-    <section class="stats-panel">
-      <div class="stats-panel-heading"><h2>External referrers</h2><span>VISITS</span></div>
-      <ol class="stats-list" id="stats-referrers"></ol>
     </section>
 
     <section class="stats-panel">
@@ -126,17 +106,40 @@ subscription: false
       <div class="stats-panel-heading"><h2>Categories</h2><span>VIEWS · AVG / POST</span></div>
       <ol class="stats-list" id="stats-categories"></ol>
     </section>
-
-    <section class="stats-panel">
-      <div class="stats-panel-heading"><h2>Site pages</h2><span>VIEWS · VISITS</span></div>
-      <ol class="stats-list" id="stats-site-pages"></ol>
-    </section>
-
-    <section class="stats-panel">
-      <div class="stats-panel-heading"><h2>Countries</h2><span>VIEWS</span></div>
-      <ol class="stats-list" id="stats-countries"></ol>
-    </section>
   </div>
+
+  <section class="stats-comments" aria-labelledby="recent-comments-title">
+    <div class="stats-panel-heading">
+      <h2 id="recent-comments-title">Recent comments</h2>
+      <span>LATEST 8</span>
+    </div>
+    <ol class="stats-comments-list" id="stats-comments">
+      <li class="stats-comments-loading">正在读取留言…</li>
+    </ol>
+  </section>
+
+  <details class="stats-more">
+    <summary>
+      <span>More stats</span>
+      <small>REFERRERS · SITE PAGES · COUNTRIES</small>
+    </summary>
+    <div class="stats-grid stats-more-grid">
+      <section class="stats-panel">
+        <div class="stats-panel-heading"><h2>External referrers</h2><span>VISITS</span></div>
+        <ol class="stats-list" id="stats-referrers"></ol>
+      </section>
+
+      <section class="stats-panel">
+        <div class="stats-panel-heading"><h2>Site pages</h2><span>VIEWS · VISITS</span></div>
+        <ol class="stats-list" id="stats-site-pages"></ol>
+      </section>
+
+      <section class="stats-panel">
+        <div class="stats-panel-heading"><h2>Countries</h2><span>VIEWS</span></div>
+        <ol class="stats-list" id="stats-countries"></ol>
+      </section>
+    </div>
+  </details>
 
   <p class="stats-footnote">只显示汇总后的访问数据；这个页面本身不会计入 Cloudflare Analytics。External referrers 已排除 shioriblog.org 的站内跳转。</p>
 </main>
@@ -203,7 +206,7 @@ subscription: false
 
   .stats-response { margin: 0 0 3rem; }
   .stats-response-heading { margin-bottom: .85rem; }
-  .stats-response-grid { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stats-response-grid { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .stats-response-grid article { min-width: 0; padding: 1rem 1.2rem 1.05rem; border-right: 1px solid var(--line); }
   .stats-response-grid article:first-child { padding-left: 0; }
   .stats-response-grid article:last-child { border-right: 0; }
@@ -218,6 +221,7 @@ subscription: false
   .stats-referrer-post-list a { display: inline; white-space: normal; }
   .stats-source-label { color: var(--muted); }
 
+  .stats-main-grid { margin-bottom: 3rem; }
   .stats-comments { margin: 0 0 3rem; }
   .stats-comments-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
   .stats-comment-item { min-width: 0; padding: .9rem 1.2rem 1rem 0; border-bottom: 1px solid var(--line); }
@@ -238,7 +242,15 @@ subscription: false
   .stats-list a:hover { color: var(--accent); }
   .stats-list .stats-value { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .stats-empty { color: var(--muted) !important; grid-template-columns: 1fr !important; }
-  .stats-footnote { margin: 3rem 0 0; color: var(--muted); font-size: .67rem; }
+  .stats-more { margin: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stats-more summary { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: .9rem 0; color: var(--ink); cursor: pointer; list-style: none; }
+  .stats-more summary::-webkit-details-marker { display: none; }
+  .stats-more summary span { font-family: var(--serif); font-size: 1rem; }
+  .stats-more summary small { color: var(--muted); font-size: .6rem; font-weight: 400; letter-spacing: .08em; }
+  .stats-more summary::after { content: '＋'; margin-left: auto; color: var(--muted); font-size: .72rem; }
+  .stats-more[open] summary::after { content: '−'; }
+  .stats-more-grid { padding: 1.6rem 0 1.8rem; border-top: 1px solid var(--line); }
+  .stats-footnote { margin: 2rem 0 0; color: var(--muted); font-size: .67rem; }
 
   @media (max-width: 700px) {
     .stats-page { width: min(100% - 2rem, 38rem); padding-top: 2.8rem; }
@@ -250,6 +262,7 @@ subscription: false
     .stats-comments-list { grid-template-columns: 1fr; }
     .stats-comment-item, .stats-comment-item:nth-child(even) { padding: .85rem 0 .9rem; border-left: 0; }
     .stats-grid { grid-template-columns: 1fr; gap: 2.6rem; }
+    .stats-more summary small { display: none; }
     .stats-chart { gap: .35rem; height: 160px; }
     .stats-bar-item time { font-size: .5rem; }
   }
