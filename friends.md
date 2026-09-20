@@ -36,6 +36,7 @@ nav: friends
       <li><a href="https://mokuyo.neocities.org/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://mokuyo.neocities.org&sz=32" alt="" loading="lazy">光明岛</a></li>
       <li><a href="https://foxat4.github.io/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://foxat4.github.io&sz=32" alt="" loading="lazy">青群山丘</a></li>
       <li><a href="https://circleyellowthere.de/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://circleyellowthere.de&sz=32" alt="" loading="lazy">Circleyellowthere</a></li>
+      <li><a href="https://www.yocson.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://www.yocson.com&sz=32" alt="" loading="lazy">散步中</a></li>
     </ul>
   </section>
 
