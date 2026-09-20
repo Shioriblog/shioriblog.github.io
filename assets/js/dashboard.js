@@ -53,8 +53,6 @@
   const comments = document.getElementById('stats-comments')
   const rangeButtons = Array.from(document.querySelectorAll('[data-days]'))
 
-  const responseMostRead = document.getElementById('response-most-read')
-  const responseMostReadMeta = document.getElementById('response-most-read-meta')
   const responseMostLiked = document.getElementById('response-most-liked')
   const responseMostLikedMeta = document.getElementById('response-most-liked-meta')
   const responseLikeRate = document.getElementById('response-like-rate')
@@ -420,7 +418,6 @@
   }
 
   const renderReaderResponse = (postRows) => {
-    const mostRead = postRows[0]
     const mostLiked = [...postRows].sort((a, b) => (b.likes - a.likes) || (b.views - a.views))[0]
     const likeRateRows = postRows
       .filter((row) => row.views >= 5 && row.likes > 0)
@@ -428,8 +425,6 @@
       .sort((a, b) => b.likeDensity - a.likeDensity)
     const highestDensity = likeRateRows[0]
 
-    setResponseCard(responseMostRead, responseMostReadMeta, mostRead,
-      (row) => `${number.format(row.views)} views · ${number.format(row.visits)} visits`)
     setResponseCard(responseMostLiked, responseMostLikedMeta, mostLiked,
       (row) => `♥ ${number.format(row.likes)} cumulative likes`)
     setResponseCard(responseLikeRate, responseLikeRateMeta, highestDensity,
