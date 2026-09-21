@@ -37,6 +37,7 @@ nav: home
   {% if site.categories.size > 0 %}
     {% assign home_categories = "日記の練習|言葉と歩く日記|うたかたの日々" | split: "|" %}
     <div class="category-strip" aria-label="文章分类">
+      <button type="button" class="home-all-posts is-active" aria-pressed="true">All posts</button>
       {% for category_name in home_categories %}
         {% assign category_description = '' %}
         {% case category_name %}
@@ -161,15 +162,20 @@ nav: home
   <script>
     (() => {
       const buttons = Array.from(document.querySelectorAll('.home-category-link[data-category]'))
+      const allPostsButton = document.querySelector('.home-all-posts')
       const defaultList = document.querySelector('.default-post-list')
       const filteredLists = Array.from(document.querySelectorAll('.filtered-post-list'))
       const pagination = document.querySelector('.pagination')
 
-      if (!buttons.length || !defaultList || !filteredLists.length) return
+      if (!buttons.length || !allPostsButton || !defaultList || !filteredLists.length) return
 
       let activeCategory = null
 
       const setButtonState = (category) => {
+        const showingAll = category === null
+        allPostsButton.classList.toggle('is-active', showingAll)
+        allPostsButton.setAttribute('aria-pressed', showingAll ? 'true' : 'false')
+
         buttons.forEach((button) => {
           const isActive = button.dataset.category === category
           button.classList.toggle('is-active', isActive)
@@ -196,6 +202,8 @@ nav: home
         })
         if (pagination) pagination.hidden = true
       }
+
+      allPostsButton.addEventListener('click', showAll)
 
       buttons.forEach((button) => {
         button.addEventListener('click', () => {
@@ -226,6 +234,34 @@ nav: home
 
   .home-marginalia em {
     font-style: italic;
+  }
+
+  .home-all-posts {
+    appearance: none;
+    margin-right: .25rem;
+    padding: .22rem .08rem;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    background: transparent;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .72rem;
+    font-weight: 500;
+    letter-spacing: .04em;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: color .15s ease, border-color .15s ease;
+  }
+
+  .home-all-posts:hover,
+  .home-all-posts:focus-visible {
+    color: var(--accent);
+    border-bottom-color: rgba(79, 90, 73, .38);
+  }
+
+  .home-all-posts.is-active {
+    color: var(--accent);
+    border-bottom-color: currentColor;
   }
 
   .home-category-link {
