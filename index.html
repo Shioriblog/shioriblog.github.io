@@ -35,7 +35,7 @@ nav: home
   <h1 class="page-title">Latest Posts</h1>
 
   {% if site.categories.size > 0 %}
-    {% assign home_categories = "うたかたの日々|日記の練習|言葉と歩く日記" | split: "|" %}
+    {% assign home_categories = "日記の練習|言葉と歩く日記|うたかたの日々" | split: "|" %}
     <div class="category-strip" aria-label="文章分类">
       {% for category_name in home_categories %}
         {% assign category_description = '' %}
