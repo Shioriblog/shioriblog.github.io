@@ -72,65 +72,76 @@ layout: default
     </div>
 
     {% comment %}
-      Pick one related post. Visible shared tags have priority; if there is no
-      tag match, fall back to the same primary category. Within either group,
-      choose the post closest in publication date to the current one.
+      Related posts: first prefer posts sharing a visible tag, then fill the
+      remaining slots from the same primary category. site.posts is newest-first,
+      so older articles naturally point readers toward newer writing on the same theme.
     {% endcomment %}
-    {% assign related_post = nil %}
-    {% assign related_distance = 999999999999 %}
-    {% assign page_timestamp = page.date | date: '%s' | plus: 0 %}
-
-    {% for candidate in site.posts %}
-      {% unless candidate.url == page.url %}
-        {% assign shares_visible_tag = false %}
-        {% for related_tag in page.tags %}
-          {% unless related_tag == 'featured' %}
-            {% if candidate.tags contains related_tag %}
-              {% assign shares_visible_tag = true %}
-            {% endif %}
-          {% endunless %}
-        {% endfor %}
-
-        {% if shares_visible_tag %}
-          {% assign candidate_timestamp = candidate.date | date: '%s' | plus: 0 %}
-          {% assign candidate_distance = page_timestamp | minus: candidate_timestamp | abs %}
-          {% if candidate_distance < related_distance %}
-            {% assign related_post = candidate %}
-            {% assign related_distance = candidate_distance %}
-          {% endif %}
-        {% endif %}
-      {% endunless %}
-    {% endfor %}
-
-    {% unless related_post %}
-      {% assign related_primary_category = page.categories | first %}
-      {% if related_primary_category %}
-        {% assign related_distance = 999999999999 %}
-        {% for candidate in site.posts %}
+    {% assign related_count = 0 %}
+    {% assign related_primary_category = page.categories | first %}
+    {% capture related_items %}
+      {% for candidate in site.posts %}
+        {% if related_count < 3 %}
           {% unless candidate.url == page.url %}
-            {% if candidate.categories contains related_primary_category %}
-              {% assign candidate_timestamp = candidate.date | date: '%s' | plus: 0 %}
-              {% assign candidate_distance = page_timestamp | minus: candidate_timestamp | abs %}
-              {% if candidate_distance < related_distance %}
-                {% assign related_post = candidate %}
-                {% assign related_distance = candidate_distance %}
-              {% endif %}
+            {% assign shares_visible_tag = false %}
+            {% for related_tag in page.tags %}
+              {% unless related_tag == 'featured' %}
+                {% if candidate.tags contains related_tag %}
+                  {% assign shares_visible_tag = true %}
+                {% endif %}
+              {% endunless %}
+            {% endfor %}
+
+            {% if shares_visible_tag %}
+              <a class="article-related-link" href="{{ candidate.url | relative_url }}">
+                <span class="article-related-copy">
+                  <span class="article-related-title">{{ candidate.title }}</span>
+                  <span class="article-related-meta">{{ candidate.date | date: '%Y.%m.%d' }}{% if candidate.categories.size > 0 %} · {{ candidate.categories | first }}{% endif %}</span>
+                </span>
+                <span class="article-related-arrow" aria-hidden="true">↗</span>
+              </a>
+              {% assign related_count = related_count | plus: 1 %}
             {% endif %}
           {% endunless %}
+        {% endif %}
+      {% endfor %}
+
+      {% if related_count < 3 and related_primary_category %}
+        {% for candidate in site.posts %}
+          {% if related_count < 3 %}
+            {% unless candidate.url == page.url %}
+              {% assign shares_visible_tag = false %}
+              {% for related_tag in page.tags %}
+                {% unless related_tag == 'featured' %}
+                  {% if candidate.tags contains related_tag %}
+                    {% assign shares_visible_tag = true %}
+                  {% endif %}
+                {% endunless %}
+              {% endfor %}
+
+              {% unless shares_visible_tag %}
+                {% if candidate.categories contains related_primary_category %}
+                  <a class="article-related-link" href="{{ candidate.url | relative_url }}">
+                    <span class="article-related-copy">
+                      <span class="article-related-title">{{ candidate.title }}</span>
+                      <span class="article-related-meta">{{ candidate.date | date: '%Y.%m.%d' }}{% if candidate.categories.size > 0 %} · {{ candidate.categories | first }}{% endif %}</span>
+                    </span>
+                    <span class="article-related-arrow" aria-hidden="true">↗</span>
+                  </a>
+                  {% assign related_count = related_count | plus: 1 %}
+                {% endif %}
+              {% endunless %}
+            {% endunless %}
+          {% endif %}
         {% endfor %}
       {% endif %}
-    {% endunless %}
+    {% endcapture %}
 
-    {% if related_post %}
+    {% if related_count > 0 %}
       <aside class="article-related" aria-labelledby="article-related-label">
-        <p class="article-related-label" id="article-related-label">RELATED</p>
-        <a class="article-related-link" href="{{ related_post.url | relative_url }}">
-          <span class="article-related-copy">
-            <span class="article-related-title">{{ related_post.title }}</span>
-            <span class="article-related-meta">{{ related_post.date | date: '%Y.%m.%d' }}{% if related_post.categories.size > 0 %} · {{ related_post.categories | first }}{% endif %}</span>
-          </span>
-          <span class="article-related-arrow" aria-hidden="true">↗</span>
-        </a>
+        <p class="article-related-label" id="article-related-label">相关文章</p>
+        <div class="article-related-list">
+          {{ related_items }}
+        </div>
       </aside>
     {% endif %}
 
@@ -300,6 +311,42 @@ layout: default
       })
     })()
   </script>
+  <script>
+    (() => {
+      const content = document.querySelector('.article-content')
+      const related = document.querySelector('.article-related-link')
+      if (!content || !related) return
+
+      const paragraphs = Array.from(content.querySelectorAll(':scope > p'))
+        .filter((paragraph) => (paragraph.textContent || '').trim().length >= 40)
+
+      if (paragraphs.length < 4) return
+
+      const title = related.querySelector('.article-related-title')
+      if (!title) return
+
+      const insertAfterIndex = Math.min(
+        paragraphs.length - 2,
+        Math.max(2, Math.floor(paragraphs.length * 0.35))
+      )
+
+      const inline = document.createElement('aside')
+      inline.className = 'article-inline-related'
+      inline.setAttribute('aria-label', '延伸阅读')
+
+      const label = document.createElement('span')
+      label.className = 'article-inline-related-label'
+      label.textContent = '延伸阅读'
+
+      const link = document.createElement('a')
+      link.href = related.href
+      link.textContent = `${title.textContent.trim()} ↗`
+
+      inline.append(label, link)
+      paragraphs[insertAfterIndex].after(inline)
+    })()
+  </script>
+
 </main>
 
 <style>
@@ -503,16 +550,20 @@ layout: default
 
   .article-related {
     margin-top: 2.8rem;
-    max-width: 34rem;
+    max-width: 36rem;
   }
 
   .article-related-label {
-    margin: 0 0 .7rem;
+    margin: 0 0 .55rem;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .62rem;
+    font-size: .68rem;
     font-weight: 500;
-    letter-spacing: .13em;
+    letter-spacing: .08em;
+  }
+
+  .article-related-list {
+    display: grid;
   }
 
   .article-related-link {
@@ -520,8 +571,14 @@ layout: default
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 1rem;
     align-items: center;
+    padding: .8rem 0;
+    border-top: 1px solid var(--line);
     color: var(--body);
     text-decoration: none;
+  }
+
+  .article-related-link:last-child {
+    border-bottom: 1px solid var(--line);
   }
 
   .article-related-copy {
@@ -532,7 +589,7 @@ layout: default
   .article-related-title {
     display: block;
     font-family: var(--serif);
-    font-size: 1.04rem;
+    font-size: 1.02rem;
     line-height: 1.45;
     transition: color .15s ease, transform .15s ease;
   }
@@ -561,6 +618,34 @@ layout: default
   .article-related-link:hover .article-related-arrow {
     color: var(--accent);
     transform: translate(2px, -2px);
+  }
+
+  .article-inline-related {
+    margin: 2rem 0;
+    padding: .15rem 0 .15rem .9rem;
+    border-left: 1px solid var(--line);
+    font-family: var(--sans);
+    line-height: 1.55;
+  }
+
+  .article-inline-related-label {
+    display: block;
+    margin-bottom: .18rem;
+    color: var(--muted);
+    font-size: .62rem;
+    letter-spacing: .08em;
+  }
+
+  .article-inline-related a {
+    color: var(--accent);
+    font-size: .76rem;
+    text-decoration: none;
+  }
+
+  .article-inline-related a:hover,
+  .article-inline-related a:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: .22em;
   }
 
   .article-zoomable-image {
