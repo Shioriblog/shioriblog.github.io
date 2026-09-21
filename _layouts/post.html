@@ -25,6 +25,9 @@ layout: default
     <div class="article-content">{{ content }}</div>
 
     <div class="article-endmatter" aria-label="文章相关信息">
+      <footer class="article-copyright" aria-label="文章版权与反馈">
+        <p>© Shiori 栞 · All rights reserved · 给这个博客一点反馈 → <a href="https://docs.google.com/forms/d/e/1FAIpQLSfvrh7kUD01h4HPE1ecbRLPFcDISm2tCY-r0zif0h6fe-2COA/viewform" target="_blank" rel="noopener noreferrer"><strong>填写问卷↗</strong></a></p>
+      </footer>
     {% assign has_visible_tags = false %}
     {% for tag in page.tags %}
       {% unless tag == 'featured' %}
@@ -134,9 +137,6 @@ layout: default
       {% if page.next %}<a href="{{ page.next.url | relative_url }}">{{ page.next.title }} →</a>{% endif %}
     </nav>
 
-    <footer class="article-copyright" aria-label="文章版权与反馈">
-      <p>© Shiori 栞 · All rights reserved · <a href="https://docs.google.com/forms/d/e/1FAIpQLSfvrh7kUD01h4HPE1ecbRLPFcDISm2tCY-r0zif0h6fe-2COA/viewform" target="_blank" rel="noopener noreferrer">给这个博客一点反馈 →</a></p>
-    </footer>
     </div>
   </article>
 
@@ -396,7 +396,7 @@ layout: default
   }
 
   .article-endmatter .article-tags {
-    margin-top: 0;
+    margin-top: 1.7rem;
   }
 
   .article-endmatter .article-nav {
@@ -404,12 +404,12 @@ layout: default
   }
 
   .article-endmatter .article-copyright {
-    margin-top: 1.15rem;
+    margin: 0;
     color: var(--muted);
     font-family: var(--sans);
     font-size: .62rem;
-    line-height: 1;
-    opacity: .72;
+    line-height: 1.55;
+    opacity: .78;
   }
 
   .article-endmatter .article-copyright::before {
@@ -423,6 +423,10 @@ layout: default
   .article-endmatter .article-copyright a {
     color: var(--accent);
     text-decoration: none;
+  }
+
+  .article-endmatter .article-copyright a strong {
+    font-weight: 600;
   }
 
   .article-endmatter .article-copyright a:hover,
