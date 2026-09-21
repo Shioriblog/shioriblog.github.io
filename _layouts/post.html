@@ -28,6 +28,7 @@ layout: default
       <footer class="article-copyright" aria-label="文章版权与反馈">
         <p>© Shiori 栞 · All rights reserved · 给这个博客一点反馈 → <a href="https://docs.google.com/forms/d/e/1FAIpQLSfvrh7kUD01h4HPE1ecbRLPFcDISm2tCY-r0zif0h6fe-2COA/viewform" target="_blank" rel="noopener noreferrer"><strong>填写问卷↗</strong></a></p>
       </footer>
+    <div class="article-meta-actions" aria-label="文章标签与互动">
     {% assign has_visible_tags = false %}
     {% for tag in page.tags %}
       {% unless tag == 'featured' %}
@@ -67,6 +68,7 @@ layout: default
         data-lyket-color-highlight="#cdd4c8"
         data-lyket-font-family="Inter, system-ui, sans-serif"
       ></div>
+    </div>
     </div>
 
     {% comment %}
@@ -395,8 +397,16 @@ layout: default
     border-top: 1px solid var(--line);
   }
 
-  .article-endmatter .article-tags {
+  .article-meta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .6rem 1.25rem;
     margin-top: 1.7rem;
+  }
+
+  .article-endmatter .article-tags {
+    margin: 0;
   }
 
   .article-endmatter .article-nav {
@@ -476,7 +486,7 @@ layout: default
   .article-like {
     display: none;
     align-items: center;
-    margin-top: 2.2rem;
+    margin: 0;
     font-family: var(--sans);
     font-size: .78rem;
   }
@@ -612,6 +622,15 @@ layout: default
   }
 
   @media (max-width: 520px) {
+    .article-meta-actions {
+      align-items: flex-start;
+      gap: .55rem;
+    }
+
+    .article-tags {
+      flex-basis: 100%;
+    }
+
     .article-info-divider {
       display: none;
     }
