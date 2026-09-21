@@ -1,0 +1,57 @@
+---
+layout: null
+permalink: /newsletter.xml
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>{{ site.title | xml_escape }}</title>
+    <link>{{ '/' | absolute_url }}</link>
+    <description>{{ site.description | xml_escape }}</description>
+    <language>{{ site.lang | default: 'zh-CN' }}</language>
+    <atom:link href="{{ '/newsletter.xml' | absolute_url }}" rel="self" type="application/rss+xml" />
+    <lastBuildDate>{{ site.time | date_to_rfc822 }}</lastBuildDate>
+
+    {% for post in site.posts limit: 10 %}
+      {% assign newsletter_description = post.excerpt | strip_html | strip_newlines | normalize_whitespace %}
+      {% if newsletter_description == '' %}
+        {% assign newsletter_description = post.content | strip_html | strip_newlines | normalize_whitespace %}
+      {% endif %}
+      {% assign newsletter_description = newsletter_description | truncate: 180, '…' %}
+
+      {% assign first_image = nil %}
+      {% assign image_parts = post.content | split: '<img ' %}
+      {% if image_parts.size > 1 %}
+        {% assign image_tag = image_parts[1] | split: '>' | first %}
+        {% if image_tag contains 'src="' %}
+          {% assign first_image = image_tag | split: 'src="' | last | split: '"' | first %}
+        {% elsif image_tag contains "src='" %}
+          {% assign first_image = image_tag | split: "src='" | last | split: "'" | first %}
+        {% endif %}
+      {% endif %}
+
+      <item>
+        <title>{{ post.title | xml_escape }}</title>
+        <link>{{ post.url | absolute_url }}</link>
+        <guid isPermaLink="true">{{ post.url | absolute_url }}</guid>
+        <pubDate>{{ post.date | date_to_rfc822 }}</pubDate>
+        <description>{{ newsletter_description | xml_escape }}</description>
+        {% if first_image %}
+          {% assign image_url = first_image | absolute_url %}
+          {% assign image_path = first_image | split: '?' | first | downcase %}
+          {% assign image_ext = image_path | split: '.' | last %}
+          {% assign image_type = 'image/jpeg' %}
+          {% case image_ext %}
+            {% when 'png' %}{% assign image_type = 'image/png' %}
+            {% when 'webp' %}{% assign image_type = 'image/webp' %}
+            {% when 'gif' %}{% assign image_type = 'image/gif' %}
+            {% when 'svg' %}{% assign image_type = 'image/svg+xml' %}
+            {% when 'jpg' %}{% assign image_type = 'image/jpeg' %}
+            {% when 'jpeg' %}{% assign image_type = 'image/jpeg' %}
+          {% endcase %}
+          <enclosure url="{{ image_url | xml_escape }}" length="0" type="{{ image_type }}" />
+        {% endif %}
+      </item>
+    {% endfor %}
+  </channel>
+</rss>
