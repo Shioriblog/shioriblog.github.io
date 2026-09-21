@@ -35,31 +35,27 @@ nav: home
   <h1 class="page-title">Latest Posts</h1>
 
   {% if site.categories.size > 0 %}
+    {% assign home_categories = "うたかたの日々|日記の練習|言葉と歩く日記" | split: "|" %}
     <div class="category-strip" aria-label="文章分类">
-      {% assign sorted_categories = site.categories | sort %}
-      {% for category in sorted_categories %}
-        {% unless category[0] == '食べたり、歩いたり' %}
-          {% assign category_description = '' %}
-          {% case category[0] %}
-            {% when 'うたかたの日々' %}{% assign category_description = '岁月的泡沫' %}
-            {% when '日記の練習' %}{% assign category_description = '日常随笔' %}
-            {% when '言葉と歩く日記' %}{% assign category_description = '旅行随笔' %}
-          {% endcase %}
-          {% if category[0] == '言葉と歩く日記' %}
-            <a class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}" href="{{ '/categories/words/' | relative_url }}"{% if category_description != '' %} data-tooltip="{{ category_description }}" aria-label="{{ category[0] }} — {{ category_description }}"{% endif %}>{{ category[0] }}</a>
-          {% elsif category[0] == '日記の練習' %}
-            <a class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}" href="{{ '/categories/daily/' | relative_url }}"{% if category_description != '' %} data-tooltip="{{ category_description }}" aria-label="{{ category[0] }} — {{ category_description }}"{% endif %}>{{ category[0] }}</a>
-          {% elsif category[0] == 'うたかたの日々' %}
-            <a class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}" href="{{ '/categories/utakata/' | relative_url }}"{% if category_description != '' %} data-tooltip="{{ category_description }}" aria-label="{{ category[0] }} — {{ category_description }}"{% endif %}>{{ category[0] }}</a>
-          {% else %}
-            <a class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}" href="{{ '/categories/' | relative_url }}"{% if category_description != '' %} data-tooltip="{{ category_description }}" aria-label="{{ category[0] }} — {{ category_description }}"{% endif %}>{{ category[0] }}</a>
-          {% endif %}
-        {% endunless %}
+      {% for category_name in home_categories %}
+        {% assign category_description = '' %}
+        {% case category_name %}
+          {% when 'うたかたの日々' %}{% assign category_description = '岁月的泡沫' %}
+          {% when '日記の練習' %}{% assign category_description = '日常随笔' %}
+          {% when '言葉と歩く日記' %}{% assign category_description = '旅行随笔' %}
+        {% endcase %}
+        <button
+          type="button"
+          class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}"
+          data-category="{{ category_name | escape }}"
+          aria-pressed="false"
+          {% if category_description != '' %}data-tooltip="{{ category_description }}" aria-label="{{ category_name }} — {{ category_description }}"{% endif %}
+        >{{ category_name }}</button>
       {% endfor %}
     </div>
   {% endif %}
 
-  <div class="post-list" aria-label="最近文章">
+  <div class="post-list default-post-list" aria-label="最近文章">
     {% for post in paginator.posts %}
       {% unless post.categories contains '食べたり、歩いたり' %}
         <article class="post-preview">
@@ -75,6 +71,29 @@ nav: home
       <p class="empty-state">文章迁移完成后，会从这里开始排列。</p>
     {% endfor %}
   </div>
+
+
+  {% for category_name in home_categories %}
+    <div class="post-list filtered-post-list" data-category-list="{{ category_name | escape }}" aria-label="{{ category_name }} 的文章" hidden>
+      {% assign filtered_count = 0 %}
+      {% for post in site.posts %}
+        {% if post.categories contains category_name %}
+          {% assign filtered_count = filtered_count | plus: 1 %}
+          <article class="post-preview">
+            <div class="post-meta">
+              <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>
+              {% if post.categories.size > 0 %}<span> · {{ post.categories | join: ' · ' }}</span>{% endif %}
+            </div>
+            <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+            <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 150 }} <a class="read-more" href="{{ post.url | relative_url }}">Read more...</a></p>
+          </article>
+        {% endif %}
+      {% endfor %}
+      {% if filtered_count == 0 %}
+        <p class="empty-state">这个分类里还没有文章。</p>
+      {% endif %}
+    </div>
+  {% endfor %}
 
   {% if paginator.total_pages > 1 %}
     <nav class="pagination" aria-label="文章分页">
@@ -138,6 +157,58 @@ nav: home
       })()
     </script>
   {% endif %}
+
+  <script>
+    (() => {
+      const buttons = Array.from(document.querySelectorAll('.home-category-link[data-category]'))
+      const defaultList = document.querySelector('.default-post-list')
+      const filteredLists = Array.from(document.querySelectorAll('.filtered-post-list'))
+      const pagination = document.querySelector('.pagination')
+
+      if (!buttons.length || !defaultList || !filteredLists.length) return
+
+      let activeCategory = null
+
+      const setButtonState = (category) => {
+        buttons.forEach((button) => {
+          const isActive = button.dataset.category === category
+          button.classList.toggle('is-active', isActive)
+          button.setAttribute('aria-pressed', isActive ? 'true' : 'false')
+        })
+      }
+
+      const showAll = () => {
+        activeCategory = null
+        setButtonState(null)
+        defaultList.hidden = false
+        filteredLists.forEach((list) => {
+          list.hidden = true
+        })
+        if (pagination) pagination.hidden = false
+      }
+
+      const showCategory = (category) => {
+        activeCategory = category
+        setButtonState(category)
+        defaultList.hidden = true
+        filteredLists.forEach((list) => {
+          list.hidden = list.dataset.categoryList !== category
+        })
+        if (pagination) pagination.hidden = true
+      }
+
+      buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const category = button.dataset.category
+          if (activeCategory === category) {
+            showAll()
+          } else {
+            showCategory(category)
+          }
+        })
+      })
+    })()
+  </script>
 </main>
 
 <style>
@@ -161,6 +232,9 @@ nav: home
     position: relative;
     display: inline-flex;
     align-items: center;
+    appearance: none;
+    font: inherit;
+    cursor: pointer;
     padding: .22rem .58rem;
     border: 1px solid rgba(79, 90, 73, .34);
     border-radius: 999px;
@@ -175,6 +249,17 @@ nav: home
     border-color: rgba(79, 90, 73, .58);
     background: rgba(79, 90, 73, .09);
     color: var(--accent);
+  }
+
+  .home-category-link.is-active {
+    border-color: rgba(79, 90, 73, .62);
+    background: rgba(79, 90, 73, .13);
+    color: var(--accent);
+  }
+
+  .home-category-link.is-active:hover,
+  .home-category-link.is-active:focus-visible {
+    background: rgba(79, 90, 73, .16);
   }
 
   .home-category-link.has-tooltip::after {
