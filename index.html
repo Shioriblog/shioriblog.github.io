@@ -53,6 +53,12 @@ nav: home
           {% if category_description != '' %}data-tooltip="{{ category_description }}" aria-label="{{ category_name }} — {{ category_description }}"{% endif %}
         >{{ category_name }}</button>
       {% endfor %}
+      <a
+        class="home-travel-link has-tooltip"
+        href="{{ '/travel/' | relative_url }}"
+        data-tooltip="旅行流水账"
+        aria-label="食べたり、歩いたり — 旅行流水账"
+      >食べたり、歩いたり →</a>
     </div>
   {% endif %}
 
@@ -262,6 +268,59 @@ nav: home
   .home-all-posts.is-active {
     color: var(--accent);
     border-bottom-color: currentColor;
+  }
+
+  .home-travel-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-left: .2rem;
+    padding: .22rem .05rem;
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: .72rem;
+    font-weight: 500;
+    letter-spacing: .02em;
+    line-height: 1.4;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color .15s ease, border-color .15s ease;
+  }
+
+  .home-travel-link:hover,
+  .home-travel-link:focus-visible {
+    color: var(--ink);
+    border-bottom-color: rgba(79, 90, 73, .38);
+  }
+
+  .home-travel-link.has-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + .42rem);
+    z-index: 10;
+    padding: .22rem .38rem;
+    border: 1px solid rgba(111, 106, 100, .16);
+    border-radius: 3px;
+    background: rgba(247, 246, 243, .96);
+    color: var(--muted);
+    box-shadow: 0 2px 8px rgba(29, 28, 26, .06);
+    font-family: var(--sans);
+    font-size: .6rem;
+    font-weight: 400;
+    letter-spacing: .015em;
+    line-height: 1.2;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, .12rem);
+    transition: opacity .12s ease, transform .12s ease;
+  }
+
+  .home-travel-link.has-tooltip:hover::after,
+  .home-travel-link.has-tooltip:focus-visible::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
   }
 
   .home-category-link {
