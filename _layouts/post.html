@@ -24,6 +24,7 @@ layout: default
     </header>
     <div class="article-content">{{ content }}</div>
 
+    <div class="article-endmatter" aria-label="文章相关信息">
     {% assign has_visible_tags = false %}
     {% for tag in page.tags %}
       {% unless tag == 'featured' %}
@@ -128,9 +129,15 @@ layout: default
       </aside>
     {% endif %}
 
-    <footer class="article-copyright">
-      <p>未经许可，请勿全文转载。© Shiori 栞</p>
+    <nav class="article-nav" aria-label="相邻文章">
+      {% if page.previous %}<a href="{{ page.previous.url | relative_url }}">← {{ page.previous.title }}</a>{% else %}<span></span>{% endif %}
+      {% if page.next %}<a href="{{ page.next.url | relative_url }}">{{ page.next.title }} →</a>{% endif %}
+    </nav>
+
+    <footer class="article-copyright" aria-label="文章版权">
+      <p aria-hidden="true">©</p>
     </footer>
+    </div>
   </article>
 
   <aside class="article-toc" id="article-toc" aria-label="文章目录" hidden>
@@ -139,11 +146,6 @@ layout: default
       <ol id="article-toc-list"></ol>
     </nav>
   </aside>
-
-  <nav class="article-nav" aria-label="相邻文章">
-    {% if page.previous %}<a href="{{ page.previous.url | relative_url }}">← {{ page.previous.title }}</a>{% else %}<span></span>{% endif %}
-    {% if page.next %}<a href="{{ page.next.url | relative_url }}">{{ page.next.title }} →</a>{% endif %}
-  </nav>
 
   {% include comments.html %}
 
@@ -385,6 +387,43 @@ layout: default
 
   .article-toc a.is-active {
     font-weight: 500;
+  }
+
+  .article-endmatter {
+    margin-top: 4.2rem;
+    padding-top: 2.1rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .article-endmatter .article-tags {
+    margin-top: 0;
+  }
+
+  .article-endmatter .article-nav {
+    margin-top: 3rem;
+  }
+
+  .article-endmatter .article-copyright {
+    margin-top: 1.15rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .62rem;
+    line-height: 1;
+    opacity: .72;
+  }
+
+  .article-endmatter .article-copyright::before {
+    display: none;
+  }
+
+  .article-endmatter .article-copyright p {
+    margin: 0;
+  }
+
+  .post-page .site-footer {
+    margin-top: 1.8rem;
+    padding-top: 1.9rem;
+    border-top-color: #d8d3cc;
   }
 
   .article-tags {
