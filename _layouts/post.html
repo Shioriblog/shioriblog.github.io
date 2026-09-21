@@ -134,8 +134,8 @@ layout: default
       {% if page.next %}<a href="{{ page.next.url | relative_url }}">{{ page.next.title }} →</a>{% endif %}
     </nav>
 
-    <footer class="article-copyright" aria-label="文章版权">
-      <p aria-hidden="true">©</p>
+    <footer class="article-copyright" aria-label="文章版权与反馈">
+      <p>© Shiori 栞 · All rights reserved · <a href="https://docs.google.com/forms/d/e/1FAIpQLSfvrh7kUD01h4HPE1ecbRLPFcDISm2tCY-r0zif0h6fe-2COA/viewform" target="_blank" rel="noopener noreferrer">给这个博客一点反馈 →</a></p>
     </footer>
     </div>
   </article>
@@ -418,6 +418,17 @@ layout: default
 
   .article-endmatter .article-copyright p {
     margin: 0;
+  }
+
+  .article-endmatter .article-copyright a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .article-endmatter .article-copyright a:hover,
+  .article-endmatter .article-copyright a:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: .22em;
   }
 
   .post-page .site-footer {
