@@ -1,18 +1,40 @@
-<section class="comments" aria-labelledby="comments-title">
+{% if site.twikoo_env_id != '' %}
+<section class="comments" id="comments-section" aria-labelledby="comments-title" hidden>
   <h2 id="comments-title">Comments</h2>
-  {% if site.twikoo_env_id != '' %}
-    <div id="tcomment"></div>
-    <script src="https://cdn.jsdelivr.net/npm/twikoo@1.7.22/dist/twikoo.min.js"></script>
-    <script>
+  <div id="tcomment"></div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/twikoo@1.7.22/dist/twikoo.min.js"></script>
+<script>
+  (() => {
+    const section = document.getElementById('comments-section')
+    const container = document.getElementById('tcomment')
+    if (!section || !container || typeof twikoo === 'undefined') return
+
+    const revealWhenReady = () => {
+      if (container.querySelector('.tk-comments-container') || container.children.length > 0) {
+        section.hidden = false
+        return true
+      }
+      return false
+    }
+
+    const observer = new MutationObserver(() => {
+      if (revealWhenReady()) observer.disconnect()
+    })
+    observer.observe(container, { childList: true, subtree: true })
+
+    try {
       twikoo.init({
         envId: {{ site.twikoo_env_id | jsonify }},
         el: '#tcomment',
         path: {{ page.url | jsonify }},
         lang: 'zh-CN'
       })
-    </script>
-  {% else %}
-    <p class="service-note">留言区正在准备中。</p>
-  {% endif %}
-</section>
-
+      revealWhenReady()
+    } catch (_) {
+      observer.disconnect()
+    }
+  })()
+</script>
+{% endif %}
