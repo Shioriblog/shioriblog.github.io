@@ -1,21 +1,24 @@
 .post-like-button {
   display: inline-flex;
   align-items: center;
-  gap: .38rem;
-  padding: .2rem .35rem;
-  border: 0;
-  background: transparent;
+  gap: .34rem;
+  padding: .34rem .55rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--soft);
   color: var(--muted);
   font-family: var(--sans);
-  font-size: .76rem;
+  font-size: .7rem;
   line-height: 1;
   cursor: pointer;
-  transition: color .15s ease, opacity .15s ease, transform .15s ease;
+  transition: color .15s ease, border-color .15s ease, background .15s ease, opacity .15s ease, transform .15s ease;
 }
 
 .post-like-button:hover,
 .post-like-button:focus-visible {
   color: var(--accent);
+  border-color: rgba(79, 90, 73, .38);
+  background: rgba(79, 90, 73, .06);
 }
 
 .post-like-button:focus-visible {
@@ -34,8 +37,12 @@
 }
 
 .post-like-heart {
-  font-size: 1.22rem;
+  font-size: 1rem;
   line-height: 1;
+}
+
+.post-like-label {
+  white-space: nowrap;
 }
 
 .post-like-button.is-liked {
