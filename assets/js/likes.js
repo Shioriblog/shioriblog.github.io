@@ -129,11 +129,15 @@
   heart.setAttribute('aria-hidden', 'true')
   heart.textContent = '♡'
 
+  const label = document.createElement('span')
+  label.className = 'post-like-label'
+  label.textContent = '喜欢这篇文章'
+
   const count = document.createElement('span')
   count.className = 'post-like-count'
   count.setAttribute('aria-live', 'polite')
 
-  button.append(heart, count)
+  button.append(heart, label, count)
   container.replaceChildren(button)
 
   const render = (data) => {
