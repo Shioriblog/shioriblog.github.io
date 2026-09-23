@@ -5,27 +5,42 @@ nav: home
 ---
 <main class="home-main" id="content">
   {% if paginator.page == 1 %}
-    {% assign featured_posts = site.posts | where: "featured", true | sort: "featured_order" %}
-    {% if featured_posts.size > 0 %}
-      <section class="featured-posts" aria-labelledby="featured-heading">
-        <h1 class="page-title" id="featured-heading">Featured Posts</h1>
-        <div class="featured-list">
-          {% for post in featured_posts limit: 4 %}
-            <article class="featured-preview">
-              <a class="featured-image-link" href="{{ post.url | relative_url }}" aria-label="阅读：{{ post.title }}">
-                <img src="{{ post.featured_image }}" alt=""{% if forloop.first %} loading="eager"{% else %} loading="lazy"{% endif %}>
-              </a>
-              <div class="featured-body">
-                <div class="featured-meta">
-                  <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>
-                  {% if post.categories.size > 0 %}<span> · {{ post.categories | join: ' · ' }}</span>{% endif %}
-                </div>
-                <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-                <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 90 }} <a class="read-more" href="{{ post.url | relative_url }}">Read more...</a></p>
-              </div>
-            </article>
-          {% endfor %}
+    {% assign latest_zine = site.data.zines | first %}
+    {% if latest_zine and latest_zine.pdf and latest_zine.pdf != '' %}
+      {% assign zine_pdf_url = latest_zine.pdf %}
+      {% unless zine_pdf_url contains '://' %}{% assign zine_pdf_url = zine_pdf_url | relative_url %}{% endunless %}
+      {% assign zine_intro_url = latest_zine.intro_url %}
+      {% unless zine_intro_url contains '://' %}{% assign zine_intro_url = zine_intro_url | relative_url %}{% endunless %}
+      <section class="home-zine-section" aria-labelledby="home-zine-heading">
+        <div class="home-zine-section-heading">
+          <h1 class="page-title" id="home-zine-heading">最新 ZINE</h1>
+          <a href="{{ '/zines/' | relative_url }}" aria-label="查看全部 ZINE">全部 ZINE <span aria-hidden="true">↗</span></a>
         </div>
+        <article class="home-zine-entry" aria-labelledby="home-zine-title">
+          <div class="home-zine-cover-wrap">
+            {% if latest_zine.cover and latest_zine.cover != '' %}
+              <a href="{% if latest_zine.intro_url and latest_zine.intro_url != '' %}{{ zine_intro_url | escape }}{% else %}{{ '/zines/' | relative_url }}{% endif %}" aria-label="阅读《{{ latest_zine.title | escape }}》的介绍">
+                <img src="{{ latest_zine.cover | relative_url }}"
+                     alt="《{{ latest_zine.title | escape }}》封面"
+                     width="{{ latest_zine.cover_width | default: 521 }}"
+                     height="{{ latest_zine.cover_height | default: 753 }}"
+                     decoding="async" fetchpriority="high">
+              </a>
+            {% endif %}
+          </div>
+          <div class="home-zine-body">
+            <p class="home-zine-number">ISSUE {{ latest_zine.issue | escape }}{% if latest_zine.date_label %}<span aria-hidden="true"> / </span>{{ latest_zine.date_label | escape }}{% endif %}</p>
+            <h2 id="home-zine-title"><a href="{% if latest_zine.intro_url and latest_zine.intro_url != '' %}{{ zine_intro_url | escape }}{% else %}{{ '/zines/' | relative_url }}{% endif %}">{{ latest_zine.title | escape }}</a></h2>
+            <p class="home-zine-description">{{ latest_zine.description | escape }}</p>
+            <p class="home-zine-meta">{{ latest_zine.collection | escape }} · PDF{% if latest_zine.pages and latest_zine.pages != '' %} · {{ latest_zine.pages }} 页{% endif %}{% if latest_zine.file_size and latest_zine.file_size != '' %} · {{ latest_zine.file_size | escape }}{% endif %}</p>
+            <div class="home-zine-actions">
+              <a class="home-zine-download" href="{{ zine_pdf_url | escape }}" download="{{ latest_zine.download_name | escape }}" aria-label="下载《{{ latest_zine.title | escape }}》PDF">下载 PDF <span aria-hidden="true">↓</span></a>
+              {% if latest_zine.intro_url and latest_zine.intro_url != '' %}
+                <a class="home-zine-intro-link" href="{{ zine_intro_url | escape }}">阅读介绍 <span aria-hidden="true">↗</span></a>
+              {% endif %}
+            </div>
+          </div>
+        </article>
       </section>
     {% endif %}
   {% endif %}
@@ -63,6 +78,7 @@ nav: home
   <div class="post-list default-post-list" aria-label="最近文章">
     {% for post in paginator.posts %}
       {% unless post.categories contains '食べたり、歩いたり' %}
+        {% unless paginator.page == 1 and post.categories contains 'zine' %}
         <article class="post-preview">
           <div class="post-meta">
             <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>
@@ -71,6 +87,7 @@ nav: home
           <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
           <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 150 }} <a class="read-more" href="{{ post.url | relative_url }}">Read more...</a></p>
         </article>
+        {% endunless %}
       {% endunless %}
     {% else %}
       <p class="empty-state">文章迁移完成后，会从这里开始排列。</p>
@@ -437,5 +454,38 @@ nav: home
   .home-site-note a:hover {
     text-decoration: underline;
     text-underline-offset: .22em;
+  }
+
+  /* Current issue spotlight: mirrors the ZINE collection page at a smaller scale. */
+  .home-zine-section { margin-bottom: 4.3rem; }
+  .home-zine-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+  .home-zine-section-heading > a { color: var(--muted); font-family: var(--sans); font-size: .7rem; text-decoration: none; }
+  .home-zine-section-heading > a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: .2em; }
+  .home-zine-entry { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 3.35rem; align-items: start; padding: 1.55rem 0 2.7rem; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .home-zine-cover-wrap { padding: 0 0 .4rem; }
+  .home-zine-cover-wrap a { display: block; text-decoration: none; }
+  .home-zine-cover-wrap img { display: block; width: 100%; height: auto; border: 1px solid var(--line); box-shadow: 3px 5px 12px rgba(44,42,39,.065); }
+  .home-zine-body { min-width: 0; padding-top: .05rem; }
+  .home-zine-number { margin: 0 0 .72rem; color: var(--accent); font-family: var(--sans); font-size: .67rem; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
+  .home-zine-number span { margin: 0 .45rem; color: #b5b0a8; }
+  .home-zine-body h2 { margin: 0 0 1rem; font-size: clamp(1.4rem,3vw,1.65rem); font-weight: 500; line-height: 1.55; text-wrap: balance; }
+  .home-zine-body h2 a { text-decoration: none; }
+  .home-zine-body h2 a:hover { color: var(--accent); }
+  .home-zine-description { margin: 0 0 1rem; color: var(--body); font-size: .91rem; line-height: 1.9; }
+  .home-zine-meta { margin: 0; color: var(--muted); font-family: var(--sans); font-size: .7rem; line-height: 1.8; }
+  .home-zine-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1.3rem; margin-top: 1.55rem; font-family: var(--sans); font-size: .75rem; }
+  .home-zine-download { display: inline-flex; align-items: center; justify-content: center; gap: .85rem; min-height: 44px; padding: .55rem 1rem; border: 1px solid var(--accent); background: var(--accent); color: #fff; text-decoration: none; }
+  .home-zine-download:hover { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .home-zine-intro-link { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; color: var(--accent); text-decoration: none; }
+  .home-zine-intro-link:hover { text-decoration: underline; text-underline-offset: .2em; }
+  .home-zine-section a:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+  @media (max-width: 760px) {
+    .home-zine-entry { grid-template-columns: 200px minmax(0,1fr); gap: 2rem; }
+  }
+  @media (max-width: 580px) {
+    .home-zine-section { margin-bottom: 3.3rem; }
+    .home-zine-entry { grid-template-columns: minmax(0,1fr); gap: 1.7rem; }
+    .home-zine-cover-wrap { width: min(220px,72%); margin: 0 auto; }
+    .home-zine-body h2 { font-size: 1.45rem; }
   }
 </style>
