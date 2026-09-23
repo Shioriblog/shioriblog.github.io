@@ -16,10 +16,19 @@
   pages: ""
   file_size: "1.2 MB"
   contents:
-    - 生活的基石
-    - 维修和动手能力
-    - 被偷走了一小时
-    - 某种中年危机
-    - 独处的时间
-    - 回家
-    - 有梦想无计划就是人生
+    - title: 生活的基石
+      page: 5
+    - title: 维修和动手能力
+      page: 9
+    - title: 被偷走了一小时
+      page: 13
+    - title: 某种中年危机
+      page: 16
+    - title: 独处的时间
+      page: 20
+    - title: 回家
+      page: 23
+    - title: 有梦想无计划就是人生
+      page: 26
+    - title: 后记
+      page: 29
