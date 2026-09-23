@@ -13,7 +13,7 @@ subscription: false
     <div>
       <p class="stats-kicker">BLOG STATS</p>
       <h1>阅读统计</h1>
-      <p class="stats-lede">shioriblog.org 的 Cloudflare Web Analytics 摘要。</p>
+      <p class="stats-lede">shioriblog.org 的阅读、互动与 ZINE 下载统计。</p>
     </div>
     <div class="stats-range" role="group" aria-label="统计范围">
       <button type="button" data-days="1">24H</button>
@@ -42,6 +42,32 @@ subscription: false
       <small id="stat-pages-per-visit-change" class="stats-change"></small>
     </article>
   </section>
+
+  {% if site.data.zines.size > 0 %}
+  <section class="stats-panel stats-zines" id="stats-zines" aria-labelledby="stats-zines-title">
+    <div class="stats-panel-heading">
+      <h2 id="stats-zines-title">ZINE downloads</h2>
+      <span>累计下载次数</span>
+    </div>
+    <ol class="stats-zine-list">
+      {% for zine in site.data.zines %}
+      <li{% if zine.release_asset_id %} data-release-asset-id="{{ zine.release_asset_id | escape }}"{% endif %}>
+        <div>
+          <span class="stats-zine-issue">ISSUE {{ zine.issue | escape }}</span>
+          <h3>{{ zine.title | escape }}</h3>
+        </div>
+        <strong class="stats-zine-count">{% if zine.release_asset_id %}—{% else %}未关联下载{% endif %}</strong>
+      </li>
+      {% endfor %}
+    </ol>
+    <div class="stats-zine-status-line">
+      <p id="stats-zine-status" role="status"></p>
+      <button id="stats-zine-retry" type="button" hidden>重新读取</button>
+    </div>
+    <p class="stats-zine-note">来自 GitHub Release 的累计下载次数，不随上方时间范围切换；同一人重复下载会重复计数。</p>
+    <noscript><p class="stats-zine-note">开启 JavaScript 后可读取下载次数。</p></noscript>
+  </section>
+  {% endif %}
 
   <section class="stats-panel stats-chart-panel">
     <div class="stats-panel-heading">
@@ -169,6 +195,7 @@ subscription: false
     }
   }
 </script>
+<script src="{{ '/assets/js/zine-downloads.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/twikoo@1.7.22/dist/twikoo.all.min.js"></script>
 <script src="{{ '/assets/js/dashboard.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 
@@ -198,6 +225,19 @@ subscription: false
   .stats-panel-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: .85rem; }
   .stats-panel-heading h2 { margin: 0; color: var(--ink); font-family: var(--serif); font-size: 1.05rem; font-weight: 500; }
   .stats-panel-heading span { color: var(--muted); font-size: .62rem; letter-spacing: .08em; }
+  .stats-zines { margin-bottom: 3rem; }
+  .stats-zine-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+  .stats-zine-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 1.25rem; padding: 1rem 0; border-bottom: 1px solid var(--line); }
+  .stats-zine-issue { display: block; margin-bottom: .3rem; color: var(--muted); font-size: .6rem; letter-spacing: .1em; }
+  .stats-zine-list h3 { margin: 0; color: var(--body); font-family: var(--serif); font-size: .95rem; font-weight: 400; line-height: 1.6; overflow-wrap: anywhere; }
+  .stats-zine-count { color: var(--ink); font-family: var(--serif); font-size: 1.65rem; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .stats-zine-count.is-unavailable { color: var(--muted); font-family: var(--sans); font-size: .68rem; }
+  .stats-zine-status-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem .75rem; margin-top: .55rem; }
+  .stats-zine-status-line p, .stats-zine-note { margin: 0; color: var(--muted); font-size: .61rem; line-height: 1.6; }
+  .stats-zine-status-line p:empty { display: none; }
+  .stats-zine-status-line button { padding: 0; border: 0; border-bottom: 1px solid currentColor; background: transparent; color: var(--accent); font: inherit; font-size: .65rem; cursor: pointer; }
+  .stats-zine-status-line button:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .stats-zine-note { margin-top: .25rem; }
   .stats-chart { display: flex; align-items: end; gap: min(.8rem, 2vw); height: 190px; padding: 1.2rem 0 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .stats-bar-item { display: flex; flex: 1 1 0; min-width: 0; height: 100%; flex-direction: column; justify-content: flex-end; align-items: center; gap: .45rem; }
   .stats-bar-wrap { display: flex; width: min(32px, 72%); flex: 1; align-items: flex-end; }

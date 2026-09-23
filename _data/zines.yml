@@ -1,4 +1,5 @@
 # Add each new issue at the top. Use the GitHub Release asset URL for downloads.
+# release_asset_id is the GitHub Release asset ID used for dashboard download counts.
 # Leave intro_url empty until the corresponding zine announcement post is published.
 - issue: "01"
   title: 有梦想无计划就是人生
