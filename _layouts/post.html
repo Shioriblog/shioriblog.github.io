@@ -7,7 +7,7 @@ layout: default
       {% if page.categories.size > 0 %}
         <p class="eyebrow">
           {% for category in page.categories %}
-            <a href="{% if category == '食べたり、歩いたり' %}{{ '/travel/' | relative_url }}{% else %}{{ '/categories/' | relative_url }}{% if category == '日記の練習' %}#category-daily{% elsif category == '言葉と歩く日記' %}#category-travel{% endif %}{% endif %}">{{ category }}</a>{% unless forloop.last %} · {% endunless %}
+            <a href="{% if category == '食べたり、歩いたり' %}{{ '/travel/' | relative_url }}{% elsif category == 'zine' %}{{ '/zines/' | relative_url }}{% else %}{{ '/categories/' | relative_url }}{% if category == '日記の練習' %}#category-daily{% elsif category == '言葉と歩く日記' %}#category-travel{% endif %}{% endif %}">{{ category }}</a>{% unless forloop.last %} · {% endunless %}
           {% endfor %}
         </p>
       {% endif %}
