@@ -59,7 +59,18 @@ sitemap: false
           {% if zine.contents and zine.contents.size > 0 %}
             <details class="zine-contents">
               <summary>收录篇目<span class="zine-contents-symbol" aria-hidden="true">+</span></summary>
-              <ol>{% for title in zine.contents %}<li>{{ title | escape }}</li>{% endfor %}</ol>
+              <ol>
+                {% for item in zine.contents %}
+                  <li>
+                    {% if item.title %}
+                      <span class="zine-content-title">{{ item.title | escape }}</span>
+                      {% if item.page %}<span class="zine-content-page" aria-label="第 {{ item.page }} 页">{{ item.page }}</span>{% endif %}
+                    {% else %}
+                      <span class="zine-content-title">{{ item | escape }}</span>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+              </ol>
             </details>
           {% endif %}
         </div>
@@ -101,9 +112,10 @@ sitemap: false
   .zine-contents summary:hover { color: var(--accent); }
   .zine-contents-symbol { font-size: 1rem; line-height: 1; }
   .zine-contents[open] .zine-contents-symbol { transform: rotate(45deg); }
-  .zine-contents ol { margin: .2rem 0 .25rem; padding-left: 1.65rem; color: var(--body); font-size: .85rem; line-height: 2; }
-  .zine-contents li { padding-left: .25rem; }
-  .zine-contents li::marker { color: var(--muted); font-family: var(--sans); font-size: .68rem; }
+  .zine-contents ol { margin: .2rem 0 .45rem; padding: 0; list-style: none; color: var(--body); font-size: .85rem; line-height: 1.9; }
+  .zine-contents li { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: .35rem 0; }
+  .zine-content-title { min-width: 0; }
+  .zine-content-page { flex: 0 0 auto; color: var(--muted); font-family: var(--sans); font-size: .73rem; font-variant-numeric: tabular-nums; }
   .zines-page a:focus-visible, .zine-contents summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
   @media (max-width: 760px) {
     .zine-entry { grid-template-columns: 200px minmax(0, 1fr); gap: 2rem; }
