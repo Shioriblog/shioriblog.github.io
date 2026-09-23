@@ -1,0 +1,24 @@
+# Add each new issue at the top. Use the GitHub Release asset URL for downloads.
+# Leave intro_url empty until the corresponding zine announcement post is published.
+- issue: "01"
+  title: 有梦想无计划就是人生
+  date_label: "2026.09"
+  collection: "2025 年 · 7 篇随笔"
+  description: "关于独居、日常的琐碎，以及慢慢摸索着过自己的生活。七篇写于 2025 年的文章，重新编排成「独居日记」的第一本小册子。"
+  cover: /assets/zines/issue-01-cover.png
+  cover_width: 521
+  cover_height: 753
+  pdf: https://github.com/Shioriblog/shioriblog.github.io/releases/download/zine/issue-01.pdf
+  release_asset_id: 584270721
+  intro_url: ""
+  download_name: shiori-zine-issue-01.pdf
+  pages: ""
+  file_size: "1.2 MB"
+  contents:
+    - 生活的基石
+    - 维修和动手能力
+    - 被偷走了一小时
+    - 某种中年危机
+    - 独处的时间
+    - 回家
+    - 有梦想无计划就是人生
