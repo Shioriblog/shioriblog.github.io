@@ -19,19 +19,23 @@ sitemap: false
       {% assign has_pdf = false %}
       {% assign has_cover = false %}
       {% assign has_intro = false %}
+      {% assign has_reader = false %}
       {% if zine.pdf and zine.pdf != '' %}{% assign has_pdf = true %}{% endif %}
       {% if zine.cover and zine.cover != '' %}{% assign has_cover = true %}{% endif %}
       {% if zine.intro_url and zine.intro_url != '' %}{% assign has_intro = true %}{% endif %}
+      {% if zine.reader_url and zine.reader_url != '' %}{% assign has_reader = true %}{% endif %}
       {% assign pdf_url = zine.pdf %}
       {% unless pdf_url contains '://' %}{% assign pdf_url = pdf_url | relative_url %}{% endunless %}
       {% assign intro_url = zine.intro_url %}
       {% unless intro_url contains '://' %}{% assign intro_url = intro_url | relative_url %}{% endunless %}
+      {% assign reader_url = zine.reader_url %}
+      {% unless reader_url contains '://' %}{% assign reader_url = reader_url | relative_url %}{% endunless %}
       <article class="zine-entry" aria-labelledby="zine-title-{{ forloop.index }}">
         <div class="zine-cover-wrap">
           {% if has_cover %}
-            {% if has_intro %}<a class="zine-cover-link" href="{{ intro_url | escape }}" aria-label="阅读《{{ zine.title | escape }}》的介绍">{% endif %}
+            {% if has_reader %}<a class="zine-cover-link" href="{{ reader_url | escape }}" aria-label="在线阅读《{{ zine.title | escape }}》">{% endif %}
             <img class="zine-cover" src="{{ zine.cover | relative_url }}" alt="《{{ zine.title | escape }}》封面" width="{{ zine.cover_width | default: 521 }}" height="{{ zine.cover_height | default: 753 }}"{% unless forloop.first %} loading="lazy"{% endunless %} decoding="async">
-            {% if has_intro %}</a>{% endif %}
+            {% if has_reader %}</a>{% endif %}
           {% else %}
             <div class="zine-cover-placeholder" aria-hidden="true"><span>独居日记 · ISSUE {{ zine.issue | escape }}</span><span>{{ zine.title | escape }}</span><span>Shiori 栞</span></div>
           {% endif %}
@@ -39,15 +43,18 @@ sitemap: false
 
         <div class="zine-body">
           <p class="zine-number">ISSUE {{ zine.issue | escape }}{% if zine.date_label %}<span aria-hidden="true"> / </span>{{ zine.date_label | escape }}{% endif %}</p>
-          <h2 id="zine-title-{{ forloop.index }}">{{ zine.title | escape }}</h2>
+          <h2 id="zine-title-{{ forloop.index }}">{% if has_reader %}<a class="zine-title-link" href="{{ reader_url | escape }}">{{ zine.title | escape }}</a>{% else %}{{ zine.title | escape }}{% endif %}</h2>
           <p class="zine-description">{{ zine.description | escape }}</p>
           <p class="zine-meta">{{ zine.collection | escape }}{% if has_pdf %} · PDF{% if zine.pages and zine.pages != '' %} · {{ zine.pages }} 页{% endif %}{% if zine.file_size and zine.file_size != '' %} · {{ zine.file_size | escape }}{% endif %}{% endif %}</p>
 
           {% if has_pdf %}
             <div class="zine-actions">
               <a class="zine-download" href="{{ pdf_url | escape }}" download="{{ zine.download_name | escape }}" aria-label="下载《{{ zine.title | escape }}》PDF">下载 PDF <span aria-hidden="true">↓</span></a>
+              {% if has_reader %}
+                <a class="zine-read zine-read-online" href="{{ reader_url | escape }}">在线阅读 <span aria-hidden="true">→</span></a>
+              {% endif %}
               {% if has_intro %}
-                <a class="zine-read" href="{{ intro_url | escape }}">阅读介绍 <span aria-hidden="true">↗</span></a>
+                <a class="zine-read zine-read-intro" href="{{ intro_url | escape }}">阅读介绍 <span aria-hidden="true">↗</span></a>
               {% else %}
                 <span class="zine-read zine-read-pending" role="link" aria-disabled="true" aria-label="阅读介绍，暂未开放">阅读介绍 <span aria-hidden="true">↗</span></span>
               {% endif %}
@@ -85,13 +92,16 @@ sitemap: false
   .zine-number { margin: 0 0 .75rem; color: var(--accent); font-family: var(--sans); font-size: .67rem; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
   .zine-number span { margin: 0 .45rem; color: #b5b0a8; }
   .zine-body h2 { margin: 0 0 1.05rem; font-size: clamp(1.4rem, 3vw, 1.65rem); font-weight: 500; line-height: 1.55; text-wrap: balance; }
+  .zine-title-link { color: inherit; text-decoration: none; }
+  .zine-title-link:hover { color: var(--accent); }
   .zine-description { margin: 0 0 1rem; color: var(--body); font-size: .91rem; line-height: 1.9; }
   .zine-meta { margin: 0; color: var(--muted); font-family: var(--sans); font-size: .7rem; line-height: 1.8; }
   .zine-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1.3rem; margin-top: 1.55rem; font-family: var(--sans); font-size: .75rem; }
   .zine-download { display: inline-flex; align-items: center; justify-content: center; gap: .85rem; min-height: 44px; padding: .55rem 1rem; background: var(--accent); color: #fff; border: 1px solid var(--accent); text-decoration: none; }
   .zine-download:hover { color: #fff; background: var(--ink); border-color: var(--ink); }
   .zine-read { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; color: var(--accent); text-decoration: none; }
-  .zine-read:hover { text-decoration: underline; }
+  .zine-read:hover { text-decoration: underline; text-underline-offset: .2em; }
+  .zine-read-intro { color: var(--muted); }
   .zine-read-pending { color: var(--muted); opacity: .55; }
   .zine-read-pending:hover { text-decoration: none; }
   .zine-status { display: inline-block; margin: 1.55rem 0 0; padding: .35rem .8rem; color: var(--muted); border: 1px solid var(--line); font-family: var(--sans); font-size: .71rem; letter-spacing: .06em; }
