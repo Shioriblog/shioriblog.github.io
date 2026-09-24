@@ -62,7 +62,8 @@ nav: about
         <time class="about-timeline-date" datetime="2026-09">2026.09</time>
         <span class="about-timeline-dot" aria-hidden="true"></span>
         <div class="about-timeline-copy">
-          <p>从 WordPress 搬到 GitHub Pages。<br>和 ChatGPT 一起搭起了现在这个个人静态 blog。</p>
+          <p>从 WordPress 搬到 GitHub Pages。<br>和 ChatGPT 一起搭起了现在这个个人静态 blog。<br>发布了第一本 digital zine。</p>
+          <a class="about-timeline-link" href="{{ '/2026/09/23/zine-issue-01/' | relative_url }}">独居日记 · zine · issue 01 <span aria-hidden="true">↗</span></a>
         </div>
       </article>
     </div>
