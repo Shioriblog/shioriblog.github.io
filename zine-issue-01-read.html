@@ -13,7 +13,7 @@ analytics: false
   <header class="reader-intro">
     <p class="reader-kicker">独居日记 · zine · issue 01</p>
     <h1>有梦想无计划就是人生</h1>
-    <p class="reader-author">Shiori 栞</p>
+    <p class="reader-author">Shiori 栞 · 2026</p>
   </header>
 
   <section class="reader-shell" id="zine-reader" aria-label="《有梦想无计划就是人生》在线阅读器">
@@ -24,7 +24,7 @@ analytics: false
       </div>
 
       <div class="reader-spread is-hidden" id="reader-spread">
-        <figure class="reader-page reader-page-left" id="page-left-wrap">
+        <figure class="reader-page reader-page-left">
           <canvas id="page-left" aria-label="当前页"></canvas>
         </figure>
         <figure class="reader-page reader-page-right" id="page-right-wrap">
@@ -33,10 +33,10 @@ analytics: false
       </div>
 
       <button class="reader-hit reader-hit-prev" id="page-prev-hit" type="button" aria-label="上一页">
-        <span aria-hidden="true">←</span>
+        <span aria-hidden="true">‹</span>
       </button>
       <button class="reader-hit reader-hit-next" id="page-next-hit" type="button" aria-label="下一页">
-        <span aria-hidden="true">→</span>
+        <span aria-hidden="true">›</span>
       </button>
 
       <div class="reader-fallback is-hidden" id="reader-fallback">
@@ -45,28 +45,23 @@ analytics: false
       </div>
     </div>
 
-    <div class="reader-controls">
-      <div class="reader-nav-controls" aria-label="翻页">
-        <button class="reader-control reader-page-button" id="page-prev" type="button" aria-label="上一页">‹</button>
-        <span class="reader-page-count" id="page-count">01</span>
-        <button class="reader-control reader-page-button" id="page-next" type="button" aria-label="下一页">›</button>
+    <div class="reader-toolbar">
+      <button class="reader-nav-button" id="page-prev" type="button">‹ 上一页</button>
+      <span class="reader-page-count" id="page-count">01</span>
+      <button class="reader-nav-button" id="page-next" type="button">下一页 ›</button>
+
+      <div class="reader-view-toggle" id="reader-view-toggle" aria-label="阅读模式切换">
+        <button id="single-mode" type="button" aria-pressed="false">单页</button>
+        <button id="spread-mode" type="button" aria-pressed="true">双页</button>
       </div>
 
-      <div class="reader-view-controls" aria-label="阅读显示">
-        <button class="reader-control" id="zoom-out" type="button" aria-label="缩小">−</button>
-        <span class="reader-zoom-label" id="zoom-label">100%</span>
-        <button class="reader-control" id="zoom-in" type="button" aria-label="放大">+</button>
-        <span class="reader-control-divider" aria-hidden="true"></span>
-        <button class="reader-text-control" id="fit-width" type="button">Fit width</button>
-        <button class="reader-text-control reader-view-toggle" id="view-toggle" type="button" aria-pressed="false">Spread</button>
-        <button class="reader-text-control reader-fullscreen" id="reader-fullscreen" type="button">Full screen</button>
-      </div>
+      <button class="reader-fullscreen" id="reader-fullscreen" type="button">全屏</button>
     </div>
 
     <div class="reader-links">
-      <a href="{{ '/zines/' | relative_url }}">← Back to all zines</a>
-      <span class="reader-tip">双击页面可快速放大</span>
-      <a href="https://github.com/Shioriblog/shioriblog.github.io/releases/download/zine/issue-01.pdf" download="独居日记-zine-issue-01-有梦想无计划就是人生.pdf">Download PDF ↓</a>
+      <a href="{{ '/zines/' | relative_url }}">← 返回所有 zines</a>
+      <span class="reader-tip">桌面端默认双页阅读；如需放大阅读，可切换到单页。</span>
+      <a href="https://github.com/Shioriblog/shioriblog.github.io/releases/download/zine/issue-01.pdf" download="独居日记-zine-issue-01-有梦想无计划就是人生.pdf">下载 PDF ↓</a>
     </div>
   </section>
 
@@ -79,7 +74,7 @@ analytics: false
 
 <style>
   .zine-reader-page {
-    width: min(1240px, calc(100% - 2.4rem));
+    width: min(1180px, calc(100% - 2.4rem));
     margin: 0 auto;
     padding: 4.4rem 0 5.2rem;
   }
@@ -96,7 +91,6 @@ analytics: false
     font-family: var(--sans);
     font-size: .67rem;
     letter-spacing: .11em;
-    text-transform: uppercase;
   }
 
   .reader-intro h1 {
@@ -118,7 +112,6 @@ analytics: false
 
   .reader-shell {
     --reader-bg: #f2f0ec;
-    position: relative;
     overflow: hidden;
     border: 1px solid var(--line);
     background: var(--reader-bg);
@@ -126,14 +119,11 @@ analytics: false
 
   .reader-stage {
     position: relative;
-    display: block;
-    height: min(76vh, 820px);
+    display: grid;
+    place-items: center;
+    height: min(75vh, 760px);
     min-height: 560px;
-    padding: 2rem clamp(2.8rem, 6vw, 5.4rem);
-    overflow: auto;
-    overscroll-behavior: contain;
-    scrollbar-width: thin;
-    touch-action: pan-x pan-y;
+    padding: clamp(1.5rem, 4vw, 3.2rem) clamp(2.5rem, 6vw, 5rem);
   }
 
   .reader-loading,
@@ -146,30 +136,27 @@ analytics: false
   }
 
   .reader-loading {
-    gap: 1.1rem;
+    gap: 1rem;
     color: var(--muted);
     font-family: var(--sans);
     font-size: .68rem;
-    letter-spacing: .04em;
   }
 
   .reader-loading img {
     display: block;
-    width: min(245px, 40vw);
+    width: min(230px, 40vw);
     height: auto;
-    border: 1px solid rgba(0, 0, 0, .06);
+    border: 1px solid rgba(0, 0, 0, .05);
     box-shadow: 3px 8px 22px rgba(44, 42, 39, .09);
   }
 
   .reader-spread {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
-    gap: clamp(.55rem, 1vw, .9rem);
-    width: max-content;
-    min-width: 100%;
-    min-height: 100%;
-    margin: 0 auto;
+    gap: clamp(.45rem, 1vw, .8rem);
+    width: 100%;
+    height: 100%;
   }
 
   .reader-spread.single-page .reader-page-right {
@@ -177,182 +164,132 @@ analytics: false
   }
 
   .reader-page {
-    flex: 0 0 auto;
     margin: 0;
     line-height: 0;
     background: #fff;
-    box-shadow: 4px 9px 24px rgba(44, 42, 39, .11);
-    cursor: zoom-in;
+    box-shadow: 4px 9px 24px rgba(44, 42, 39, .10);
   }
 
   .reader-page canvas {
     display: block;
     width: auto;
-    max-width: none;
+    max-width: 100%;
     height: auto;
     background: #fff;
   }
 
-  .reader-stage.is-zoomed .reader-page {
-    cursor: grab;
-  }
-
-  .reader-stage.is-zoomed .reader-page:active {
-    cursor: grabbing;
-  }
-
   .reader-hit {
-    position: sticky;
+    position: absolute;
     z-index: 5;
-    top: 50%;
-    width: 0;
-    height: 0;
+    top: 0;
+    bottom: 0;
+    width: 17%;
     border: 0;
-    padding: 0;
     background: transparent;
     color: rgba(44, 42, 39, .52);
     cursor: pointer;
+    opacity: 0;
+    transition: opacity .18s ease;
+  }
+
+  .reader-hit:hover,
+  .reader-hit:focus-visible {
+    opacity: 1;
   }
 
   .reader-hit span {
-    position: absolute;
     display: inline-grid;
     place-items: center;
     width: 2.35rem;
     height: 2.35rem;
-    margin-top: -1.175rem;
     border: 1px solid rgba(44, 42, 39, .12);
     border-radius: 50%;
-    background: rgba(255, 255, 255, .84);
-    box-shadow: 0 2px 9px rgba(44, 42, 39, .06);
+    background: rgba(255, 255, 255, .8);
     backdrop-filter: blur(6px);
     font-family: var(--sans);
-    font-size: 1rem;
-    opacity: .25;
-    transition: opacity .18s ease;
-  }
-
-  .reader-hit:hover span,
-  .reader-hit:focus-visible span {
-    opacity: 1;
+    font-size: 1.2rem;
   }
 
   .reader-hit-prev {
-    float: left;
-    left: .9rem;
-  }
-
-  .reader-hit-prev span {
-    left: .7rem;
+    left: 0;
+    text-align: left;
+    padding-left: 1rem;
   }
 
   .reader-hit-next {
-    float: right;
-    right: .9rem;
+    right: 0;
+    text-align: right;
+    padding-right: 1rem;
   }
 
-  .reader-hit-next span {
-    right: .7rem;
+  .reader-hit:disabled,
+  .reader-nav-button:disabled {
+    cursor: default;
+    opacity: .15;
   }
 
-  .reader-controls {
+  .reader-toolbar {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem 2rem;
-    min-height: 58px;
-    padding: .55rem 1.1rem;
+    gap: .5rem 1rem;
+    min-height: 62px;
+    padding: .65rem 1rem;
     border-top: 1px solid rgba(44, 42, 39, .08);
-    background: rgba(255, 255, 255, .68);
+    background: rgba(255, 255, 255, .62);
     font-family: var(--sans);
+    font-size: .68rem;
   }
 
-  .reader-nav-controls,
-  .reader-view-controls {
-    display: flex;
-    align-items: center;
-  }
-
-  .reader-nav-controls {
-    gap: .65rem;
-  }
-
-  .reader-view-controls {
-    gap: .35rem;
-  }
-
-  .reader-control,
-  .reader-text-control {
+  .reader-nav-button,
+  .reader-fullscreen,
+  .reader-view-toggle button {
     appearance: none;
-    border: 0;
+    min-height: 36px;
+    padding: 0 .8rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
     background: transparent;
-    color: var(--body);
+    color: var(--muted);
     font: inherit;
     cursor: pointer;
   }
 
-  .reader-control {
-    display: inline-grid;
-    place-items: center;
-    width: 34px;
-    height: 34px;
-    padding: 0;
-    border-radius: 50%;
-    font-size: 1rem;
-  }
-
-  .reader-control:hover,
-  .reader-text-control:hover {
-    background: var(--soft);
+  .reader-nav-button:hover,
+  .reader-fullscreen:hover,
+  .reader-view-toggle button:hover {
     color: var(--accent);
-  }
-
-  .reader-page-button {
-    font-size: 1.25rem;
-  }
-
-  .reader-control:disabled,
-  .reader-hit:disabled {
-    cursor: default;
-    opacity: .18;
+    background: rgba(255, 255, 255, .8);
   }
 
   .reader-page-count {
-    min-width: 7.2rem;
+    min-width: 7.7rem;
     color: var(--muted);
-    font-size: .66rem;
     letter-spacing: .08em;
     text-align: center;
     font-variant-numeric: tabular-nums;
   }
 
-  .reader-zoom-label {
-    min-width: 3.25rem;
-    color: var(--muted);
-    font-size: .65rem;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .reader-text-control {
-    min-height: 34px;
-    padding: 0 .65rem;
+  .reader-view-toggle {
+    display: inline-flex;
+    align-items: center;
+    margin-left: .35rem;
+    padding: 2px;
+    border: 1px solid rgba(44, 42, 39, .06);
     border-radius: 999px;
-    color: var(--muted);
-    font-size: .65rem;
-    white-space: nowrap;
+    background: rgba(44, 42, 39, .045);
   }
 
-  .reader-view-toggle[aria-pressed="true"] {
-    background: var(--soft);
+  .reader-view-toggle button {
+    min-height: 31px;
+    padding: 0 .8rem;
+  }
+
+  .reader-view-toggle button[aria-pressed="true"] {
+    background: #fff;
     color: var(--accent);
-  }
-
-  .reader-control-divider {
-    width: 1px;
-    height: 18px;
-    margin: 0 .25rem;
-    background: var(--line);
+    box-shadow: 0 1px 4px rgba(44, 42, 39, .08);
   }
 
   .reader-links {
@@ -360,15 +297,11 @@ analytics: false
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
     gap: 1rem;
-    padding: 1.05rem 1.3rem;
+    padding: 1rem 1.3rem;
     border-top: 1px solid var(--line);
     background: #fff;
     font-family: var(--sans);
     font-size: .68rem;
-  }
-
-  .reader-links > :last-child {
-    justify-self: end;
   }
 
   .reader-links a {
@@ -380,9 +313,14 @@ analytics: false
     color: var(--accent);
   }
 
+  .reader-links > :last-child {
+    justify-self: end;
+  }
+
   .reader-tip {
     color: #aaa59e;
     font-size: .61rem;
+    text-align: center;
   }
 
   .reader-fallback {
@@ -438,7 +376,7 @@ analytics: false
   }
 
   .reader-shell:fullscreen .reader-stage {
-    height: calc(100vh - 59px);
+    height: calc(100vh - 63px);
     min-height: 0;
   }
 
@@ -448,7 +386,7 @@ analytics: false
 
   @media (max-width: 700px) {
     .zine-reader-page {
-      width: min(100% - 1rem, 1240px);
+      width: min(100% - 1rem, 1180px);
       padding-top: 3rem;
     }
 
@@ -459,42 +397,31 @@ analytics: false
     .reader-stage {
       height: 68vh;
       min-height: 470px;
-      padding: 1rem .7rem;
+      padding: 1rem 2.3rem;
     }
 
     .reader-spread {
       gap: 0;
     }
 
-    .reader-page-right {
+    .reader-page-right,
+    .reader-hit {
       display: none !important;
     }
 
-    .reader-hit {
-      display: none;
+    .reader-toolbar {
+      gap: .35rem .55rem;
+      padding: .5rem .55rem .65rem;
     }
 
-    .reader-controls {
-      display: grid;
-      grid-template-columns: 1fr;
-      justify-items: center;
-      gap: .15rem;
-      padding: .45rem .6rem .6rem;
-    }
-
-    .reader-nav-controls {
-      width: 100%;
-      justify-content: center;
-    }
-
-    .reader-view-controls {
-      justify-content: center;
-      flex-wrap: wrap;
+    .reader-page-count {
+      order: -1;
+      flex-basis: 100%;
+      min-height: 1.4rem;
     }
 
     .reader-view-toggle,
-    .reader-fullscreen,
-    .reader-control-divider {
+    .reader-fullscreen {
       display: none;
     }
 
@@ -518,7 +445,7 @@ analytics: false
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .reader-hit span {
+    .reader-hit {
       transition: none;
     }
   }
@@ -530,7 +457,7 @@ analytics: false
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/6.3.289/pdf.worker.min.mjs';
 
-  const pdfApiUrl = "{{ '/assets/zines/issue-01.pdf' | relative_url }}";
+  const pdfUrl = "{{ '/assets/zines/issue-01.pdf' | relative_url }}";
   const pdfDownloadUrl =
     'https://github.com/Shioriblog/shioriblog.github.io/releases/download/zine/issue-01.pdf';
 
@@ -547,30 +474,21 @@ analytics: false
   const next = document.getElementById('page-next');
   const prevHit = document.getElementById('page-prev-hit');
   const nextHit = document.getElementById('page-next-hit');
-  const zoomOut = document.getElementById('zoom-out');
-  const zoomIn = document.getElementById('zoom-in');
-  const zoomLabel = document.getElementById('zoom-label');
-  const fitWidth = document.getElementById('fit-width');
-  const viewToggle = document.getElementById('view-toggle');
+  const singleMode = document.getElementById('single-mode');
+  const spreadMode = document.getElementById('spread-mode');
   const fullscreen = document.getElementById('reader-fullscreen');
 
   let pdf = null;
   let currentPage = 1;
-  let viewMode = 'single';
-  let zoom = 1;
+  let desktopViewMode = 'spread';
   let renderToken = 0;
   let touchStartX = null;
   let touchStartY = null;
-  let lastTapAt = 0;
   const activeRenders = new Map();
 
   const isMobile = () => window.matchMedia('(max-width: 700px)').matches;
+  const effectiveViewMode = () => isMobile() ? 'single' : desktopViewMode;
   const pad = (number) => String(number).padStart(2, '0');
-  const clampZoom = (value) => Math.max(.75, Math.min(2.5, value));
-
-  function effectiveViewMode() {
-    return isMobile() ? 'single' : viewMode;
-  }
 
   function visiblePages() {
     if (!pdf) return [1];
@@ -579,17 +497,12 @@ analytics: false
       return [Math.min(currentPage, pdf.numPages)];
     }
 
-    if (currentPage <= 1) {
-      return [1];
-    }
+    if (currentPage <= 1) return [1];
 
     const left = currentPage % 2 === 0 ? currentPage : currentPage - 1;
     const pages = [left];
 
-    if (left + 1 <= pdf.numPages) {
-      pages.push(left + 1);
-    }
-
+    if (left + 1 <= pdf.numPages) pages.push(left + 1);
     return pages;
   }
 
@@ -597,13 +510,10 @@ analytics: false
     if (!pdf) return;
 
     const pages = visiblePages();
-    const label =
+    count.textContent =
       pages.length === 2
         ? pad(pages[0]) + '–' + pad(pages[1]) + ' / ' + pad(pdf.numPages)
         : pad(pages[0]) + ' / ' + pad(pdf.numPages);
-
-    count.textContent = label;
-    zoomLabel.textContent = Math.round(zoom * 100) + '%';
 
     const atStart = currentPage <= 1;
     const atEnd = pages[pages.length - 1] >= pdf.numPages;
@@ -616,31 +526,27 @@ analytics: false
       button.disabled = atEnd;
     });
 
-    zoomOut.disabled = zoom <= .75;
-    zoomIn.disabled = zoom >= 2.5;
-
-    viewToggle.setAttribute('aria-pressed', String(viewMode === 'spread'));
-    viewToggle.textContent = viewMode === 'spread' ? 'Single' : 'Spread';
-    stage.classList.toggle('is-zoomed', zoom > 1.01);
+    singleMode.setAttribute('aria-pressed', String(desktopViewMode === 'single'));
+    spreadMode.setAttribute('aria-pressed', String(desktopViewMode === 'spread'));
   }
 
   function cancelRender(canvas) {
     const task = activeRenders.get(canvas);
     if (!task) return;
 
-    try {
-      task.cancel();
-    } catch (_) {}
-
+    try { task.cancel(); } catch (_) {}
     activeRenders.delete(canvas);
   }
 
-  async function renderPage(pageNumber, canvas, baseWidth, token) {
+  async function renderPage(pageNumber, canvas, maxWidth, maxHeight, token) {
     cancelRender(canvas);
 
     const page = await pdf.getPage(pageNumber);
     const baseViewport = page.getViewport({ scale: 1 });
-    const cssScale = (baseWidth / baseViewport.width) * zoom;
+    const cssScale = Math.min(
+      maxWidth / baseViewport.width,
+      maxHeight / baseViewport.height
+    );
     const deviceScale = Math.min(window.devicePixelRatio || 1, 2);
     const renderViewport = page.getViewport({ scale: cssScale * deviceScale });
 
@@ -671,7 +577,7 @@ analytics: false
     }
   }
 
-  async function renderSpread(options = {}) {
+  async function renderReader() {
     if (!pdf) return;
 
     const token = ++renderToken;
@@ -679,26 +585,31 @@ analytics: false
     const mode = effectiveViewMode();
 
     spread.classList.toggle('single-page', mode === 'single' || pages.length === 1);
-    rightWrap.classList.toggle('is-hidden', pages.length < 2 || mode === 'single');
+    rightWrap.classList.toggle('is-hidden', mode === 'single' || pages.length < 2);
 
     const stageStyle = getComputedStyle(stage);
-    const padX =
-      parseFloat(stageStyle.paddingLeft) + parseFloat(stageStyle.paddingRight);
-    const availableWidth = Math.max(stage.clientWidth - padX, 240);
-    const gap = 16;
+    const availableWidth = Math.max(
+      stage.clientWidth -
+        parseFloat(stageStyle.paddingLeft) -
+        parseFloat(stageStyle.paddingRight),
+      240
+    );
+    const availableHeight = Math.max(
+      stage.clientHeight -
+        parseFloat(stageStyle.paddingTop) -
+        parseFloat(stageStyle.paddingBottom),
+      320
+    );
 
-    const basePageWidth =
+    const pageWidth =
       mode === 'single'
-        ? availableWidth
-        : Math.max((availableWidth - gap) / 2, 220);
+        ? Math.min(availableWidth, 720)
+        : Math.min((availableWidth - 16) / 2, 520);
 
-    const oldScrollLeft = stage.scrollLeft;
-    const oldScrollTop = stage.scrollTop;
+    await renderPage(pages[0], leftCanvas, pageWidth, availableHeight, token);
 
-    await renderPage(pages[0], leftCanvas, basePageWidth, token);
-
-    if (pages.length > 1 && mode === 'spread') {
-      await renderPage(pages[1], rightCanvas, basePageWidth, token);
+    if (mode === 'spread' && pages.length > 1) {
+      await renderPage(pages[1], rightCanvas, pageWidth, availableHeight, token);
     }
 
     if (token !== renderToken) return;
@@ -707,16 +618,6 @@ analytics: false
     fallback.classList.add('is-hidden');
     spread.classList.remove('is-hidden');
     updateControls();
-
-    requestAnimationFrame(() => {
-      if (options.keepScroll) {
-        stage.scrollLeft = oldScrollLeft;
-        stage.scrollTop = oldScrollTop;
-      } else {
-        stage.scrollLeft = Math.max((stage.scrollWidth - stage.clientWidth) / 2, 0);
-        stage.scrollTop = 0;
-      }
-    });
   }
 
   function goNext() {
@@ -733,7 +634,7 @@ analytics: false
       );
     }
 
-    renderSpread();
+    renderReader();
   }
 
   function goPrev() {
@@ -750,67 +651,29 @@ analytics: false
       );
     }
 
-    renderSpread();
+    renderReader();
   }
 
-  function setZoom(nextZoom, keepScroll = false) {
-    const clamped = clampZoom(nextZoom);
-    if (Math.abs(clamped - zoom) < .001) return;
-    zoom = clamped;
-    renderSpread({ keepScroll });
-  }
+  function setDesktopView(mode) {
+    desktopViewMode = mode;
 
-  function toggleQuickZoom() {
-    setZoom(zoom > 1.01 ? 1 : 1.5);
+    if (mode === 'spread' && currentPage > 1) {
+      currentPage = currentPage % 2 === 0 ? currentPage : currentPage - 1;
+    }
+
+    renderReader();
   }
 
   [prev, prevHit].forEach((button) => button.addEventListener('click', goPrev));
   [next, nextHit].forEach((button) => button.addEventListener('click', goNext));
 
-  zoomOut.addEventListener('click', () => setZoom(zoom - .25, true));
-  zoomIn.addEventListener('click', () => setZoom(zoom + .25, true));
-
-  fitWidth.addEventListener('click', () => {
-    zoom = 1;
-    renderSpread();
-  });
-
-  viewToggle.addEventListener('click', () => {
-    viewMode = viewMode === 'single' ? 'spread' : 'single';
-    zoom = 1;
-
-    if (viewMode === 'spread' && currentPage > 1) {
-      currentPage = currentPage % 2 === 0 ? currentPage : currentPage - 1;
-    }
-
-    renderSpread();
-  });
-
-  spread.addEventListener('dblclick', (event) => {
-    if (event.target.closest('.reader-page')) {
-      toggleQuickZoom();
-    }
-  });
+  singleMode.addEventListener('click', () => setDesktopView('single'));
+  spreadMode.addEventListener('click', () => setDesktopView('spread'));
 
   document.addEventListener('keydown', (event) => {
     if (event.target.closest('input, textarea, select, button, a')) return;
-
     if (event.key === 'ArrowLeft') goPrev();
     if (event.key === 'ArrowRight') goNext();
-
-    if (event.key === '+' || event.key === '=') {
-      event.preventDefault();
-      setZoom(zoom + .25, true);
-    }
-
-    if (event.key === '-') {
-      event.preventDefault();
-      setZoom(zoom - .25, true);
-    }
-
-    if (event.key === 'Escape' && document.fullscreenElement) {
-      document.exitFullscreen();
-    }
   });
 
   stage.addEventListener('touchstart', (event) => {
@@ -825,25 +688,11 @@ analytics: false
     const touchEndY = event.changedTouches[0]?.clientY ?? touchStartY;
     const deltaX = touchEndX - touchStartX;
     const deltaY = touchEndY - touchStartY;
-    const moved = Math.hypot(deltaX, deltaY);
 
     touchStartX = null;
     touchStartY = null;
 
-    if (moved < 18) {
-      const now = Date.now();
-      if (now - lastTapAt < 330) {
-        lastTapAt = 0;
-        toggleQuickZoom();
-        return;
-      }
-      lastTapAt = now;
-      return;
-    }
-
-    if (zoom > 1.01) return;
     if (Math.abs(deltaX) < 55 || Math.abs(deltaX) < Math.abs(deltaY)) return;
-
     if (deltaX < 0) goNext();
     if (deltaX > 0) goPrev();
   }, { passive: true });
@@ -859,31 +708,28 @@ analytics: false
   });
 
   document.addEventListener('fullscreenchange', () => {
-    fullscreen.textContent = document.fullscreenElement ? 'Exit full screen' : 'Full screen';
-    if (pdf) requestAnimationFrame(() => renderSpread());
+    fullscreen.textContent = document.fullscreenElement ? '退出全屏' : '全屏';
+    if (pdf) requestAnimationFrame(renderReader);
   });
 
   let resizeTimer = null;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      if (!pdf) return;
-      renderSpread();
-    }, 160);
+      if (pdf) renderReader();
+    }, 150);
   });
 
   async function loadPdf() {
     try {
-      const loadingTask = pdfjsLib.getDocument({
-        url: pdfApiUrl,
+      pdf = await pdfjsLib.getDocument({
+        url: pdfUrl,
         withCredentials: false
-      });
+      }).promise;
 
-      pdf = await loadingTask.promise;
       currentPage = 1;
-      viewMode = 'single';
-      zoom = 1;
-      await renderSpread();
+      desktopViewMode = 'spread';
+      await renderReader();
     } catch (error) {
       console.error('PDF reader failed:', error);
       loading.classList.add('is-hidden');
