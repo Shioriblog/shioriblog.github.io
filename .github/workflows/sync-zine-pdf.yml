@@ -1,0 +1,38 @@
+name: Sync zine PDF for web reader
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/sync-zine-pdf.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download Issue 01 PDF
+        run: |
+          mkdir -p assets/zines
+          curl -L --fail --retry 3 \
+            "https://github.com/Shioriblog/shioriblog.github.io/releases/download/zine/issue-01.pdf" \
+            -o assets/zines/issue-01.pdf
+          test -s assets/zines/issue-01.pdf
+
+      - name: Commit PDF if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/zines/issue-01.pdf
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "Add Issue 01 PDF for web reader"
+          git push
