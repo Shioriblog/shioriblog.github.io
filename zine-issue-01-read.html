@@ -399,8 +399,7 @@ analytics: false
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/6.3.289/pdf.worker.min.mjs';
 
-  const pdfApiUrl =
-    'https://api.github.com/repos/Shioriblog/shioriblog.github.io/releases/assets/584406215';
+  const pdfApiUrl = "{{ '/assets/zines/issue-01.pdf' | relative_url }}";
   const pdfDownloadUrl =
     'https://github.com/Shioriblog/shioriblog.github.io/releases/download/zine/issue-01.pdf';
 
@@ -645,9 +644,6 @@ analytics: false
     try {
       const loadingTask = pdfjsLib.getDocument({
         url: pdfApiUrl,
-        httpHeaders: {
-          Accept: 'application/octet-stream'
-        },
         withCredentials: false
       });
 
