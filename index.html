@@ -80,33 +80,36 @@ nav: home
     </div>
   {% endif %}
 
-  <div class="post-list default-post-list" aria-label="最近文章">
-    {% for post in paginator.posts %}
+  <div class="post-list home-post-list" aria-label="文章列表">
+    {% assign rendered_count = 0 %}
+    {% for post in site.posts %}
       {% unless post.categories contains '食べたり、歩いたり' %}
-        {% unless paginator.page == 1 and post.categories contains 'zine' %}
-        <article class="post-preview">
-          <div class="post-meta">
-            <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>
-            {% if post.categories.size > 0 %}<span> · {{ post.categories | join: ' · ' }}</span>{% endif %}
-          </div>
-          <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-          <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 150 }} <a class="read-more" href="{{ post.url | relative_url }}">Read more...</a></p>
-        </article>
-        {% endunless %}
-      {% endunless %}
-    {% else %}
-      <p class="empty-state">文章迁移完成后，会从这里开始排列。</p>
-    {% endfor %}
-  </div>
-
-
-  {% for category_name in home_categories %}
-    <div class="post-list filtered-post-list" data-category-list="{{ category_name | escape }}" aria-label="{{ category_name }} 的文章" hidden>
-      {% assign filtered_count = 0 %}
-      {% for post in site.posts %}
-        {% if post.categories contains category_name %}
-          {% assign filtered_count = filtered_count | plus: 1 %}
-          <article class="post-preview">
+        {% assign on_current_page = false %}
+        {% for paginated_post in paginator.posts %}
+          {% if paginated_post.url == post.url %}
+            {% assign on_current_page = true %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+        {% assign show_in_all = on_current_page %}
+        {% if paginator.page == 1 and post.categories contains 'zine' %}
+          {% assign show_in_all = false %}
+        {% endif %}
+        {% assign home_category_match = false %}
+        {% for category_name in home_categories %}
+          {% if post.categories contains category_name %}
+            {% assign home_category_match = true %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+        {% if show_in_all or home_category_match %}
+          {% assign rendered_count = rendered_count | plus: 1 %}
+          <article
+            class="post-preview home-post-item"
+            data-categories="{{ post.categories | join: '|' | escape }}"
+            data-show-in-all="{% if show_in_all %}true{% else %}false{% endif %}"
+            {% unless show_in_all %}hidden{% endunless %}
+          >
             <div class="post-meta">
               <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>
               {% if post.categories.size > 0 %}<span> · {{ post.categories | join: ' · ' }}</span>{% endif %}
@@ -115,12 +118,13 @@ nav: home
             <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 150 }} <a class="read-more" href="{{ post.url | relative_url }}">Read more...</a></p>
           </article>
         {% endif %}
-      {% endfor %}
-      {% if filtered_count == 0 %}
-        <p class="empty-state">这个分类里还没有文章。</p>
-      {% endif %}
-    </div>
-  {% endfor %}
+      {% endunless %}
+    {% endfor %}
+    {% if rendered_count == 0 %}
+      <p class="empty-state">文章迁移完成后，会从这里开始排列。</p>
+    {% endif %}
+    <p class="empty-state home-filter-empty" hidden>这个分类里还没有文章。</p>
+  </div>
 
   {% if paginator.total_pages > 1 %}
     <nav class="pagination" aria-label="文章分页">
@@ -189,11 +193,11 @@ nav: home
     (() => {
       const buttons = Array.from(document.querySelectorAll('.home-category-link[data-category]'))
       const allPostsButton = document.querySelector('.home-all-posts')
-      const defaultList = document.querySelector('.default-post-list')
-      const filteredLists = Array.from(document.querySelectorAll('.filtered-post-list'))
+      const postItems = Array.from(document.querySelectorAll('.home-post-item'))
+      const emptyState = document.querySelector('.home-filter-empty')
       const pagination = document.querySelector('.pagination')
 
-      if (!buttons.length || !allPostsButton || !defaultList || !filteredLists.length) return
+      if (!buttons.length || !allPostsButton || !postItems.length) return
 
       let activeCategory = null
 
@@ -212,20 +216,24 @@ nav: home
       const showAll = () => {
         activeCategory = null
         setButtonState(null)
-        defaultList.hidden = false
-        filteredLists.forEach((list) => {
-          list.hidden = true
+        postItems.forEach((item) => {
+          item.hidden = item.dataset.showInAll !== 'true'
         })
+        if (emptyState) emptyState.hidden = true
         if (pagination) pagination.hidden = false
       }
 
       const showCategory = (category) => {
         activeCategory = category
         setButtonState(category)
-        defaultList.hidden = true
-        filteredLists.forEach((list) => {
-          list.hidden = list.dataset.categoryList !== category
+        let visibleCount = 0
+        postItems.forEach((item) => {
+          const categories = (item.dataset.categories || '').split('|')
+          const matches = categories.includes(category)
+          item.hidden = !matches
+          if (matches) visibleCount += 1
         })
+        if (emptyState) emptyState.hidden = visibleCount !== 0
         if (pagination) pagination.hidden = true
       }
 
