@@ -1,0 +1,670 @@
+---
+layout: default
+title: 有梦想无计划就是人生 · 在线阅读
+description: 独居日记 · zine · issue 01《有梦想无计划就是人生》在线阅读。
+permalink: /zines/issue-01/read/
+robots: noindex, nofollow
+sitemap: false
+subscription: false
+analytics: false
+---
+
+<main class="zine-reader-page" id="content">
+  <header class="reader-intro">
+    <p class="reader-kicker">独居日记 · zine · issue 01</p>
+    <h1>有梦想无计划就是人生</h1>
+    <p class="reader-author">Shiori 栞</p>
+  </header>
+
+  <section class="reader-shell" id="zine-reader" aria-label="《有梦想无计划就是人生》在线阅读器">
+    <div class="reader-stage" id="reader-stage" aria-live="polite">
+      <div class="reader-loading" id="reader-loading">
+        <img src="{{ '/assets/zines/issue-01-cover.png' | relative_url }}" alt="" width="521" height="753">
+        <p>正在打开 zine…</p>
+      </div>
+
+      <div class="reader-spread is-hidden" id="reader-spread">
+        <figure class="reader-page reader-page-left" id="page-left-wrap">
+          <canvas id="page-left" aria-label="左页"></canvas>
+        </figure>
+        <figure class="reader-page reader-page-right" id="page-right-wrap">
+          <canvas id="page-right" aria-label="右页"></canvas>
+        </figure>
+      </div>
+
+      <button class="reader-hit reader-hit-prev" id="page-prev-hit" type="button" aria-label="上一页">
+        <span aria-hidden="true">←</span>
+      </button>
+      <button class="reader-hit reader-hit-next" id="page-next-hit" type="button" aria-label="下一页">
+        <span aria-hidden="true">→</span>
+      </button>
+
+      <div class="reader-fallback is-hidden" id="reader-fallback">
+        <p>这个浏览器暂时无法使用简洁阅读模式。</p>
+        <a href="https://github.com/Shioriblog/shioriblog.github.io/releases/download/zine/issue-01.pdf">直接打开 PDF ↗</a>
+      </div>
+    </div>
+
+    <div class="reader-controls">
+      <button class="reader-control" id="page-prev" type="button" aria-label="上一页">‹</button>
+      <span class="reader-page-count" id="page-count">01</span>
+      <button class="reader-control" id="page-next" type="button" aria-label="下一页">›</button>
+    </div>
+
+    <div class="reader-links">
+      <a href="{{ '/zines/' | relative_url }}">← Back to all zines</a>
+      <button class="reader-fullscreen" id="reader-fullscreen" type="button">Full screen</button>
+      <a href="https://github.com/Shioriblog/shioriblog.github.io/releases/download/zine/issue-01.pdf" download="独居日记-zine-issue-01-有梦想无计划就是人生.pdf">Download PDF ↓</a>
+    </div>
+  </section>
+
+  <section class="reader-about">
+    <p class="reader-about-label">About this issue</p>
+    <p>关于独居、生活，以及时间和年龄的一些思考。</p>
+    <p class="reader-about-meta">Issue 01 · 2026 · 7 篇随笔</p>
+  </section>
+</main>
+
+<style>
+  .zine-reader-page {
+    width: min(1180px, calc(100% - 2.4rem));
+    margin: 0 auto;
+    padding: 4.4rem 0 5.2rem;
+  }
+
+  .reader-intro {
+    width: min(720px, 100%);
+    margin: 0 auto 2.7rem;
+    text-align: center;
+  }
+
+  .reader-kicker {
+    margin: 0 0 .8rem;
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: .67rem;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+  }
+
+  .reader-intro h1 {
+    margin: 0;
+    font-size: clamp(1.65rem, 4vw, 2.15rem);
+    font-weight: 500;
+    line-height: 1.55;
+    letter-spacing: .015em;
+    text-wrap: balance;
+  }
+
+  .reader-author {
+    margin: .75rem 0 0;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .72rem;
+    letter-spacing: .04em;
+  }
+
+  .reader-shell {
+    --reader-bg: #f2f0ec;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--reader-bg);
+  }
+
+  .reader-stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: min(74vh, 760px);
+    padding: clamp(1.5rem, 4vw, 3.4rem) clamp(2.1rem, 6vw, 5.3rem);
+  }
+
+  .reader-loading {
+    display: grid;
+    justify-items: center;
+    gap: 1.1rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .68rem;
+    letter-spacing: .04em;
+  }
+
+  .reader-loading img {
+    display: block;
+    width: min(245px, 40vw);
+    height: auto;
+    border: 1px solid rgba(0, 0, 0, .06);
+    box-shadow: 3px 8px 22px rgba(44, 42, 39, .09);
+  }
+
+  .reader-spread {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(.45rem, 1vw, .8rem);
+    width: 100%;
+  }
+
+  .reader-spread.single-page .reader-page-right {
+    display: none;
+  }
+
+  .reader-page {
+    margin: 0;
+    line-height: 0;
+    background: #fff;
+    box-shadow: 4px 9px 24px rgba(44, 42, 39, .10);
+  }
+
+  .reader-page canvas {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    background: #fff;
+  }
+
+  .reader-hit {
+    position: absolute;
+    z-index: 5;
+    top: 0;
+    bottom: 0;
+    width: 18%;
+    border: 0;
+    background: transparent;
+    color: rgba(44, 42, 39, .52);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .18s ease;
+  }
+
+  .reader-hit:hover,
+  .reader-hit:focus-visible {
+    opacity: 1;
+  }
+
+  .reader-hit span {
+    display: inline-grid;
+    place-items: center;
+    width: 2.35rem;
+    height: 2.35rem;
+    border: 1px solid rgba(44, 42, 39, .12);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .78);
+    backdrop-filter: blur(6px);
+    font-family: var(--sans);
+    font-size: 1rem;
+  }
+
+  .reader-hit-prev {
+    left: 0;
+    text-align: left;
+    padding-left: 1rem;
+  }
+
+  .reader-hit-next {
+    right: 0;
+    text-align: right;
+    padding-right: 1rem;
+  }
+
+  .reader-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.35rem;
+    min-height: 56px;
+    border-top: 1px solid rgba(44, 42, 39, .08);
+    background: rgba(255, 255, 255, .58);
+  }
+
+  .reader-control,
+  .reader-fullscreen {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: var(--body);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .reader-control {
+    width: 38px;
+    height: 38px;
+    font-family: var(--sans);
+    font-size: 1.25rem;
+  }
+
+  .reader-control:disabled,
+  .reader-hit:disabled {
+    cursor: default;
+    opacity: .16;
+  }
+
+  .reader-page-count {
+    min-width: 7.5rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .66rem;
+    letter-spacing: .08em;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .reader-links {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.15rem 1.3rem;
+    border-top: 1px solid var(--line);
+    background: #fff;
+    font-family: var(--sans);
+    font-size: .68rem;
+  }
+
+  .reader-links > :last-child {
+    justify-self: end;
+  }
+
+  .reader-links a,
+  .reader-fullscreen {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .reader-links a:hover,
+  .reader-fullscreen:hover {
+    color: var(--accent);
+  }
+
+  .reader-fallback {
+    max-width: 420px;
+    padding: 2rem;
+    text-align: center;
+    color: var(--muted);
+    font-size: .85rem;
+    line-height: 1.8;
+  }
+
+  .reader-fallback a {
+    color: var(--accent);
+  }
+
+  .reader-about {
+    width: min(720px, 100%);
+    margin: 3.6rem auto 0;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .reader-about-label {
+    margin: 0 0 .7rem;
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: .68rem;
+    letter-spacing: .08em;
+  }
+
+  .reader-about p:not(.reader-about-label):not(.reader-about-meta) {
+    margin: 0;
+    font-size: .92rem;
+    line-height: 1.9;
+  }
+
+  .reader-about-meta {
+    margin: .85rem 0 0;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .68rem;
+  }
+
+  .is-hidden {
+    display: none !important;
+  }
+
+  .reader-shell:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    border: 0;
+    background: var(--reader-bg);
+  }
+
+  .reader-shell:fullscreen .reader-stage {
+    min-height: calc(100vh - 112px);
+    height: calc(100vh - 112px);
+  }
+
+  .reader-shell:fullscreen .reader-links {
+    display: none;
+  }
+
+  @media (max-width: 700px) {
+    .zine-reader-page {
+      width: min(100% - 1.2rem, 1180px);
+      padding-top: 3rem;
+    }
+
+    .reader-intro {
+      margin-bottom: 2rem;
+    }
+
+    .reader-stage {
+      min-height: 62vh;
+      padding: 1.2rem 2.5rem;
+    }
+
+    .reader-spread {
+      gap: 0;
+    }
+
+    .reader-page-right {
+      display: none !important;
+    }
+
+    .reader-hit {
+      width: 24%;
+    }
+
+    .reader-links {
+      grid-template-columns: 1fr 1fr;
+      gap: .8rem 1rem;
+      padding: 1rem;
+    }
+
+    .reader-fullscreen {
+      display: none;
+    }
+
+    .reader-links > :last-child {
+      justify-self: end;
+    }
+
+    .reader-about {
+      margin-top: 2.7rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reader-hit {
+      transition: none;
+    }
+  }
+</style>
+
+<script type="module">
+  import * as pdfjsLib from 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/6.3.289/pdf.min.mjs';
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/6.3.289/pdf.worker.min.mjs';
+
+  const pdfApiUrl =
+    'https://api.github.com/repos/Shioriblog/shioriblog.github.io/releases/assets/584406215';
+  const pdfDownloadUrl =
+    'https://github.com/Shioriblog/shioriblog.github.io/releases/download/zine/issue-01.pdf';
+
+  const shell = document.getElementById('zine-reader');
+  const stage = document.getElementById('reader-stage');
+  const loading = document.getElementById('reader-loading');
+  const spread = document.getElementById('reader-spread');
+  const fallback = document.getElementById('reader-fallback');
+  const leftWrap = document.getElementById('page-left-wrap');
+  const rightWrap = document.getElementById('page-right-wrap');
+  const leftCanvas = document.getElementById('page-left');
+  const rightCanvas = document.getElementById('page-right');
+  const count = document.getElementById('page-count');
+  const prev = document.getElementById('page-prev');
+  const next = document.getElementById('page-next');
+  const prevHit = document.getElementById('page-prev-hit');
+  const nextHit = document.getElementById('page-next-hit');
+  const fullscreen = document.getElementById('reader-fullscreen');
+
+  let pdf = null;
+  let currentPage = 1;
+  let renderToken = 0;
+  let lastMobileState = null;
+  let touchStartX = null;
+
+  const isMobile = () => window.matchMedia('(max-width: 700px)').matches;
+  const pad = (number) => String(number).padStart(2, '0');
+
+  function visiblePages() {
+    if (!pdf) return [1];
+
+    if (isMobile()) {
+      return [Math.min(currentPage, pdf.numPages)];
+    }
+
+    if (currentPage <= 1) {
+      return [1];
+    }
+
+    const left = currentPage % 2 === 0 ? currentPage : currentPage - 1;
+    const pages = [left];
+
+    if (left + 1 <= pdf.numPages) {
+      pages.push(left + 1);
+    }
+
+    return pages;
+  }
+
+  function updateControls() {
+    if (!pdf) return;
+
+    const pages = visiblePages();
+    const label =
+      pages.length === 2
+        ? pad(pages[0]) + '–' + pad(pages[1]) + ' / ' + pad(pdf.numPages)
+        : pad(pages[0]) + ' / ' + pad(pdf.numPages);
+
+    count.textContent = label;
+
+    const atStart = currentPage <= 1;
+    const atEnd = isMobile()
+      ? currentPage >= pdf.numPages
+      : pages[pages.length - 1] >= pdf.numPages;
+
+    [prev, prevHit].forEach((button) => {
+      button.disabled = atStart;
+    });
+
+    [next, nextHit].forEach((button) => {
+      button.disabled = atEnd;
+    });
+  }
+
+  async function renderPage(pageNumber, canvas, maxWidth, maxHeight, token) {
+    const page = await pdf.getPage(pageNumber);
+    const baseViewport = page.getViewport({ scale: 1 });
+    const cssScale = Math.min(
+      maxWidth / baseViewport.width,
+      maxHeight / baseViewport.height
+    );
+    const deviceScale = Math.min(window.devicePixelRatio || 1, 2);
+    const renderViewport = page.getViewport({ scale: cssScale * deviceScale });
+
+    if (token !== renderToken) return;
+
+    canvas.width = Math.floor(renderViewport.width);
+    canvas.height = Math.floor(renderViewport.height);
+    canvas.style.width = Math.floor(baseViewport.width * cssScale) + 'px';
+    canvas.style.height = Math.floor(baseViewport.height * cssScale) + 'px';
+
+    const context = canvas.getContext('2d', { alpha: false });
+
+    await page.render({
+      canvasContext: context,
+      viewport: renderViewport,
+      background: '#ffffff'
+    }).promise;
+  }
+
+  async function renderSpread() {
+    if (!pdf) return;
+
+    const token = ++renderToken;
+    const pages = visiblePages();
+    const mobile = isMobile();
+
+    spread.classList.toggle('single-page', pages.length === 1 || mobile);
+    rightWrap.classList.toggle('is-hidden', pages.length < 2 || mobile);
+
+    const stageStyle = getComputedStyle(stage);
+    const padX =
+      parseFloat(stageStyle.paddingLeft) + parseFloat(stageStyle.paddingRight);
+    const padY =
+      parseFloat(stageStyle.paddingTop) + parseFloat(stageStyle.paddingBottom);
+
+    const availableWidth = Math.max(stage.clientWidth - padX, 240);
+    const availableHeight = Math.max(stage.clientHeight - padY, 320);
+    const pageWidth = mobile || pages.length === 1
+      ? Math.min(availableWidth, 620)
+      : Math.min((availableWidth - 16) / 2, 520);
+
+    await renderPage(
+      pages[0],
+      leftCanvas,
+      pageWidth,
+      availableHeight,
+      token
+    );
+
+    if (pages.length > 1 && !mobile) {
+      await renderPage(
+        pages[1],
+        rightCanvas,
+        pageWidth,
+        availableHeight,
+        token
+      );
+    }
+
+    if (token !== renderToken) return;
+
+    loading.classList.add('is-hidden');
+    fallback.classList.add('is-hidden');
+    spread.classList.remove('is-hidden');
+    updateControls();
+  }
+
+  function goNext() {
+    if (!pdf) return;
+
+    if (isMobile()) {
+      currentPage = Math.min(currentPage + 1, pdf.numPages);
+    } else if (currentPage <= 1) {
+      currentPage = Math.min(2, pdf.numPages);
+    } else {
+      currentPage = Math.min(
+        (currentPage % 2 === 0 ? currentPage : currentPage - 1) + 2,
+        pdf.numPages
+      );
+    }
+
+    renderSpread();
+  }
+
+  function goPrev() {
+    if (!pdf) return;
+
+    if (isMobile()) {
+      currentPage = Math.max(currentPage - 1, 1);
+    } else if (currentPage <= 2) {
+      currentPage = 1;
+    } else {
+      currentPage = Math.max(
+        (currentPage % 2 === 0 ? currentPage : currentPage - 1) - 2,
+        1
+      );
+    }
+
+    renderSpread();
+  }
+
+  [prev, prevHit].forEach((button) => button.addEventListener('click', goPrev));
+  [next, nextHit].forEach((button) => button.addEventListener('click', goNext));
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') goPrev();
+    if (event.key === 'ArrowRight') goNext();
+    if (event.key === 'Escape' && document.fullscreenElement) {
+      document.exitFullscreen();
+    }
+  });
+
+  stage.addEventListener('touchstart', (event) => {
+    touchStartX = event.changedTouches[0]?.clientX ?? null;
+  }, { passive: true });
+
+  stage.addEventListener('touchend', (event) => {
+    if (touchStartX === null) return;
+    const touchEndX = event.changedTouches[0]?.clientX ?? touchStartX;
+    const delta = touchEndX - touchStartX;
+    touchStartX = null;
+
+    if (Math.abs(delta) < 45) return;
+    if (delta < 0) goNext();
+    if (delta > 0) goPrev();
+  }, { passive: true });
+
+  fullscreen.addEventListener('click', async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await shell.requestFullscreen();
+      } else {
+        await document.exitFullscreen();
+      }
+    } catch (_) {}
+  });
+
+  document.addEventListener('fullscreenchange', () => {
+    fullscreen.textContent = document.fullscreenElement ? 'Exit full screen' : 'Full screen';
+    if (pdf) requestAnimationFrame(renderSpread);
+  });
+
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    const mobileState = isMobile();
+
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (!pdf) return;
+
+      if (lastMobileState !== mobileState && !mobileState && currentPage > 1) {
+        currentPage = currentPage % 2 === 0 ? currentPage : currentPage - 1;
+      }
+
+      lastMobileState = mobileState;
+      renderSpread();
+    }, 140);
+  });
+
+  async function loadPdf() {
+    try {
+      const loadingTask = pdfjsLib.getDocument({
+        url: pdfApiUrl,
+        httpHeaders: {
+          Accept: 'application/octet-stream'
+        },
+        withCredentials: false
+      });
+
+      pdf = await loadingTask.promise;
+      lastMobileState = isMobile();
+      currentPage = 1;
+      await renderSpread();
+    } catch (error) {
+      console.error('PDF reader failed:', error);
+      loading.classList.add('is-hidden');
+      spread.classList.add('is-hidden');
+      fallback.classList.remove('is-hidden');
+
+      const fallbackLink = fallback.querySelector('a');
+      fallbackLink.href = pdfDownloadUrl;
+    }
+  }
+
+  loadPdf();
+</script>
