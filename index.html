@@ -124,19 +124,21 @@ nav: home
             data-show-in-all="{% if show_in_all %}true{% else %}false{% endif %}"
             {% unless show_in_all %}hidden{% endunless %}
           >
-            <div class="home-post-copy">
-              <div class="post-meta">
-                <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>
-                {% if post.categories.size > 0 %}<span> · {{ post.categories | join: ' · ' }}</span>{% endif %}
+            <div class="home-post-inner">
+              <div class="home-post-copy">
+                <div class="post-meta">
+                  <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>
+                  {% if post.categories.size > 0 %}<span> · {{ post.categories | join: ' · ' }}</span>{% endif %}
+                </div>
+                <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+                <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 150 }} <a class="read-more" href="{{ post.url | relative_url }}">Read more...</a></p>
               </div>
-              <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-              <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 150 }} <a class="read-more" href="{{ post.url | relative_url }}">Read more...</a></p>
+              {% if home_image != '' %}
+                <a class="home-post-image" href="{{ post.url | relative_url }}" aria-label="阅读《{{ post.title | escape }}》">
+                  <img src="{{ home_image | escape }}" alt="" loading="lazy" decoding="async">
+                </a>
+              {% endif %}
             </div>
-            {% if home_image != '' %}
-              <a class="home-post-image" href="{{ post.url | relative_url }}" aria-label="阅读《{{ post.title | escape }}》">
-                <img src="{{ home_image | escape }}" alt="" loading="lazy" decoding="async">
-              </a>
-            {% endif %}
           </article>
         {% endif %}
       {% endunless %}
@@ -436,11 +438,11 @@ nav: home
     transform: translate(-50%, 0);
   }
 
-  .home-post-item[hidden] {
-    display: none !important;
+  .home-post-inner {
+    display: block;
   }
 
-  .home-post-item.has-image {
+  .home-post-item.has-image .home-post-inner {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 150px;
     gap: 1.6rem;
@@ -467,7 +469,7 @@ nav: home
   }
 
   @media (max-width: 580px) {
-    .home-post-item.has-image {
+    .home-post-item.has-image .home-post-inner {
       grid-template-columns: minmax(0, 1fr);
       gap: .9rem;
     }
