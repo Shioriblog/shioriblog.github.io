@@ -104,18 +104,39 @@ nav: home
         {% endfor %}
         {% if show_in_all or home_category_match %}
           {% assign rendered_count = rendered_count | plus: 1 %}
+          {% assign home_image = '' %}
+          {% assign home_image_parts = post.content | split: '<img ' %}
+          {% if home_image_parts.size > 1 %}
+            {% assign home_image_tag = home_image_parts[1] | split: '>' | first %}
+            {% assign home_image_src_parts = home_image_tag | split: 'src="' %}
+            {% if home_image_src_parts.size > 1 %}
+              {% assign home_image = home_image_src_parts[1] | split: '"' | first %}
+            {% else %}
+              {% assign home_image_src_parts = home_image_tag | split: "src='" %}
+              {% if home_image_src_parts.size > 1 %}
+                {% assign home_image = home_image_src_parts[1] | split: "'" | first %}
+              {% endif %}
+            {% endif %}
+          {% endif %}
           <article
-            class="post-preview home-post-item"
+            class="post-preview home-post-item{% if home_image != '' %} has-image{% endif %}"
             data-categories="{{ post.categories | join: '|' | escape }}"
             data-show-in-all="{% if show_in_all %}true{% else %}false{% endif %}"
             {% unless show_in_all %}hidden{% endunless %}
           >
-            <div class="post-meta">
-              <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>
-              {% if post.categories.size > 0 %}<span> · {{ post.categories | join: ' · ' }}</span>{% endif %}
+            <div class="home-post-copy">
+              <div class="post-meta">
+                <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>
+                {% if post.categories.size > 0 %}<span> · {{ post.categories | join: ' · ' }}</span>{% endif %}
+              </div>
+              <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+              <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 150 }} <a class="read-more" href="{{ post.url | relative_url }}">Read more...</a></p>
             </div>
-            <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-            <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 150 }} <a class="read-more" href="{{ post.url | relative_url }}">Read more...</a></p>
+            {% if home_image != '' %}
+              <a class="home-post-image" href="{{ post.url | relative_url }}" aria-label="阅读《{{ post.title | escape }}》">
+                <img src="{{ home_image | escape }}" alt="" loading="lazy" decoding="async">
+              </a>
+            {% endif %}
           </article>
         {% endif %}
       {% endunless %}
@@ -413,6 +434,45 @@ nav: home
   .home-category-link.has-tooltip:focus-visible::after {
     opacity: 1;
     transform: translate(-50%, 0);
+  }
+
+  .home-post-item.has-image {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 150px;
+    gap: 1.6rem;
+    align-items: start;
+  }
+
+  .home-post-copy {
+    min-width: 0;
+  }
+
+  .home-post-image {
+    display: block;
+    width: 150px;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    text-decoration: none;
+  }
+
+  .home-post-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 580px) {
+    .home-post-item.has-image {
+      grid-template-columns: minmax(0, 1fr);
+      gap: .9rem;
+    }
+
+    .home-post-image {
+      width: 100%;
+      max-width: 100%;
+      aspect-ratio: 16 / 9;
+    }
   }
 
   .read-more {
