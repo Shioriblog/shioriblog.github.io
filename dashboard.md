@@ -191,7 +191,9 @@ subscription: false
     },
     likeIds: {
       {% for post in site.posts %}
-        {% if post.wordpress_id %}
+        {% if post.categories contains '食べたり、歩いたり' %}
+          {% assign dashboard_like_id = post.date | date: 'post-%Y%m%d%H%M%S' %}
+        {% elsif post.wordpress_id %}
           {% assign dashboard_like_id = 'post-' | append: post.wordpress_id %}
         {% else %}
           {% assign dashboard_like_id = post.date | date: 'post-%Y%m%d%H%M%S' %}
