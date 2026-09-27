@@ -206,3 +206,55 @@ body.post-category-tabetari .article-content .wp-block-jetpack-tiled-gallery .co
     line-height: 1.85;
   }
 }
+
+
+/* Reusable speaker rows for dialogue excerpt posts. */
+.article-content .conversation-log {
+  display: grid;
+  gap: .42rem;
+  margin: .95rem 0 2.15rem;
+  padding: 0;
+  list-style: none;
+}
+
+.article-content .conversation-turn {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  column-gap: .8rem;
+  align-items: baseline;
+  margin: 0;
+}
+
+.article-content .conversation-speaker {
+  color: var(--accent);
+  font-family: var(--sans);
+  font-size: .75rem;
+  font-weight: 500;
+  line-height: 1.85;
+}
+
+.article-content .conversation-line {
+  min-width: 0;
+}
+
+.article-content .conversation-note {
+  margin: .2rem 0 .15rem 2.3rem;
+  color: var(--muted);
+  font-size: .92em;
+  font-style: italic;
+}
+
+@media (max-width: 640px) {
+  .article-content .conversation-log {
+    gap: .38rem;
+  }
+
+  .article-content .conversation-turn {
+    grid-template-columns: 1.25rem minmax(0, 1fr);
+    column-gap: .6rem;
+  }
+
+  .article-content .conversation-note {
+    margin-left: 1.85rem;
+  }
+}
