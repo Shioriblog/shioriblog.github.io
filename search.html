@@ -1,0 +1,206 @@
+---
+layout: default
+title: 搜索
+permalink: /search/
+nav: search
+subscription: false
+---
+
+<main id="content" class="simple-page search-page">
+  <p class="page-title">Search</p>
+  <h1>搜索</h1>
+  <p class="search-intro">在独居日记里找一找。</p>
+
+  <form class="search-form" role="search" onsubmit="return false;">
+    <label class="sr-only" for="site-search">搜索文章</label>
+    <input id="site-search" type="search" inputmode="search" autocomplete="off" placeholder="输入标题、文字或关键词…" aria-describedby="search-status">
+  </form>
+
+  <p id="search-status" class="search-status" aria-live="polite">输入关键词开始搜索。</p>
+  <div id="search-results" class="search-results"></div>
+</main>
+
+<script id="search-data" type="application/json">
+[
+{% for post in site.posts %}
+  {
+    "title": {{ post.title | jsonify }},
+    "url": {{ post.url | relative_url | jsonify }},
+    "date": {{ post.date | date: "%Y.%m.%d" | jsonify }},
+    "category": {{ post.categories | join: " · " | jsonify }},
+    "text": {{ post.content | strip_html | normalize_whitespace | jsonify }}
+  }{% unless forloop.last %},{% endunless %}
+{% endfor %}
+]
+</script>
+
+<style>
+  .search-page { max-width: 860px; }
+  .search-intro {
+    margin: -.55rem 0 2rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .78rem;
+  }
+  .search-form { margin: 0 0 1rem; }
+  .search-form input {
+    width: 100%;
+    padding: .85rem 0;
+    color: var(--ink);
+    border: 0;
+    border-bottom: 1px solid #aaa49b;
+    border-radius: 0;
+    outline: none;
+    background: transparent;
+    font-family: var(--serif);
+    font-size: 1.12rem;
+  }
+  .search-form input::placeholder { color: #9b958d; }
+  .search-form input:focus { border-bottom-color: var(--accent); }
+  .search-status {
+    margin: .7rem 0 2.2rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .7rem;
+  }
+  .search-results { border-top: 1px solid var(--line); }
+  .search-result {
+    padding: 1.25rem 0 1.35rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .search-result-meta {
+    margin: 0 0 .25rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .68rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .025em;
+  }
+  .search-result h2 {
+    margin: 0 0 .4rem;
+    font-size: 1.28rem;
+    font-weight: 500;
+    line-height: 1.45;
+  }
+  .search-result h2 a { text-decoration: none; }
+  .search-result p {
+    max-width: 43rem;
+    margin: 0;
+    color: var(--body);
+    font-size: .9rem;
+    line-height: 1.7;
+  }
+  .search-empty {
+    padding: 1.6rem 0;
+    color: var(--muted);
+    font-size: .9rem;
+  }
+</style>
+
+<script>
+(() => {
+  const input = document.getElementById('site-search');
+  const status = document.getElementById('search-status');
+  const results = document.getElementById('search-results');
+  const posts = JSON.parse(document.getElementById('search-data').textContent);
+
+  const normalize = (value) =>
+    String(value || '')
+      .toLocaleLowerCase()
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  posts.forEach((post) => {
+    post._title = normalize(post.title);
+    post._text = normalize(post.text);
+    post._category = normalize(post.category);
+    post._haystack = `${post._title} ${post._category} ${post._text}`;
+  });
+
+  const makeSnippet = (post, terms) => {
+    const source = String(post.text || '').replace(/\s+/g, ' ').trim();
+    const lower = source.toLocaleLowerCase();
+    let at = -1;
+
+    for (const term of terms) {
+      const found = lower.indexOf(term);
+      if (found !== -1 && (at === -1 || found < at)) at = found;
+    }
+
+    if (at === -1) return source.slice(0, 150) + (source.length > 150 ? '…' : '');
+
+    const start = Math.max(0, at - 55);
+    const end = Math.min(source.length, at + 120);
+    return (start > 0 ? '…' : '') + source.slice(start, end).trim() + (end < source.length ? '…' : '');
+  };
+
+  const render = (query) => {
+    const clean = normalize(query);
+    results.replaceChildren();
+
+    if (!clean) {
+      status.textContent = '输入关键词开始搜索。';
+      return;
+    }
+
+    const terms = clean.split(' ').filter(Boolean);
+
+    const matches = posts
+      .filter((post) => terms.every((term) => post._haystack.includes(term)))
+      .map((post) => {
+        let score = 0;
+        terms.forEach((term) => {
+          if (post._title.includes(term)) score += 8;
+          if (post._category.includes(term)) score += 3;
+          if (post._text.includes(term)) score += 1;
+        });
+        return { post, score };
+      })
+      .sort((a, b) => b.score - a.score || b.post.date.localeCompare(a.post.date));
+
+    status.textContent = matches.length
+      ? `找到 ${matches.length} 篇文章`
+      : '没有找到相关文章。';
+
+    if (!matches.length) {
+      const empty = document.createElement('p');
+      empty.className = 'search-empty';
+      empty.textContent = '换一个关键词试试看。';
+      results.appendChild(empty);
+      return;
+    }
+
+    matches.forEach(({ post }) => {
+      const article = document.createElement('article');
+      article.className = 'search-result';
+
+      const meta = document.createElement('p');
+      meta.className = 'search-result-meta';
+      meta.textContent = post.category ? `${post.date} · ${post.category}` : post.date;
+
+      const heading = document.createElement('h2');
+      const link = document.createElement('a');
+      link.href = post.url;
+      link.textContent = post.title;
+      heading.appendChild(link);
+
+      const excerpt = document.createElement('p');
+      excerpt.textContent = makeSnippet(post, terms);
+
+      article.append(meta, heading, excerpt);
+      results.appendChild(article);
+    });
+  };
+
+  const params = new URLSearchParams(window.location.search);
+  const initial = params.get('q') || '';
+  if (initial) input.value = initial;
+  render(initial);
+
+  let timer;
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => render(input.value), 80);
+  });
+})();
+</script>
