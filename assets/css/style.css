@@ -278,3 +278,66 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
     flex-basis: 78px;
   }
 }
+
+
+/* Header search */
+.nav-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.nav-search-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2rem;
+  height: 1.5rem;
+  padding: 0 0 .2rem;
+  color: var(--ink);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.nav-search-toggle:hover,
+.nav-search-toggle:focus-visible {
+  color: var(--accent);
+}
+.nav-search-form {
+  position: absolute;
+  right: 1.7rem;
+  bottom: -.1rem;
+  width: 10.5rem;
+  margin: 0;
+  background: var(--paper);
+}
+.nav-search-form[hidden] {
+  display: none;
+}
+.nav-search-form input {
+  width: 100%;
+  padding: .15rem 0 .25rem;
+  color: var(--ink);
+  border: 0;
+  border-bottom: 1px solid #aaa49b;
+  border-radius: 0;
+  outline: 0;
+  background: var(--paper);
+  font-family: var(--serif);
+  font-size: .82rem;
+}
+.nav-search-form input::placeholder {
+  color: #9b958d;
+}
+.nav-search-form input:focus {
+  border-bottom-color: var(--accent);
+}
+.nav-search.is-open .nav-search-toggle {
+  color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .nav-search-form {
+    right: 1.55rem;
+    width: min(12rem, calc(100vw - 3.5rem));
+  }
+}
