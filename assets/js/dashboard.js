@@ -28,6 +28,7 @@
   const titles = normalizePathMap(config.titles)
   const categoriesByPath = normalizePathMap(config.categories)
   const likeIdsByPath = normalizePathMap(config.likeIds)
+  const validPaths = new Set((config.validPaths || []).map(normalizePath))
   const datesByPath = normalizePathMap(config.dates)
   const siteHost = 'shioriblog.org'
 
@@ -47,6 +48,7 @@
   const sources = document.getElementById('stats-sources')
   const categories = document.getElementById('stats-categories')
   const sitePages = document.getElementById('stats-site-pages')
+  const sitePagesToggle = document.getElementById('stats-site-pages-toggle')
   const countries = document.getElementById('stats-countries')
   const postAge = document.getElementById('stats-post-age')
   const referrerPosts = document.getElementById('stats-referrer-posts')
@@ -147,6 +149,65 @@
       }
       li.appendChild(metric)
       list.appendChild(li)
+    })
+  }
+
+
+  let showArchivedSitePages = false
+  let cachedSitePages = []
+
+  const isCurrentSitePath = (path) => {
+    const normalized = normalizePath(path)
+    if (validPaths.has(normalized)) return true
+    return /^\/page\/\d+$/.test(normalized)
+  }
+
+  const renderSitePages = (items) => {
+    cachedSitePages = items || []
+    const current = cachedSitePages.filter((item) => isCurrentSitePath(item.label))
+    const archived = cachedSitePages.filter((item) => !isCurrentSitePath(item.label))
+    const visible = showArchivedSitePages ? [...current, ...archived] : current
+
+    sitePages.innerHTML = ''
+    if (!visible.length) {
+      showEmpty(sitePages)
+    } else {
+      visible.slice(0, 10).forEach((item) => {
+        const archivedPath = !isCurrentSitePath(item.label)
+        const li = document.createElement('li')
+        if (archivedPath) li.classList.add('is-archived')
+
+        const left = document.createElement(archivedPath ? 'span' : 'a')
+        if (!archivedPath) left.href = item.label
+        left.textContent = pathLabel(item.label)
+        left.title = item.label
+
+        if (archivedPath) {
+          const badge = document.createElement('small')
+          badge.className = 'stats-page-status'
+          badge.textContent = '404 / old'
+          left.appendChild(badge)
+        }
+
+        const metric = document.createElement('span')
+        metric.className = 'stats-value'
+        metric.textContent = `${number.format(item.views || 0)} · ${number.format(item.visits || 0)}`
+
+        li.append(left, metric)
+        sitePages.appendChild(li)
+      })
+    }
+
+    if (sitePagesToggle) {
+      sitePagesToggle.hidden = archived.length === 0
+      sitePagesToggle.textContent = showArchivedSitePages ? 'Hide archived / 404' : `Show archived / 404 (${archived.length})`
+    }
+  }
+
+  if (sitePagesToggle) {
+    sitePagesToggle.addEventListener('click', () => {
+      showArchivedSitePages = !showArchivedSitePages
+      renderSitePages(cachedSitePages)
     })
   }
 
@@ -555,7 +616,7 @@
     renderReaderResponse(postRows)
     addItems(recentPosts, recentPostRows(data.pages || [], data.likes || {}), { link: true, triple: true })
     addItems(posts, postRows, { link: true, triple: true })
-    addItems(sitePages, siteRows, { link: true, dual: true })
+    renderSitePages(siteRows)
 
     const external = externalReferrers(data.referrers || [])
       .sort((a, b) => (b.visits - a.visits) || (b.views - a.views))
