@@ -185,7 +185,7 @@ body.post-category-tabetari .article-content .wp-block-jetpack-tiled-gallery .co
     flex-wrap: wrap;
   }
 
-  body.post-category-tabetari .article-content .wp-block-jetpack-tiled-gallery .wp-block-gallery.has-nested-images .wp-block-image {
+  body.post-category-tabetari .article-content .wp-block-jetpack-tiled-gallery .tiled-gallery__row:not(.columns-1) > .tiled-gallery__col {
     flex: 1 1 calc(50% - 3px) !important;
   }
 
