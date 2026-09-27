@@ -185,11 +185,24 @@ body.post-category-tabetari .article-content .wp-block-jetpack-tiled-gallery .co
     flex-wrap: wrap;
   }
 
-  body.post-category-tabetari .article-content .wp-block-jetpack-tiled-gallery .tiled-gallery__row:not(.columns-1) > .tiled-gallery__col {
+  body.post-category-tabetari .article-content .wp-block-jetpack-tiled-gallery .wp-block-gallery.has-nested-images .wp-block-image {
     flex: 1 1 calc(50% - 3px) !important;
   }
 
   body.post-category-tabetari .article-content .wp-block-jetpack-tiled-gallery img {
     min-height: 135px;
+  }
+}
+
+/* Slightly quieter, more compact post body typography. */
+.article-content {
+  font-size: 17px;
+  line-height: 1.85;
+}
+
+@media (max-width: 640px) {
+  .article-content {
+    font-size: 16px;
+    line-height: 1.85;
   }
 }
