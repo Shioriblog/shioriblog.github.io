@@ -156,7 +156,13 @@ subscription: false
       </section>
 
       <section class="stats-panel">
-        <div class="stats-panel-heading"><h2>Site pages</h2><span>VIEWS · VISITS</span></div>
+        <div class="stats-panel-heading">
+          <h2>Site pages</h2>
+          <div class="stats-heading-actions">
+            <span>VIEWS · VISITS</span>
+            <button id="stats-site-pages-toggle" type="button" hidden>Show archived / 404</button>
+          </div>
+        </div>
         <ol class="stats-list" id="stats-site-pages"></ol>
       </section>
 
@@ -192,7 +198,11 @@ subscription: false
         {% endif %}
         {{ post.url | jsonify }}: {{ dashboard_like_id | jsonify }}{% unless forloop.last %},{% endunless %}
       {% endfor %}
-    }
+    },
+    validPaths: [
+      {% for page in site.pages %}{{ page.url | jsonify }},{% endfor %}
+      {% for post in site.posts %}{{ post.url | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}
+    ]
   }
 </script>
 <script src="{{ '/assets/js/zine-downloads.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
@@ -225,6 +235,11 @@ subscription: false
   .stats-panel-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: .85rem; }
   .stats-panel-heading h2 { margin: 0; color: var(--ink); font-family: var(--serif); font-size: 1.05rem; font-weight: 500; }
   .stats-panel-heading span { color: var(--muted); font-size: .62rem; letter-spacing: .08em; }
+  .stats-heading-actions { display: flex; align-items: baseline; gap: .7rem; }
+  .stats-heading-actions button { padding: 0; border: 0; border-bottom: 1px solid currentColor; background: transparent; color: var(--muted); font: inherit; font-size: .58rem; cursor: pointer; }
+  .stats-heading-actions button:hover, .stats-heading-actions button:focus-visible { color: var(--accent); }
+  .stats-list li.is-archived { opacity: .62; }
+  .stats-page-status { display: inline-block; margin-left: .45rem; padding: .03rem .28rem; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: .5rem; line-height: 1.4; vertical-align: .08em; }
   .stats-zines { margin-bottom: 3rem; }
   .stats-zine-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
   .stats-zine-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 1.25rem; padding: 1rem 0; border-bottom: 1px solid var(--line); }
