@@ -16,14 +16,65 @@
       <li><a href="{{ '/archive/' | relative_url }}"{% if page.nav == 'archive' %} aria-current="page"{% endif %}>归档</a></li>
       <li><a href="{{ '/about/' | relative_url }}"{% if page.nav == 'about' %} aria-current="page"{% endif %}>关于</a></li>
       <li><a href="{{ '/friends/' | relative_url }}"{% if page.nav == 'friends' %} aria-current="page"{% endif %}>友链</a></li>
-      <li>
-        <a href="{{ '/search/' | relative_url }}"{% if page.nav == 'search' %} aria-current="page"{% endif %} aria-label="搜索" title="搜索">
+      <li class="nav-search">
+        <button class="nav-search-toggle" type="button" aria-label="搜索" aria-expanded="false" aria-controls="nav-search-form" title="搜索">
           <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"></circle>
             <path d="M16 16l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
           </svg>
-        </a>
+        </button>
+        <form id="nav-search-form" class="nav-search-form" action="{{ '/search/' | relative_url }}" method="get" role="search" hidden>
+          <label class="sr-only" for="nav-search-input">搜索文章</label>
+          <input id="nav-search-input" name="q" type="search" autocomplete="off" placeholder="搜索…" aria-label="搜索文章">
+        </form>
       </li>
     </ul>
   </nav>
 </header>
+
+<script>
+(() => {
+  const wrap = document.querySelector('.nav-search');
+  if (!wrap) return;
+
+  const toggle = wrap.querySelector('.nav-search-toggle');
+  const form = wrap.querySelector('.nav-search-form');
+  const input = wrap.querySelector('input');
+
+  const open = () => {
+    form.hidden = false;
+    wrap.classList.add('is-open');
+    toggle.setAttribute('aria-expanded', 'true');
+    requestAnimationFrame(() => input.focus());
+  };
+
+  const close = () => {
+    wrap.classList.remove('is-open');
+    toggle.setAttribute('aria-expanded', 'false');
+    form.hidden = true;
+  };
+
+  toggle.addEventListener('click', () => {
+    if (form.hidden) open();
+    else close();
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!form.hidden && !wrap.contains(event.target)) close();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !form.hidden) {
+      close();
+      toggle.focus();
+    }
+  });
+
+  form.addEventListener('submit', (event) => {
+    if (!input.value.trim()) {
+      event.preventDefault();
+      input.focus();
+    }
+  });
+})();
+</script>
