@@ -50,14 +50,7 @@ nav: home
     {% endif %}
   {% endif %}
 
-  <div class="latest-posts-heading">
-    <h1 class="page-title">Latest Posts</h1>
-    <div class="latest-posts-subscribe" aria-label="订阅博客更新">
-      <button type="button" data-open-subscription>Subscribe</button>
-      <span aria-hidden="true">·</span>
-      <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
-    </div>
-  </div>
+  <h1 class="page-title">Latest Posts</h1>
 
   {% if site.categories.size > 0 %}
     {% assign home_categories = "日記の練習|言葉と歩く日記|うたかたの日々" | split: "|" %}
