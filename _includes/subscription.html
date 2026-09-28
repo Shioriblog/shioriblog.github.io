@@ -217,6 +217,9 @@
       }
 
       launcher.addEventListener('click', () => setOpen(panel.hidden))
+      document.querySelectorAll('[data-open-subscription]').forEach((trigger) => {
+        trigger.addEventListener('click', () => setOpen(true))
+      })
       close.addEventListener('click', () => setOpen(false))
 
       document.addEventListener('click', (event) => {
