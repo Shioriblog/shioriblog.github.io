@@ -7,7 +7,7 @@
     aria-controls="subscription-panel"
   >
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 6.5h15v11h-15z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="m5.2 7.3 6.8 5.4 6.8-5.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span>订阅</span>
+    <span>订阅更新</span>
   </button>
 
   <section class="subscription-panel" id="subscription-panel" aria-labelledby="subscribe-title" hidden>
@@ -50,15 +50,16 @@
     .subscription-launcher {
       display: inline-flex;
       align-items: center;
-      gap: .45rem;
-      min-height: 38px;
-      padding: .48rem .8rem;
+      gap: .5rem;
+      min-height: 46px;
+      padding: .625rem .875rem;
       border: 1px solid var(--accent);
       border-radius: 999px;
       background: var(--accent);
       color: #fff;
       font: inherit;
-      font-size: .76rem;
+      font-size: .875rem;
+      line-height: 1.4;
       cursor: pointer;
       box-shadow: 0 5px 18px rgba(29, 28, 26, .10);
       transition: background-color .15s ease, border-color .15s ease, transform .15s ease;
@@ -75,9 +76,9 @@
     }
 
     .subscription-launcher svg {
-      width: 15px;
-      height: 15px;
-      flex: 0 0 15px;
+      width: 18px;
+      height: 18px;
+      flex: 0 0 18px;
     }
 
     .subscription-panel {
