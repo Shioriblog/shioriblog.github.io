@@ -343,79 +343,96 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
 }
 
 
-/* Conversation excerpts: editorial transcript layout */
+/* Conversation excerpts: book-style dialogue. */
 .article-content .conversation-page {
-  width: min(100%, 36rem);
-  margin: .35rem auto 0;
+  width: 100%;
+  margin: 0;
 }
+
 .article-content .conversation-date {
-  display: flex;
-  align-items: center;
-  gap: .8rem;
-  margin: 3.15rem 0 1rem;
+  margin: 3rem 0 1rem;
   color: var(--muted);
   font-family: var(--sans);
-  font-size: .67rem;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: .13em;
-  line-height: 1;
+  font-size: .8125rem;
+  font-weight: 500;
+  letter-spacing: .03em;
+  line-height: 1.5;
 }
+
 .article-content .conversation-date:first-child {
-  margin-top: .25rem;
+  margin-top: 0;
 }
-.article-content .conversation-date::after {
-  content: "";
-  width: 2.4rem;
-  height: 1px;
-  background: var(--line);
-}
+
 .article-content .conversation-log {
   margin: 0;
   padding: 0;
   list-style: none;
+  line-height: 1.82;
 }
+
 .article-content .conversation-turn {
   display: grid;
-  grid-template-columns: 1.7rem minmax(0, 1fr);
-  column-gap: .8rem;
+  grid-template-columns: 1.85em minmax(0, 1fr);
   align-items: baseline;
-  margin: 0 0 .42rem;
+  margin: 0 0 .25rem;
+  line-height: inherit;
 }
+
+.article-content .conversation-turn:last-child {
+  margin-bottom: 0;
+}
+
+.article-content .conversation-turn.conversation-pause {
+  margin-top: .8125rem;
+}
+
 .article-content .conversation-speaker {
-  color: var(--muted);
-  font-family: var(--sans);
-  font-size: .67rem;
+  color: var(--body);
+  font-family: var(--serif);
+  font-size: 1em;
   font-weight: 500;
-  letter-spacing: .04em;
-  line-height: 1.9;
+  line-height: inherit;
 }
+
+.article-content .conversation-speaker::after {
+  content: "：";
+}
+
 .article-content .conversation-line {
   min-width: 0;
   color: var(--body);
-  line-height: 1.82;
-}
-.article-content .conversation-note {
-  margin: .55rem 0 .55rem 2.5rem;
-  color: var(--muted);
-  font-family: var(--sans);
-  font-size: .72rem;
-  font-style: italic;
-  line-height: 1.7;
-}
-@media (max-width: 640px) {
-  .article-content .conversation-page {
-    width: 100%;
-  }
-  .article-content .conversation-date {
-    margin-top: 2.7rem;
-  }
-  .article-content .conversation-turn {
-    grid-template-columns: 1.35rem minmax(0, 1fr);
-    column-gap: .65rem;
-    margin-bottom: .48rem;
-  }
-  .article-content .conversation-note {
-    margin-left: 2rem;
-  }
+  line-height: inherit;
+  overflow-wrap: break-word;
 }
 
+.article-content .conversation-aside,
+.article-content .conversation-note {
+  color: var(--muted);
+  font-family: var(--serif);
+  font-style: normal;
+}
+
+.article-content .conversation-note {
+  margin: .1875rem 0 .4375rem 2em;
+  font-size: .92em;
+  line-height: 1.75;
+}
+
+body.post-category-utakata .article-content h3:has(+ .conversation-log) {
+  margin-bottom: 1rem;
+}
+
+body.post-category-utakata .article-content .conversation-log + h3 {
+  margin-top: 3rem;
+}
+
+@media (max-width: 640px) {
+  .article-content .conversation-date,
+  body.post-category-utakata .article-content .conversation-log + h3 {
+    margin-top: 2.5rem;
+  }
+
+  .article-content .conversation-date:first-child {
+    margin-top: 0;
+  }
+}
