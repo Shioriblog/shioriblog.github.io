@@ -52,6 +52,7 @@ subscription: false
     <p class="stats-note">按芝加哥日期汇总；首尾日期可能只覆盖部分时段，今天尚未结束。</p>
   </section>
 
+  <div class="stats-grid stats-posts-grid">
   <section class="stats-panel stats-recent-panel">
     <div class="stats-panel-heading"><h2>Recent posts</h2><span>最新 5 篇</span></div>
     <table class="stats-post-table">
@@ -69,6 +70,7 @@ subscription: false
       <tbody id="stats-posts"></tbody>
     </table>
   </section>
+  </div>
 
   <section class="stats-comments" aria-labelledby="recent-comments-title">
     <div class="stats-panel-heading">
@@ -227,7 +229,6 @@ subscription: false
   .stats-change.is-down { color: #8a625a; }
   .stats-panel { min-width: 0; }
   .stats-chart-panel { margin-bottom: 3rem; }
-  .stats-recent-panel { margin-bottom: 3rem; }
   .stats-panel-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin-bottom: .85rem; }
   .stats-panel-heading h2 { margin: 0; color: var(--ink); font-family: var(--serif); font-size: 1.05rem; font-weight: 500; }
   .stats-panel-heading span { color: var(--muted); font-size: .62rem; letter-spacing: .08em; }
@@ -330,12 +331,13 @@ subscription: false
   .stats-summary-note { margin-bottom: 2rem; }
   .stats-panel-heading h2 { font-size: 1.1rem; }
   .stats-panel-heading span { color: var(--stats-muted); font-size: .7rem; letter-spacing: .025em; }
-  .stats-chart-panel, .stats-recent-panel, .stats-top-panel, .stats-comments, .stats-insight-grid, .stats-support-grid { margin-bottom: 2.4rem; }
+  .stats-chart-panel, .stats-posts-grid, .stats-comments, .stats-insight-grid, .stats-support-grid { margin-bottom: 2.4rem; }
+  .stats-posts-grid { align-items: start; }
   .stats-post-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: .84rem; }
   .stats-post-table th { padding: .65rem 0; color: var(--stats-muted); font-size: .72rem; font-weight: 400; border-top: 1px solid var(--line); }
   .stats-post-table th, .stats-post-table td { text-align: right; border-bottom: 1px solid var(--line); }
   .stats-post-table th:first-child, .stats-post-table td:first-child { text-align: left; padding-right: 1rem; }
-  .stats-post-table th:not(:first-child) { width: 4.4rem; }
+  .stats-post-table th:not(:first-child) { width: 3.4rem; }
   .stats-post-table td { padding: .78rem 0; color: var(--body); font-variant-numeric: tabular-nums; vertical-align: middle; }
   .stats-post-table a { display: block; color: var(--body); text-decoration: none; line-height: 1.55; overflow-wrap: anywhere; }
   .stats-post-table a:hover { color: var(--accent); }
@@ -366,6 +368,9 @@ subscription: false
   .stats-bar-item:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
   .stats-bar-item:hover::after, .stats-bar-item:focus::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); z-index: 1; padding: .25rem .4rem; background: var(--ink); color: white; font-size: .68rem; white-space: nowrap; }
   .stats-bar-item.is-partial .stats-bar { opacity: .48; }
+  @media (max-width: 800px) {
+    .stats-posts-grid { grid-template-columns: 1fr; gap: 2rem; }
+  }
   @media (max-width: 700px) {
     .stats-header { gap: .8rem; }
     .stats-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
