@@ -189,17 +189,26 @@ async function handleDashboard(request, env, url) {
     return json({
       views,
       visits,
-      likes,
+      likes: likes || {},
+      likesAvailable: likes !== null,
+      generatedAt: end.toISOString(),
+      range: {
+        start: start.toISOString(),
+        end: end.toISOString(),
+        startDate: localDateKey(start),
+        endDate: localDateKey(end),
+        timeZone: SITE_TIME_ZONE
+      },
       previous: {
+        start: previousStart.toISOString(),
+        end: previousEnd.toISOString(),
         views: previousViews,
         visits: previousVisits,
         pagesPerVisit: previousVisits ? previousViews / previousVisits : null
       },
       label: days === 1 ? 'Last 24 hours' : `Last ${days} days`,
       comparisonLabel: days === 1 ? 'vs previous 24h' : `vs previous ${days} days`,
-      series: mergeNumeric(account.series, (row) => localDateKey(row.dimensions?.datetimeHour), (row) => estimate(row))
-        .sort((a, b) => a[0].localeCompare(b[0]))
-        .map(([date, value]) => ({ date, views: value })),
+      series: dailySeries(account.series, start, end),
       pages: Array.from(pageMap.entries())
         .map(([label, value]) => ({ label, ...value }))
         .sort((a, b) => b.views - a.views),
@@ -289,16 +298,16 @@ async function handleLikeRequest(request, env, url) {
 }
 
 async function getLikeSummary(env) {
-  if (!env.LIKES) return {}
+  if (!env.LIKES) return null
   try {
     const objectId = env.LIKES.idFromName(LIKE_STORE_NAME)
     const stub = env.LIKES.get(objectId)
     const response = await stub.fetch('https://likes.internal/__summary')
-    if (!response.ok) return {}
+    if (!response.ok) return null
     const data = await response.json()
     return data.likes || {}
   } catch (_) {
-    return {}
+    return null
   }
 }
 
@@ -321,7 +330,7 @@ async function runGraphQL(env, query) {
 function rumFilter(start, end) {
   return `{
     datetime_geq: ${JSON.stringify(start.toISOString())}
-    datetime_leq: ${JSON.stringify(end.toISOString())}
+    datetime_lt: ${JSON.stringify(end.toISOString())}
     requestHost: ${JSON.stringify(SITE_HOST)}
     bot: 0
   }`
@@ -339,6 +348,17 @@ function localDateKey(value) {
   }).formatToParts(date)
   const byType = Object.fromEntries(parts.map((part) => [part.type, part.value]))
   return `${byType.year}-${byType.month}-${byType.day}`
+}
+
+function dailySeries(rows, start, end) {
+  const totals = new Map(mergeNumeric(rows, (row) => localDateKey(row.dimensions?.datetimeHour), (row) => estimate(row)))
+  const first = new Date(`${localDateKey(start)}T00:00:00Z`)
+  const last = localDateKey(end)
+  const series = []
+  for (let date = first.toISOString().slice(0, 10); date <= last; first.setUTCDate(first.getUTCDate() + 1), date = first.toISOString().slice(0, 10)) {
+    series.push({ date, views: totals.get(date) || 0 })
+  }
+  return series
 }
 
 function normalizeRequestPath(value) {
@@ -377,8 +397,10 @@ function internalJson(data, status = 200) {
 }
 
 function estimate(row) {
-  const sampleInterval = Number(row?.avg?.sampleInterval || 1)
-  return Math.round(Number(row?.count || 0) * sampleInterval)
+  // Adaptive Groups counts already include sampling extrapolation.
+  // https://developers.cloudflare.com/analytics/graphql-api/sampling/
+  // Multiplying by sampleInterval again inflates older, sampled periods.
+  return Math.round(Number(row?.count || 0))
 }
 
 function mergeNumeric(rows = [], keyFn, valueFn) {

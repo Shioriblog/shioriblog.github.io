@@ -57,8 +57,10 @@
 
   const responseMostLiked = document.getElementById('response-most-liked')
   const responseMostLikedMeta = document.getElementById('response-most-liked-meta')
-  const responseLikeRate = document.getElementById('response-like-rate')
-  const responseLikeRateMeta = document.getElementById('response-like-rate-meta')
+  const periodDetails = document.getElementById('stats-period-details')
+  const readerOnly = document.getElementById('stats-comments-reader-only')
+  const commentsNote = document.getElementById('stats-comments-note')
+  const siteTimeZone = 'America/Chicago'
 
   const number = new Intl.NumberFormat('en-US')
   const regionNames = typeof Intl.DisplayNames === 'function'
@@ -90,9 +92,17 @@
   }
 
   const showEmpty = (list) => {
-    const item = document.createElement('li')
-    item.className = 'stats-empty'
-    item.textContent = '暂无数据'
+    const item = document.createElement(list.tagName === 'TBODY' ? 'tr' : 'li')
+    if (list.tagName === 'TBODY') {
+      const cell = document.createElement('td')
+      cell.colSpan = 4
+      cell.className = 'stats-empty'
+      cell.textContent = '暂无数据'
+      item.appendChild(cell)
+    } else {
+      item.className = 'stats-empty'
+      item.textContent = '暂无数据'
+    }
     list.appendChild(item)
   }
 
@@ -135,6 +145,7 @@
       } else {
         const span = document.createElement('span')
         span.textContent = label
+        if (item.rawHosts) span.title = item.rawHosts.join('、')
         li.appendChild(span)
       }
 
@@ -152,6 +163,35 @@
     })
   }
 
+
+  const renderPostTable = (body, rows, withDates = false, likesAvailable = true) => {
+    body.innerHTML = ''
+    if (!rows?.length) return showEmpty(body)
+    rows.slice(0, 10).forEach((row) => {
+      const tr = document.createElement('tr')
+      const title = document.createElement('td')
+      const link = document.createElement('a')
+      link.href = row.label
+      link.textContent = pathLabel(row.label)
+      title.appendChild(link)
+      if (withDates && datesByPath[row.label]) {
+        const date = new Date(datesByPath[row.label])
+        if (!Number.isNaN(date.getTime())) {
+          const time = document.createElement('time')
+          time.dateTime = date.toISOString()
+          time.textContent = date.toLocaleDateString('zh-CN', { timeZone: siteTimeZone, year: 'numeric', month: '2-digit', day: '2-digit' })
+          title.appendChild(time)
+        }
+      }
+      tr.appendChild(title)
+      ;['views', 'visits', 'likes'].forEach((key) => {
+        const cell = document.createElement('td')
+        cell.textContent = key === 'likes' && !likesAvailable ? '—' : number.format(row[key] || 0)
+        tr.appendChild(cell)
+      })
+      body.appendChild(tr)
+    })
+  }
 
   let showArchivedSitePages = false
   let cachedSitePages = []
@@ -211,7 +251,7 @@
     })
   }
 
-  const drawChart = (series) => {
+  const drawChart = (series, range = {}) => {
     chart.innerHTML = ''
     if (!series?.length) {
       const empty = document.createElement('p')
@@ -221,12 +261,19 @@
       return
     }
 
+    chart.classList.toggle('is-dense', series.length > 12)
+    const startDay = String(range.startDate || '')
+    const endDay = String(range.endDate || '')
     const ordered = [...series].sort((a, b) => String(a.date).localeCompare(String(b.date)))
     const max = Math.max(...ordered.map((item) => item.views), 1)
     ordered.forEach((item) => {
       const node = document.createElement('div')
       node.className = 'stats-bar-item'
-      node.title = `${item.date}: ${number.format(item.views)} views`
+      const partial = item.date === startDay || item.date === endDay
+      node.classList.toggle('is-partial', partial)
+      node.dataset.tooltip = `${item.date} · ${number.format(item.views)} 次${partial ? '（部分时段）' : ''}`
+      node.setAttribute('aria-label', node.dataset.tooltip)
+      node.tabIndex = 0
 
       const wrap = document.createElement('div')
       wrap.className = 'stats-bar-wrap'
@@ -237,8 +284,8 @@
 
       const time = document.createElement('time')
       time.dateTime = item.date
-      const date = new Date(`${item.date}T12:00:00`)
-      time.textContent = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/Chicago' })
+      const [, month, day] = String(item.date).split('-')
+      time.textContent = `${Number(month)}/${Number(day)}`
 
       node.appendChild(wrap)
       node.appendChild(time)
@@ -247,7 +294,7 @@
   }
 
   const pctChange = (current, previous) => {
-    if (previous == null || !Number.isFinite(Number(previous))) return null
+    if (current == null || previous == null || !Number.isFinite(Number(current)) || !Number.isFinite(Number(previous))) return null
     if (Number(previous) === 0) return Number(current) === 0 ? 0 : null
     return ((Number(current) - Number(previous)) / Number(previous)) * 100
   }
@@ -256,7 +303,7 @@
     const change = pctChange(current, previous)
     node.classList.remove('is-up', 'is-down')
     if (change == null) {
-      node.textContent = label ? `— ${label}` : ''
+      node.textContent = '暂无可比数据'
       return
     }
     const rounded = Math.round(change)
@@ -268,25 +315,42 @@
 
   const normalizeHost = (host) => String(host || '').trim().toLowerCase().replace(/^www\./, '')
 
-  const externalReferrers = (items) => (items || []).filter((item) => {
-    const host = normalizeHost(item.label)
-    return !host || host !== siteHost
-  })
+  const isMailHost = (host) => /(^|\.)sendib[mt]\d*\.com$/.test(host)
+  const sourceKey = (label) => {
+    const host = normalizeHost(label)
+    if (!host || host === 'direct') return 'direct'
+    return isMailHost(host) ? 'brevo-email' : host
+  }
+  const sourceLabel = (key) => ({
+    direct: '直接 / 未知来源',
+    'douban.com': '豆瓣',
+    'brevo-email': '邮件订阅（Brevo）'
+  }[key] || key)
+
+  const externalReferrers = (items) => (items || []).filter((item) => normalizeHost(item.label) !== siteHost)
+
+  const mergeReferrers = (items) => {
+    const totals = new Map()
+    externalReferrers(items).forEach((item) => {
+      const key = sourceKey(item.label)
+      const row = totals.get(key) || { key, label: sourceLabel(key), views: 0, visits: 0, rawHosts: [] }
+      row.views += Number(item.views || 0)
+      row.visits += Number(item.visits || 0)
+      if (!row.rawHosts.includes(item.label)) row.rawHosts.push(item.label || 'Direct')
+      totals.set(key, row)
+    })
+    return [...totals.values()].sort((a, b) => b.visits - a.visits || b.views - a.views)
+  }
 
   const sourceType = (label) => {
     const host = normalizeHost(label)
-    if (!host || host === 'direct') return 'Direct'
-
+    if (!host || host === 'direct') return '直接 / 未知来源'
+    if (isMailHost(host)) return '邮件订阅'
     const searchHosts = ['google.', 'bing.com', 'duckduckgo.com', 'yahoo.', 'baidu.com', 'yandex.']
-    if (searchHosts.some((needle) => host.includes(needle))) return 'Search'
-
-    const socialHosts = [
-      'douban.com', 'mastodon.', 'bsky.app', 'facebook.com', 'instagram.com', 'threads.net',
-      'twitter.com', 'x.com', 'weibo.com', 'reddit.com', 't.co', 'linkedin.com'
-    ]
-    if (socialHosts.some((needle) => host.includes(needle))) return 'Social'
-
-    return 'Other websites'
+    if (searchHosts.some((needle) => host.includes(needle))) return '搜索引擎'
+    const socialHosts = ['douban.com', 'mastodon.', 'bsky.app', 'facebook.com', 'instagram.com', 'threads.net', 'twitter.com', 'x.com', 'weibo.com', 'reddit.com', 't.co', 'linkedin.com']
+    if (socialHosts.some((needle) => host.includes(needle))) return '社交网站'
+    return '其他网站'
   }
 
   const groupSources = (items) => {
@@ -295,8 +359,7 @@
       const label = sourceType(item.label)
       totals.set(label, (totals.get(label) || 0) + Number(item.visits || 0))
     })
-    const order = ['Direct', 'Search', 'Social', 'Other websites']
-    return order.map((label) => ({ label, visits: totals.get(label) || 0 })).filter((item) => item.visits > 0)
+    return [...totals].map(([label, visits]) => ({ label, visits })).filter((item) => item.visits > 0).sort((a, b) => b.visits - a.visits)
   }
 
   const splitPages = (items, likes) => {
@@ -431,14 +494,19 @@
 
   const renderReferrerPosts = (items) => {
     referrerPosts.innerHTML = ''
-    const filtered = (items || [])
-      .filter((item) => Object.prototype.hasOwnProperty.call(titles, normalizePath(item.path)))
-      .filter((item) => {
-        const host = normalizeHost(item.referrer)
-        return !host || host !== siteHost
-      })
-      .sort((a, b) => (b.visits - a.visits) || (b.views - a.views))
-      .slice(0, 10)
+    const totals = new Map()
+    ;(items || []).forEach((item) => {
+      const path = normalizePath(item.path)
+      if (!Object.prototype.hasOwnProperty.call(titles, path) || normalizeHost(item.referrer) === siteHost) return
+      const source = sourceKey(item.referrer)
+      const key = `${path}\u0000${source}`
+      const row = totals.get(key) || { path, referrer: sourceLabel(source), views: 0, visits: 0, rawHosts: [] }
+      row.views += Number(item.views || 0)
+      row.visits += Number(item.visits || 0)
+      if (!row.rawHosts.includes(item.referrer)) row.rawHosts.push(item.referrer || 'Direct')
+      totals.set(key, row)
+    })
+    const filtered = [...totals.values()].sort((a, b) => b.visits - a.visits || b.views - a.views).slice(0, 10)
 
     if (!filtered.length) {
       showEmpty(referrerPosts)
@@ -450,7 +518,8 @@
       const left = document.createElement('span')
       const source = document.createElement('span')
       source.className = 'stats-source-label'
-      source.textContent = item.referrer || 'Direct'
+      source.textContent = item.referrer
+      source.title = item.rawHosts.join('、')
       const arrow = document.createTextNode(' → ')
       const link = document.createElement('a')
       link.href = normalizePath(item.path)
@@ -478,20 +547,15 @@
     meta.textContent = text(row)
   }
 
-  const renderReaderResponse = (postRows) => {
-    const mostLiked = [...postRows].sort((a, b) => (b.likes - a.likes) || (b.views - a.views))[0]
-    const likeRateRows = postRows
-      .filter((row) => row.views >= 5 && row.likes > 0)
-      .map((row) => ({ ...row, likeDensity: (row.likes / row.views) * 100 }))
-      .sort((a, b) => b.likeDensity - a.likeDensity)
-    const highestDensity = likeRateRows[0]
-
-    setResponseCard(responseMostLiked, responseMostLikedMeta, mostLiked,
-      (row) => `♥ ${number.format(row.likes)} cumulative likes`)
-    setResponseCard(responseLikeRate, responseLikeRateMeta, highestDensity,
-      (row) => `${row.likeDensity.toFixed(1)} likes / 100 selected-period views`)
+  const renderReaderResponse = (likes, available = true) => {
+    const mostLiked = Object.keys(titles)
+      .map((path) => ({ label: path, likes: Number(likes?.[likeIdsByPath[path]] || 0) }))
+      .filter((row) => row.likes > 0)
+      .sort((a, b) => b.likes - a.likes || a.label.localeCompare(b.label))[0]
+    setResponseCard(responseMostLiked, responseMostLikedMeta, available ? mostLiked : null,
+      (row) => `♥ ${number.format(row.likes)} 次累计点赞`)
+    if (!available) responseMostLikedMeta.textContent = '点赞暂时无法读取'
   }
-
 
   const plainComment = (html) => {
     const box = document.createElement('div')
@@ -530,12 +594,18 @@
     return rtf.format(Math.round(seconds / 31536000), 'year')
   }
 
-  const renderRecentComments = (items) => {
+  let cachedComments = []
+  const authorNames = new Set((config.commentAuthorNames || []).map((name) => name.replace(/\s+/g, '').toLowerCase()))
+  const isAuthorComment = (item) => item.master === true || item.master === 1 || authorNames.has(String(item.nick || '').replace(/\s+/g, '').toLowerCase())
+
+  const renderRecentComments = () => {
     comments.innerHTML = ''
-    if (!items?.length) {
+    const items = readerOnly?.checked ? cachedComments.filter((item) => !isAuthorComment(item)) : cachedComments
+    commentsNote.textContent = `最新 ${Math.min(items.length, 8)} 条 · ${readerOnly?.checked ? '已隐藏博主留言' : '包含博主回复'} · 不随上方时段切换`
+    if (!items.length) {
       const empty = document.createElement('li')
       empty.className = 'stats-comments-empty'
-      empty.textContent = '暂无留言'
+      empty.textContent = readerOnly?.checked ? '最近暂无读者留言' : '暂无留言'
       comments.appendChild(empty)
       return
     }
@@ -556,7 +626,8 @@
 
       const time = document.createElement('time')
       time.className = 'stats-comment-time'
-      time.dateTime = item.created || ''
+      const created = new Date(item.created)
+      if (!Number.isNaN(created.getTime())) time.dateTime = created.toISOString()
       time.textContent = relativeTime(item.created)
 
       meta.append(nick, time)
@@ -576,50 +647,64 @@
     })
   }
 
+  readerOnly?.addEventListener('change', renderRecentComments)
+
   const loadRecentComments = async () => {
     if (!comments) return
+    if (readerOnly) readerOnly.disabled = true
 
     if (!twikooEnvId || typeof window.twikoo?.getRecentComments !== 'function') {
       comments.innerHTML = '<li class="stats-comments-empty">留言暂时无法读取</li>'
+      commentsNote.textContent = ''
       return
     }
 
     try {
       const items = await window.twikoo.getRecentComments({
         envId: twikooEnvId,
-        pageSize: 8,
+        pageSize: 100,
         includeReply: true
       })
-      renderRecentComments(items)
+      cachedComments = Array.isArray(items) ? items : []
+      renderRecentComments()
+      if (readerOnly) readerOnly.disabled = false
     } catch (error) {
       console.warn('Unable to load recent comments', error)
       comments.innerHTML = '<li class="stats-comments-empty">留言读取失败</li>'
+      commentsNote.textContent = ''
     }
   }
 
-  const render = (data) => {
+  const render = (data, days) => {
+    const range = data.range || {}
+    const formatTime = (value) => new Date(value).toLocaleString('zh-CN', { timeZone: siteTimeZone, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
+    const updated = data.generatedAt ? formatTime(data.generatedAt) : formatTime(Date.now())
+    periodDetails.textContent = range.start && range.end
+      ? `${formatTime(range.start)} — ${formatTime(range.end)} · 芝加哥时间 · 数据更新于 ${updated}`
+      : `最近 ${days === 1 ? '24 小时' : `${days} 天`} · 芝加哥时间 · 本次读取于 ${updated}`
+    const comparisonLabel = days === 1 ? '较前 24 小时' : `较前 ${days} 天`
+    const likesAvailable = data.likesAvailable !== false
     const currentPpv = data.visits ? data.views / data.visits : null
     const previousPpv = data.previous?.pagesPerVisit
 
     views.textContent = number.format(data.views || 0)
     visits.textContent = number.format(data.visits || 0)
     pagesPerVisit.textContent = currentPpv == null ? '—' : currentPpv.toFixed(2)
-    periodLabel.textContent = data.label || ''
+    periodLabel.textContent = days === 1 ? '最近 24 小时' : `最近 ${days} 天`
 
-    setChange(viewsChange, data.views || 0, data.previous?.views, data.comparisonLabel || '')
-    setChange(visitsChange, data.visits || 0, data.previous?.visits, data.comparisonLabel || '')
-    setChange(pagesPerVisitChange, currentPpv || 0, previousPpv, data.comparisonLabel || '')
+    setChange(viewsChange, data.views || 0, data.previous?.views, comparisonLabel)
+    setChange(visitsChange, data.visits || 0, data.previous?.visits, comparisonLabel)
+    setChange(pagesPerVisitChange, currentPpv, previousPpv, comparisonLabel)
 
-    drawChart(data.series || [])
+    drawChart(data.series || [], range)
 
     const { postRows, siteRows } = splitPages(data.pages || [], data.likes || {})
-    renderReaderResponse(postRows)
-    addItems(recentPosts, recentPostRows(data.pages || [], data.likes || {}), { link: true, triple: true })
-    addItems(posts, postRows, { link: true, triple: true })
+    renderReaderResponse(data.likes || {}, likesAvailable)
+    renderPostTable(recentPosts, recentPostRows(data.pages || [], data.likes || {}), true, likesAvailable)
+    renderPostTable(posts, postRows, false, likesAvailable)
     renderSitePages(siteRows)
 
-    const external = externalReferrers(data.referrers || [])
-      .sort((a, b) => (b.visits - a.visits) || (b.views - a.views))
+    const external = mergeReferrers(data.referrers || [])
     addItems(referrers, external, { value: 'visits' })
     addItems(sources, groupSources(data.referrers || []), { value: 'visits' })
     renderCategoryRows(categoryRows(data.pages || []))
@@ -631,7 +716,9 @@
   const load = async (days) => {
     errorBox.hidden = true
     rangeButtons.forEach((button) => {
-      button.classList.toggle('is-active', Number(button.dataset.days) === days)
+      const active = Number(button.dataset.days) === days
+      button.classList.toggle('is-active', active)
+      button.setAttribute('aria-pressed', String(active))
       button.disabled = true
     })
 
@@ -639,9 +726,13 @@
       const response = await fetch(`${endpoint}?days=${days}`, { headers: { Accept: 'application/json' } })
       const payload = await response.json().catch(() => ({}))
       if (!response.ok) throw new Error(payload.error || `HTTP ${response.status}`)
-      render(payload)
+      render(payload, days)
     } catch (error) {
       clearLists()
+      ;[views, visits, pagesPerVisit].forEach((node) => { node.textContent = '—' })
+      ;[viewsChange, visitsChange, pagesPerVisitChange].forEach((node) => { node.textContent = '' })
+      periodDetails.textContent = '统计数据暂时无法读取'
+      periodLabel.textContent = ''
       errorBox.textContent = `读取统计失败：${error.message}`
       errorBox.hidden = false
     } finally {
@@ -657,6 +748,8 @@
 
   if (!endpoint) {
     setup.hidden = false
+    periodDetails.textContent = '尚未连接统计数据'
+    rangeButtons.forEach((button) => { button.disabled = true })
     clearLists()
     ;[posts, recentPosts, referrers, sources, categories, sitePages, countries, postAge, referrerPosts].forEach((list) => {
       if (list) showEmpty(list)

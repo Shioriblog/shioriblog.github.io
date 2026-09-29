@@ -30,7 +30,7 @@ export default {
 
     const filter = `{
       datetime_geq: ${JSON.stringify(startISO)}
-      datetime_leq: ${JSON.stringify(endISO)}
+      datetime_lt: ${JSON.stringify(endISO)}
       requestHost: ${JSON.stringify(SITE_HOST)}
       bot: 0
     }`
@@ -140,8 +140,10 @@ export default {
 }
 
 function estimate(row) {
-  const sampleInterval = Number(row?.avg?.sampleInterval || 1)
-  return Math.round(Number(row?.count || 0) * sampleInterval)
+  // Adaptive Groups counts already include sampling extrapolation.
+  // https://developers.cloudflare.com/analytics/graphql-api/sampling/
+  // Multiplying by sampleInterval again inflates older, sampled periods.
+  return Math.round(Number(row?.count || 0))
 }
 
 function mergeBy(rows = [], keyFn, valueFn) {

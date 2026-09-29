@@ -16,11 +16,13 @@ subscription: false
       <p class="stats-lede">shioriblog.org 的阅读、互动与 ZINE 下载统计。</p>
     </div>
     <div class="stats-range" role="group" aria-label="统计范围">
-      <button type="button" data-days="1">24H</button>
-      <button type="button" data-days="7" class="is-active">7 DAYS</button>
-      <button type="button" data-days="30">30 DAYS</button>
+      <button type="button" data-days="1" aria-pressed="false">24H</button>
+      <button type="button" data-days="7" class="is-active" aria-pressed="true">7 DAYS</button>
+      <button type="button" data-days="30" aria-pressed="false">30 DAYS</button>
     </div>
   </header>
+
+  <p class="stats-period-details" id="stats-period-details" role="status">正在读取统计时段…</p>
 
   <div id="stats-setup" class="stats-notice" hidden>Dashboard 页面已经准备好，但还没有连接 Cloudflare Worker。</div>
   <div id="stats-error" class="stats-notice stats-error" hidden></div>
@@ -42,7 +44,42 @@ subscription: false
       <small id="stat-pages-per-visit-change" class="stats-change"></small>
     </article>
   </section>
+  <p class="stats-summary-note">浏览为页面加载次数；访问为从站外进入的访问次数，不等同于独立读者人数。每次访问页数 = 浏览 ÷ 访问。</p>
 
+  <section class="stats-panel stats-chart-panel">
+    <div class="stats-panel-heading"><h2>Views</h2><span id="stats-period-label"></span></div>
+    <div class="stats-chart" id="stats-chart" aria-label="每日浏览量图表"></div>
+    <p class="stats-note">按芝加哥日期汇总；首尾日期可能只覆盖部分时段，今天尚未结束。</p>
+  </section>
+
+  <section class="stats-panel stats-recent-panel">
+    <div class="stats-panel-heading"><h2>Recent posts</h2><span>最新 5 篇</span></div>
+    <table class="stats-post-table">
+      <caption class="stats-sr-only">最新文章：浏览与访问为所选时段，点赞为累计</caption>
+      <thead><tr><th scope="col">文章</th><th scope="col">浏览</th><th scope="col">访问</th><th scope="col">累计赞</th></tr></thead>
+      <tbody id="stats-recent-posts"></tbody>
+    </table>
+  </section>
+
+  <section class="stats-panel stats-top-panel">
+    <div class="stats-panel-heading"><h2>Top posts</h2><span>所选时段 · TOP 10</span></div>
+    <table class="stats-post-table">
+      <caption class="stats-sr-only">热门文章：浏览与访问为所选时段，点赞为累计</caption>
+      <thead><tr><th scope="col">文章</th><th scope="col">浏览</th><th scope="col">访问</th><th scope="col">累计赞</th></tr></thead>
+      <tbody id="stats-posts"></tbody>
+    </table>
+  </section>
+
+  <section class="stats-comments" aria-labelledby="recent-comments-title">
+    <div class="stats-panel-heading">
+      <h2 id="recent-comments-title">Recent comments</h2>
+      <label class="stats-comment-filter"><input id="stats-comments-reader-only" type="checkbox" checked>只看读者留言</label>
+    </div>
+    <ol class="stats-comments-list" id="stats-comments" aria-live="polite"><li class="stats-comments-loading">正在读取留言…</li></ol>
+    <p class="stats-note" id="stats-comments-note">最新 8 条 · 不随上方时段切换</p>
+  </section>
+
+  <div class="stats-grid stats-support-grid">
   {% if site.data.zines.size > 0 %}
   <section class="stats-panel stats-zines" id="stats-zines" aria-labelledby="stats-zines-title">
     <div class="stats-panel-heading">
@@ -64,91 +101,43 @@ subscription: false
       <p id="stats-zine-status" role="status"></p>
       <button id="stats-zine-retry" type="button" hidden>重新读取</button>
     </div>
-    <p class="stats-zine-note">来自 GitHub Release 的累计下载次数，不随上方时间范围切换；同一人重复下载会重复计数。</p>
+    <p class="stats-zine-note">累计下载，不随上方时段切换；重复下载会重复计数。</p>
     <noscript><p class="stats-zine-note">开启 JavaScript 后可读取下载次数。</p></noscript>
   </section>
   {% endif %}
 
-  <section class="stats-panel stats-chart-panel">
-    <div class="stats-panel-heading">
-      <h2>Views</h2>
-      <span id="stats-period-label"></span>
-    </div>
-    <div class="stats-chart" id="stats-chart" aria-label="每日浏览量图表"></div>
-  </section>
 
-  <section class="stats-panel stats-recent-panel">
-    <div class="stats-panel-heading">
-      <h2>Recent posts</h2>
-      <span>VIEWS · VISITS · ♥</span>
-    </div>
-    <ol class="stats-list" id="stats-recent-posts"></ol>
-  </section>
-
-  <section class="stats-response" aria-labelledby="reader-response-title">
-    <div class="stats-panel-heading stats-response-heading">
-      <h2 id="reader-response-title">Reader response</h2>
-      <span>LIKES ARE CUMULATIVE</span>
-    </div>
-    <div class="stats-response-grid">
-      <article>
-        <span>MOST LIKED</span>
-        <a id="response-most-liked" href="#">—</a>
-        <small id="response-most-liked-meta">—</small>
-      </article>
-      <article>
-        <span>LIKE DENSITY</span>
-        <a id="response-like-rate" href="#">—</a>
-        <small id="response-like-rate-meta">—</small>
-      </article>
-    </div>
-    <p class="stats-response-note">Like density = 当前累计点赞数 ÷ 所选时间段的浏览量 × 100；适合比较文章反馈强弱，但不是严格的转化率。</p>
-  </section>
+    <section class="stats-response" aria-labelledby="reader-response-title">
+      <div class="stats-panel-heading"><h2 id="reader-response-title">Most liked</h2><span>全站累计</span></div>
+      <div class="stats-response-card">
+        <a id="response-most-liked">—</a>
+        <small id="response-most-liked-meta">正在读取…</small>
+      </div>
+      <p class="stats-note">按当前文章的累计点赞比较，不随上方时段切换。</p>
+    </section>
+  </div>
 
   <div class="stats-grid stats-insight-grid">
     <section class="stats-panel">
-      <div class="stats-panel-heading"><h2>Old post discovery</h2><span>POST VIEWS · SHARE</span></div>
+      <div class="stats-panel-heading"><h2>Traffic sources</h2><span>访问次数</span></div>
+      <ol class="stats-list" id="stats-sources"></ol>
+      <p class="stats-note">直接访问也包含未提供来源的访问。</p>
+    </section>
+    <section class="stats-panel">
+      <div class="stats-panel-heading"><h2>Old post discovery</h2><span>文章浏览 · 占比</span></div>
       <ol class="stats-list" id="stats-post-age"></ol>
     </section>
-
-    <section class="stats-panel">
-      <div class="stats-panel-heading"><h2>How readers found posts</h2><span>VISITS</span></div>
-      <ol class="stats-list stats-referrer-post-list" id="stats-referrer-posts"></ol>
-    </section>
   </div>
-
-  <div class="stats-grid stats-main-grid">
-    <section class="stats-panel">
-      <div class="stats-panel-heading"><h2>Top posts</h2><span>VIEWS · VISITS · ♥</span></div>
-      <ol class="stats-list" id="stats-posts"></ol>
-    </section>
-
-    <section class="stats-panel">
-      <div class="stats-panel-heading"><h2>Traffic sources</h2><span>VISITS</span></div>
-      <ol class="stats-list" id="stats-sources"></ol>
-    </section>
-
-    <section class="stats-panel">
-      <div class="stats-panel-heading"><h2>Categories</h2><span>VIEWS · AVG / POST</span></div>
-      <ol class="stats-list" id="stats-categories"></ol>
-    </section>
-  </div>
-
-  <section class="stats-comments" aria-labelledby="recent-comments-title">
-    <div class="stats-panel-heading">
-      <h2 id="recent-comments-title">Recent comments</h2>
-      <span>LATEST 8</span>
-    </div>
-    <ol class="stats-comments-list" id="stats-comments">
-      <li class="stats-comments-loading">正在读取留言…</li>
-    </ol>
-  </section>
 
   <details class="stats-more">
     <summary>
       <span>More stats</span>
-      <small>REFERRERS · SITE PAGES · COUNTRIES</small>
+      <small>来源明细 · 分类 · 站内页面 · 国家</small>
     </summary>
+    <section class="stats-panel stats-referrer-detail">
+      <div class="stats-panel-heading"><h2>How readers found posts</h2><span>访问次数</span></div>
+      <ol class="stats-list stats-referrer-post-list" id="stats-referrer-posts"></ol>
+    </section>
     <div class="stats-grid stats-more-grid">
       <section class="stats-panel">
         <div class="stats-panel-heading"><h2>External referrers</h2><span>VISITS</span></div>
@@ -167,6 +156,10 @@ subscription: false
       </section>
 
       <section class="stats-panel">
+        <div class="stats-panel-heading"><h2>Categories</h2><span>浏览 · 篇均浏览</span></div>
+        <ol class="stats-list" id="stats-categories"></ol>
+      </section>
+      <section class="stats-panel">
         <div class="stats-panel-heading"><h2>Countries</h2><span>VIEWS</span></div>
         <ol class="stats-list" id="stats-countries"></ol>
       </section>
@@ -180,6 +173,7 @@ subscription: false
   window.SHIO_STATS_CONFIG = {
     endpoint: {{ site.dashboard_api_url | jsonify }},
     twikooEnvId: {{ site.twikoo_env_id | jsonify }},
+    commentAuthorNames: ["Shiori", "Shiori栞", "Shiori 栞"],
     titles: {
       {% for post in site.posts %}{{ post.url | jsonify }}: {{ post.title | jsonify }}{% unless forloop.last %},{% endunless %}{% endfor %}
     },
@@ -322,5 +316,73 @@ subscription: false
     .stats-more summary small { display: none; }
     .stats-chart { gap: .35rem; height: 160px; }
     .stats-bar-item time { font-size: .5rem; }
+  }
+  .stats-page { --stats-muted: #666963; }
+  .stats-header { margin-bottom: 1rem; }
+  .stats-lede { font-size: .82rem; }
+  .stats-range button { min-height: 40px; font-size: .75rem; }
+  .stats-range button:focus-visible, .stats-more summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .stats-period-details { margin: 0 0 1.2rem; color: var(--stats-muted); font-size: .73rem; line-height: 1.7; }
+  .stats-summary { margin-bottom: .6rem; }
+  .stats-summary span { color: var(--stats-muted); font-size: .7rem; }
+  .stats-change { color: var(--stats-muted); font-size: .68rem; line-height: 1.5; }
+  .stats-note, .stats-summary-note { margin: .55rem 0 0; color: var(--stats-muted); font-size: .7rem; line-height: 1.65; }
+  .stats-summary-note { margin-bottom: 2rem; }
+  .stats-panel-heading h2 { font-size: 1.1rem; }
+  .stats-panel-heading span { color: var(--stats-muted); font-size: .7rem; letter-spacing: .025em; }
+  .stats-chart-panel, .stats-recent-panel, .stats-top-panel, .stats-comments, .stats-insight-grid, .stats-support-grid { margin-bottom: 2.4rem; }
+  .stats-post-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: .84rem; }
+  .stats-post-table th { padding: .65rem 0; color: var(--stats-muted); font-size: .72rem; font-weight: 400; border-top: 1px solid var(--line); }
+  .stats-post-table th, .stats-post-table td { text-align: right; border-bottom: 1px solid var(--line); }
+  .stats-post-table th:first-child, .stats-post-table td:first-child { text-align: left; padding-right: 1rem; }
+  .stats-post-table th:not(:first-child) { width: 4.4rem; }
+  .stats-post-table td { padding: .78rem 0; color: var(--body); font-variant-numeric: tabular-nums; vertical-align: middle; }
+  .stats-post-table a { display: block; color: var(--body); text-decoration: none; line-height: 1.55; overflow-wrap: anywhere; }
+  .stats-post-table a:hover { color: var(--accent); }
+  .stats-post-table time { display: block; margin-top: .18rem; color: var(--stats-muted); font-size: .69rem; }
+  .stats-post-table .stats-empty { text-align: left; }
+  .stats-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+  .stats-list li { font-size: .82rem; }
+  .stats-list .stats-value, .stats-source-label { color: var(--stats-muted); }
+  .stats-list span:first-child { min-width: 0; overflow-wrap: anywhere; }
+  .stats-support-grid { align-items: start; }
+  .stats-support-grid .stats-zines, .stats-support-grid .stats-response { margin-bottom: 0; }
+  .stats-zine-list li { padding: .7rem 0; gap: .8rem; }
+  .stats-zine-count { font-size: 1.45rem; }
+  .stats-zine-issue, .stats-zine-status-line p, .stats-zine-note { color: var(--stats-muted); font-size: .7rem; }
+  .stats-response-card { padding: 1rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .stats-response-card a { display: block; color: var(--body); font-family: var(--serif); font-size: 1rem; line-height: 1.6; text-decoration: none; overflow-wrap: anywhere; }
+  .stats-response-card small { display: block; margin-top: .4rem; color: var(--stats-muted); font-size: .76rem; }
+  .stats-comment-filter { display: inline-flex; align-items: center; gap: .4rem; color: var(--stats-muted); font-size: .75rem; cursor: pointer; white-space: nowrap; }
+  .stats-comment-filter input { width: 1rem; height: 1rem; margin: 0; accent-color: var(--accent); }
+  .stats-comment-nick { font-size: .78rem; }
+  .stats-comment-time, .stats-comment-post { color: var(--stats-muted); font-size: .7rem; }
+  .stats-comment-text { font-size: .88rem; }
+  .stats-referrer-detail { padding: 1.5rem 0 0; border-top: 1px solid var(--line); }
+  .stats-referrer-post-list li > span:first-child { white-space: normal; }
+  .stats-more-grid { border-top: 0; gap: 2rem 3rem; }
+  .stats-more summary small, .stats-footnote { color: var(--stats-muted); font-size: .7rem; }
+  .stats-bar-item { position: relative; }
+  .stats-bar-item:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
+  .stats-bar-item:hover::after, .stats-bar-item:focus::after { content: attr(data-tooltip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); z-index: 1; padding: .25rem .4rem; background: var(--ink); color: white; font-size: .68rem; white-space: nowrap; }
+  .stats-bar-item.is-partial .stats-bar { opacity: .48; }
+  @media (max-width: 700px) {
+    .stats-header { gap: .8rem; }
+    .stats-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .stats-summary article, .stats-summary article:first-child { padding: .8rem .6rem; border-bottom: 0; border-right: 1px solid var(--line); }
+    .stats-summary article:first-child { padding-left: 0; }
+    .stats-summary article:last-child { border-right: 0; padding-right: 0; }
+    .stats-summary strong { font-size: 1.55rem; }
+    .stats-summary span { font-size: .6rem; letter-spacing: .02em; }
+    .stats-change { font-size: .64rem; }
+    .stats-post-table { font-size: .8rem; }
+    .stats-post-table th:not(:first-child) { width: 3.25rem; }
+    .stats-post-table th:first-child, .stats-post-table td:first-child { padding-right: .65rem; }
+    .stats-post-table th { font-size: .68rem; }
+    .stats-grid { gap: 2rem; }
+    .stats-bar-item time { font-size: .6rem; }
+    .stats-chart.is-dense .stats-bar-item time { visibility: hidden; }
+    .stats-chart.is-dense .stats-bar-item:nth-child(5n + 1) time, .stats-chart.is-dense .stats-bar-item:last-child time { visibility: visible; }
+    .stats-panel-heading { flex-wrap: wrap; gap: .4rem .7rem; }
   }
 </style>
