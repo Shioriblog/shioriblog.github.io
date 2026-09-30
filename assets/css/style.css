@@ -451,12 +451,12 @@ body.post-category-utakata .article-content .conversation-log + h3 {
 body.post-category-utakata .article-content h3.diary-entry-date {
   display: block;
   margin: 2.35rem 0 .7rem;
-  color: var(--muted);
-  font-family: var(--serif);
-  font-size: 1rem;
-  font-weight: 400;
+  color: var(--body);
+  font-family: var(--sans);
+  font-size: 1.05rem;
+  font-weight: 500;
   line-height: 1.5;
-  letter-spacing: .025em;
+  letter-spacing: .02em;
 }
 
 body.post-category-utakata .article-content h3.diary-entry-date::after {
