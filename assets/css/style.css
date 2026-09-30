@@ -450,7 +450,7 @@ body.post-category-utakata .article-content .conversation-log + h3 {
 
 body.post-category-utakata .article-content h3.diary-entry-date {
   display: block;
-  margin: 2.35rem 0 .7rem;
+  margin: 3.15rem 0 .7rem;
   color: #354234;
   font-family: var(--sans);
   font-size: 1.05rem;
