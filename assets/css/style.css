@@ -449,7 +449,9 @@ body.post-category-utakata .article-content .conversation-log + h3 {
 }
 
 body.post-category-utakata .article-content h3.diary-entry-date {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: .8rem;
   margin: 3.15rem 0 .7rem;
   color: #354234;
   font-family: var(--sans);
@@ -461,8 +463,8 @@ body.post-category-utakata .article-content h3.diary-entry-date {
 
 body.post-category-utakata .article-content h3.diary-entry-date::after {
   display: block;
+  flex: 1 1 auto;
   content: "";
   height: 1px;
-  margin-top: .45rem;
   background: #eff0ed;
 }
