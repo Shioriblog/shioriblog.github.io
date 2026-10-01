@@ -460,6 +460,9 @@ body.post-category-utakata .article-content h3.diary-entry-date {
 }
 
 body.post-category-utakata .article-content h3.diary-entry-date::after {
-  display: none;
-  content: none;
+  display: block;
+  content: "";
+  height: 1px;
+  margin-top: .45rem;
+  background: #eff0ed;
 }
