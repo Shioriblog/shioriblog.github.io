@@ -3,7 +3,9 @@ layout: null
 permalink: /newsletter.xml
 ---
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>{{ site.title | xml_escape }}</title>
     <link>{{ '/' | absolute_url }}</link>
@@ -36,6 +38,9 @@ permalink: /newsletter.xml
         <guid isPermaLink="true">{{ post.url | absolute_url }}</guid>
         <pubDate>{{ post.date | date_to_rfc822 }}</pubDate>
         <description>{{ newsletter_description | xml_escape }}</description>
+        <content:encoded><![CDATA[
+{{ post.content }}
+        ]]></content:encoded>
         {% if first_image %}
           {% assign image_url = first_image | absolute_url %}
           {% assign image_path = first_image | split: '?' | first | downcase %}
