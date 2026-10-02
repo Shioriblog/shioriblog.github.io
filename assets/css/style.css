@@ -69,7 +69,7 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
   margin: 2.2rem 0;
   padding: 1.05rem 1.35rem 1.05rem 1.45rem;
   color: var(--body);
-  border-left: 5px solid #2f7d32;
+  border-left: 3px solid var(--accent);
   background-color: #fafaf8;
   background-image: radial-gradient(circle, rgba(111, 106, 100, .22) .65px, transparent .75px);
   background-size: 5px 5px;
