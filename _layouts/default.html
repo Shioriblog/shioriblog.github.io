@@ -54,6 +54,31 @@
     {% include footer.html %}
     {% unless page.subscription == false %}{% include subscription.html %}{% endunless %}
 
+    <button class="back-to-top" id="back-to-top" type="button" aria-label="返回页面顶部" title="返回顶部">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M6.5 14.5 12 9l5.5 5.5" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </button>
+
+    <script>
+      (() => {
+        const button = document.getElementById('back-to-top')
+        if (!button) return
+
+        const updateVisibility = () => {
+          button.classList.toggle('is-visible', window.scrollY > 520)
+        }
+
+        updateVisibility()
+        window.addEventListener('scroll', updateVisibility, { passive: true })
+
+        button.addEventListener('click', () => {
+          const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+          window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' })
+        })
+      })()
+    </script>
+
     <script>
       (() => {
         const images = Array.from(document.querySelectorAll('main img'))
