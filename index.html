@@ -135,7 +135,7 @@ nav: home
               </div>
               {% if home_image != '' %}
                 <a class="home-post-image" href="{{ post.url | relative_url }}" aria-label="阅读《{{ post.title | escape }}》">
-                  <img src="{{ home_image | escape }}" alt="" loading="lazy" decoding="async">
+                  <img src="{{ home_image | escape }}" alt="" loading="lazy" decoding="async"{% if post.thumbnail_position %} style="object-position: {{ post.thumbnail_position | escape }};"{% endif %}>
                 </a>
               {% endif %}
             </div>
