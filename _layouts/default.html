@@ -6,7 +6,7 @@
     {% if page.robots %}<meta name="robots" content="{{ page.robots }}">{% endif %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Noto+Sans+JP:wght@400;500&family=Noto+Serif+SC:wght@400;500&family=Shippori+Mincho:wght@400;500&family=Source+Serif+4:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Noto+Sans+JP:wght@400;500&family=Noto+Serif+JP:wght@400;500&family=Noto+Serif+SC:wght@400;500&family=Source+Serif+4:wght@400;500&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="{{ '/assets/images/shiori-icon.png' | relative_url }}">
     <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}?v={{ site.time | date: '%s' }}">
     <link rel="stylesheet" href="{{ '/assets/css/fonts.css' | relative_url }}?v={{ site.time | date: '%s' }}">
@@ -165,9 +165,18 @@
           const content = document.querySelector('.article-content')
           if (!content) return
 
-          const japaneseKana = /[\u3040-\u30ff]/
-          content.querySelectorAll('p, blockquote, li').forEach((element) => {
-            if (!element.hasAttribute('lang') && japaneseKana.test(element.textContent || '')) {
+          const kana = /[\u3040-\u30ff]/g
+          const han = /[\u3400-\u9fff]/g
+
+          const isMostlyJapanese = (text) => {
+            const kanaCount = (text.match(kana) || []).length
+            const hanCount = (text.match(han) || []).length
+            const cjkCount = kanaCount + hanCount
+            return kanaCount >= 4 && cjkCount > 0 && kanaCount / cjkCount >= 0.28
+          }
+
+          content.querySelectorAll('p, li, figcaption, h2, h3, h4, td, th').forEach((element) => {
+            if (!element.hasAttribute('lang') && isMostlyJapanese(element.textContent || '')) {
               element.setAttribute('lang', 'ja')
             }
           })
