@@ -1,18 +1,19 @@
 :root {
   --serif: "Source Serif 4", "Noto Serif SC", "Songti SC", "Source Han Serif SC", serif;
-  --serif-ja: "Source Serif 4", "Noto Serif JP", "Yu Mincho", "Hiragino Mincho ProN", serif;
+  --serif-ja: "Source Serif 4", "Noto Serif SC", "Songti SC", "Source Han Serif SC", serif;
   --sans-ja: "Noto Sans JP", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
 }
 
-/* Keep Latin text consistent with Source Serif 4.
-   Chinese falls through to Noto Serif SC; Japanese falls through to Noto Serif JP. */
+/* Article CJK typography uses one family for both Chinese and Japanese.
+   This prevents mixed paragraphs from falling through to mismatched system fonts. */
 :lang(ja) {
   font-family: var(--serif-ja);
 }
 
 .article-content :lang(ja) {
-  font-feature-settings: "palt" 1;
-  letter-spacing: .015em;
+  font-family: var(--serif);
+  font-feature-settings: normal;
+  letter-spacing: inherit;
 }
 
 .travel-kicker {
