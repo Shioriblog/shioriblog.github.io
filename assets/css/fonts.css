@@ -1,11 +1,11 @@
 :root {
   --serif: "Source Serif 4", "Noto Serif SC", "Songti SC", "Source Han Serif SC", serif;
-  --serif-ja: "Shippori Mincho", "Yu Mincho", "Hiragino Mincho ProN", serif;
+  --serif-ja: "Source Serif 4", "Noto Serif JP", "Yu Mincho", "Hiragino Mincho ProN", serif;
   --sans-ja: "Noto Sans JP", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
 }
 
-/* English and other Latin text naturally use Source Serif 4 first;
-   Chinese glyphs fall through to Noto Serif SC. */
+/* Keep Latin text consistent with Source Serif 4.
+   Chinese falls through to Noto Serif SC; Japanese falls through to Noto Serif JP. */
 :lang(ja) {
   font-family: var(--serif-ja);
 }
