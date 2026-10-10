@@ -77,7 +77,7 @@ nav: about
 
   <section class="about-subscribe" aria-labelledby="about-subscribe-label">
     <p class="about-section-kicker" id="about-subscribe-label">SUBSCRIBE</p>
-    <p class="about-subscribe-copy">通过 Email 订阅更新，或使用 <a href="{{ '/feed.xml' | relative_url }}">RSS</a>。</p>
+    <p class="about-subscribe-copy">通过 Email 订阅更新，或使用 <a href="{{ '/newsletter.xml' | relative_url }}">RSS</a>。</p>
 
     <div id="about-subscribe-success" class="about-subscribe-status" role="status" hidden>
       感谢订阅！更新时会收到邮件 ^_^

@@ -85,4 +85,4 @@ npx wrangler secret put CF_ACCOUNT_ID
 ## 其他页面
 
 - `about.md` 关于、`friends.md` 友链、`privacy.md` 隐私说明
-- `newsletter.xml` 是导航栏里的 RSS（最近 10 篇的摘要）；`feed.xml` 由插件自动生成（全文）
+- `newsletter.xml` 是全站唯一对外的 RSS（最近 10 篇的摘要），页脚、订阅弹窗和关于页都链接到它；`feed.xml` 由插件自动生成（全文），网站上不再链接，但保留给已经订阅它的读者
