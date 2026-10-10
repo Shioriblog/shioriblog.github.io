@@ -58,13 +58,9 @@ travel_excerpt: 一两句话简介。
 
 ### Cloudflare Worker
 
-代码在 `cloudflare-worker/src/index.js`。修改后在仓库根目录运行：
+代码在 `cloudflare-worker/src/index.js`，配置是根目录的 `wrangler.jsonc`。Cloudflare 已经连接了这个仓库（Workers Builds），推送到 `main` 后会自动重新部署，不需要手动操作。需要手动部署时，在仓库根目录运行 `npx wrangler deploy`。
 
-```sh
-npx wrangler deploy
-```
-
-需要的密钥（只设置一次）：
+需要的密钥（已经设置过，换 token 时才需要重新设置）：
 
 ```sh
 npx wrangler secret put CF_API_TOKEN

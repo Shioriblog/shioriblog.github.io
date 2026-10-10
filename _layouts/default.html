@@ -189,10 +189,11 @@
       <script>
         (() => {
           try { if (localStorage.getItem('shiori-skip-analytics') === '1') return } catch (_) {}
+          const token = {{ site.cloudflare_beacon_token | jsonify }}
           const beacon = document.createElement('script')
           beacon.defer = true
           beacon.src = 'https://static.cloudflareinsights.com/beacon.min.js'
-          beacon.setAttribute('data-cf-beacon', {{ site.cloudflare_beacon_token | prepend: '{"token": "' | append: '"}' | jsonify }})
+          beacon.setAttribute('data-cf-beacon', JSON.stringify({ token: token }))
           document.body.appendChild(beacon)
         })()
       </script>
