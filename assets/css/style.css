@@ -153,7 +153,7 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
 .travel-entry { display: grid; grid-template-columns: 4.5rem 160px minmax(0, 1fr); gap: 1.25rem; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--line); }
 .travel-entry > time { color: var(--muted); font-family: var(--sans); font-size: .72rem; font-variant-numeric: tabular-nums; }
 .travel-entry-image { display: block; text-decoration: none; }
-.travel-entry-image img { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+.travel-entry-image img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
 .travel-entry-place { margin: 0 0 .18rem; color: var(--accent); font-family: var(--sans); font-size: .68rem; letter-spacing: .05em; }
 .travel-entry h2 { margin: 0; color: var(--ink); font-size: 1.35rem; font-weight: 500; line-height: 1.45; }
 .travel-entry h2 a { text-decoration: none; }
