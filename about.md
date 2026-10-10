@@ -247,7 +247,7 @@ footer_subscribe: false
     width: 100%;
     padding: .68rem .72rem;
     border: 1px solid var(--line);
-    border-radius: 3px;
+    border-radius: 0;
     background: var(--paper);
     color: var(--body);
     font-family: var(--sans);
@@ -262,7 +262,7 @@ footer_subscribe: false
   .about-side-subscribe-form button {
     padding: .68rem .84rem;
     border: 1px solid var(--accent);
-    border-radius: 3px;
+    border-radius: 0;
     background: var(--accent);
     color: #fff;
     font-family: var(--sans);
@@ -315,7 +315,7 @@ footer_subscribe: false
     gap: .42rem;
     padding: .46rem .64rem;
     border: 1px solid var(--line);
-    border-radius: 999px;
+    border-radius: 0;
     background: var(--paper);
     color: var(--body);
     font-family: var(--sans);
@@ -448,7 +448,7 @@ footer_subscribe: false
     gap: .28rem;
     padding: .5rem .72rem;
     border: 1px solid var(--line);
-    border-radius: 999px;
+    border-radius: 0;
     background: var(--paper);
     color: var(--accent);
     font-family: var(--sans);

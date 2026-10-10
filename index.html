@@ -307,31 +307,25 @@ nav: home
     appearance: none;
     font: inherit;
     cursor: pointer;
-    padding: .22rem .58rem;
-    border: 1px solid rgba(79, 90, 73, .34);
-    border-radius: 999px;
-    background: rgba(79, 90, 73, .045);
-    color: var(--accent);
+    padding: .22rem .08rem;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    color: var(--muted);
     text-decoration: none;
-    transition: border-color .15s ease, background .15s ease, color .15s ease;
+    transition: border-color .15s ease, color .15s ease;
   }
 
   .home-category-link:hover,
   .home-category-link:focus-visible {
-    border-color: rgba(79, 90, 73, .58);
-    background: rgba(79, 90, 73, .09);
+    border-bottom-color: rgba(79, 90, 73, .38);
     color: var(--accent);
   }
 
   .home-category-link.is-active {
-    border-color: rgba(79, 90, 73, .62);
-    background: rgba(79, 90, 73, .13);
+    border-bottom-color: currentColor;
     color: var(--accent);
-  }
-
-  .home-category-link.is-active:hover,
-  .home-category-link.is-active:focus-visible {
-    background: rgba(79, 90, 73, .16);
   }
 
   .home-category-link.has-tooltip::after {

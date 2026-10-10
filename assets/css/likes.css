@@ -4,7 +4,7 @@
   gap: .34rem;
   padding: .34rem .55rem;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--soft);
   color: var(--muted);
   font-family: var(--sans);
@@ -24,7 +24,7 @@
 .post-like-button:focus-visible {
   outline: 1px solid var(--line);
   outline-offset: 3px;
-  border-radius: 999px;
+  border-radius: 0;
 }
 
 .post-like-button:active {

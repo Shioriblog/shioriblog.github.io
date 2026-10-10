@@ -1,10 +1,10 @@
 :root {
-  --paper: #fff;
+  --paper: #f7f4ee;
   --ink: #1d1c1a;
   --body: #2c2a27;
   --muted: #6f6a64;
-  --line: #e8e4de;
-  --soft: #f7f6f3;
+  --line: #e4ded4;
+  --soft: #efebe3;
   --accent: #4f5a49;
   --serif: "Noto Serif SC", "Songti SC", "Source Han Serif SC", "Yu Mincho", serif;
   --sans: Inter, "Noto Sans CJK SC", "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;
@@ -70,7 +70,7 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
   padding: 1.05rem 1.35rem 1.05rem 1.45rem;
   color: var(--body);
   border-left: 3px solid var(--accent);
-  background-color: #fafaf8;
+  background-color: var(--soft);
   background-image: radial-gradient(circle, rgba(111, 106, 100, .22) .65px, transparent .75px);
   background-size: 5px 5px;
 }
@@ -241,8 +241,8 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
   padding: 0;
   color: var(--accent);
   border: 1px solid #d8d3cc;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, .92);
+  border-radius: 0;
+  background: rgba(247, 244, 238, .94);
   box-shadow: 0 6px 20px rgba(29, 28, 26, .08);
   opacity: 0;
   visibility: hidden;
