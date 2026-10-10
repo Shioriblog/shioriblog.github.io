@@ -1,0 +1,55 @@
+# 发布或修改旅行文章后，自动为 travel_image 生成旅行页用的小图（assets/images/thumbs/）。
+# 小图不带任何照片信息（包括位置）。已经有小图的文章会跳过。
+name: 生成旅行页缩略图
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '_posts/**'
+      - 'assets/images/posts/**'
+      - 'tools/make_travel_thumbs.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: make-travel-thumbnails
+  cancel-in-progress: false
+
+jobs:
+  thumbs:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Pillow
+        run: python3 -m pip install --quiet pillow
+
+      - name: Make missing thumbnails
+        run: |
+          python3 tools/make_travel_thumbs.py | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ -n "$(git status --porcelain assets/images/thumbs)" ]; then
+            echo "changed=1" >> "$GITHUB_ENV"
+          fi
+
+      - name: Commit and push
+        if: env.changed == '1'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/images/thumbs
+          git commit -q -m "自动生成旅行页缩略图"
+          git pull -q --rebase origin main
+          git push -q origin HEAD:main
+
+      # 机器人推送的提交不会自动触发网站重建，所以这里手动请求一次
+      - name: Rebuild the site
+        if: env.changed == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" --silent

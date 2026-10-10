@@ -28,6 +28,8 @@ travel_image: /assets/images/posts/2026/09/封面.jpg
 travel_excerpt: 一两句话简介。
 ```
 
+旅行页用的小图（`assets/images/thumbs/`）会在推送后由 GitHub Actions 的「生成旅行页缩略图」自动生成，也可以在本地运行 `python3 tools/make_travel_thumbs.py`。
+
 ### 引文
 
 ```markdown
@@ -46,7 +48,7 @@ travel_excerpt: 一两句话简介。
   - 保险措施：推送后，GitHub Actions 的「去掉照片里的位置信息」会自动删掉照片里的 GPS 并重建网站（`.github/workflows/strip-photo-location.yml`）。但最初上传的那一版仍留在 git 历史里，所以上传前关掉位置仍然是最重要的一步。
 - 写上图片说明：`![早饭的纳豆和味噌汤](/assets/images/posts/...)`，方便读屏软件和图片加载失败时显示。
 
-文章里的图片会自动延迟加载，并通过 Cloudflare 按屏幕大小压缩，不需要额外处理。
+文章里的图片会自动延迟加载。`default.html` 里还有一段按屏幕大小压缩图片的设置（Cloudflare 图片转换），只有在域名开启 Cloudflare 代理并打开图片转换后才会生效；没开启时直接显示原图。
 
 ## ZINE
 

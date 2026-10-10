@@ -24,7 +24,8 @@ nav: travel
             <article class="travel-entry">
               <time datetime="{{ post.travel_date | date_to_xmlschema }}">{{ post.travel_date | date: '%m.%d' }}</time>
               <a class="travel-entry-image" href="{{ post.url | relative_url }}" aria-label="阅读：{{ post.title }}">
-                <img src="{{ post.travel_image }}" alt="" loading="lazy">
+                {% assign travel_thumb = post.travel_image | replace: '/assets/images/posts/', '/assets/images/thumbs/' %}
+                <img src="{{ travel_thumb | relative_url }}" alt="" loading="lazy" decoding="async" width="480" height="320"{% if travel_thumb != post.travel_image %} onerror="this.onerror=null;this.src='{{ post.travel_image | relative_url }}'"{% endif %}>
               </a>
               <div class="travel-entry-body">
                 {% if post.travel_place %}<p class="travel-entry-place">{{ post.travel_place }}</p>{% endif %}
@@ -73,10 +74,6 @@ nav: travel
 </main>
 
 <style>
-  .travel-page {
-    width: min(980px, calc(100% - 4rem));
-  }
-
   .travel-page .travel-year {
     color: var(--ink);
     font-size: .9rem;
@@ -160,10 +157,6 @@ nav: travel
   }
 
   @media (max-width: 760px) {
-    .travel-page {
-      width: min(860px, calc(100% - 2.2rem));
-    }
-
     .travel-page-grid {
       display: block;
       margin-top: 2.8rem;
