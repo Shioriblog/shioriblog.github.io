@@ -1,0 +1,93 @@
+# 每次推送照片后，自动去掉照片里的 GPS 位置信息，然后重新生成网站。
+# 只删除位置，不动画质、拍摄方向和其他信息；没有位置信息的照片不会被改动。
+# 也可以在 GitHub 的 Actions 页面手动运行，检查全站所有照片。
+name: 去掉照片里的位置信息
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/*.jpg'
+      - '**/*.JPG'
+      - '**/*.jpeg'
+      - '**/*.JPEG'
+      - '**/*.png'
+      - '**/*.PNG'
+      - '**/*.webp'
+      - '**/*.WEBP'
+      - '**/*.heic'
+      - '**/*.HEIC'
+      - '**/*.tif'
+      - '**/*.tiff'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: strip-photo-location
+  cancel-in-progress: false
+
+jobs:
+  strip:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install exiftool
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libimage-exiftool-perl
+          exiftool -ver
+
+      - name: Remove GPS from photos
+        shell: bash
+        run: |
+          set +e
+          args=(-r -ext jpg -ext jpeg -ext png -ext webp -ext heic -ext heif -ext tif -ext tiff
+                -i .git -i _site -i node_modules
+                -if '$GPS:all or $XMP-exif:GPSLatitude or $XMP-exif:GPSLongitude')
+
+          # 先列出带位置的照片
+          exiftool "${args[@]}" -q -q -p '$Directory/$FileName' . > "$RUNNER_TEMP/gps-files.txt"
+          status=$?
+          # exiftool：0 = 找到，2 = 一张都没有，其他 = 出错
+          if [ "$status" -ne 0 ] && [ "$status" -ne 2 ]; then exit "$status"; fi
+
+          sed -i 's|^\./||' "$RUNNER_TEMP/gps-files.txt"
+          count=$(grep -c . "$RUNNER_TEMP/gps-files.txt")
+          echo "count=$count" >> "$GITHUB_ENV"
+
+          if [ "$count" -eq 0 ]; then
+            echo "没有照片带位置信息。" | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          exiftool "${args[@]}" -overwrite_original -gps:all= -xmp-exif:gps*= .
+          status=$?
+          if [ "$status" -ne 0 ]; then exit "$status"; fi
+
+          {
+            echo "去掉了 $count 张照片的位置信息："
+            sed 's/^/- /' "$RUNNER_TEMP/gps-files.txt"
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit and push
+        if: env.count != '0'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -q -m "自动去掉 ${count} 张照片的位置信息" -m "$(sed 's/^/- /' "$RUNNER_TEMP/gps-files.txt")"
+          git pull -q --rebase origin main
+          git push -q origin HEAD:main
+
+      # 机器人推送的提交不会自动触发网站重建，所以这里手动请求一次
+      - name: Rebuild the site
+        if: env.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" --silent
