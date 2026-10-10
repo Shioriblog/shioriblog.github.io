@@ -3,7 +3,6 @@ const SITE_HOST = 'shioriblog.org'
 const ALLOWED_ORIGIN = 'https://shioriblog.org'
 const SITE_TIME_ZONE = 'America/Chicago'
 const LIKE_STORE_NAME = 'shioriblog-post-likes'
-const POST_PATH = /^\/\d{4}\/\d{2}\/\d{2}\//
 
 export default {
   async fetch(request, env) {
@@ -11,10 +10,6 @@ export default {
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders(request) })
-    }
-
-    if (url.pathname === '/most-read') {
-      return handleMostRead(request, env)
     }
 
     if (url.pathname.startsWith('/likes/')) {
@@ -226,43 +221,6 @@ async function handleDashboard(request, env, url) {
     }, 200, request, 60)
   } catch (error) {
     return json({ error: error.message || 'Unexpected Worker error' }, 500, request)
-  }
-}
-
-async function handleMostRead(request, env) {
-  if (request.method !== 'GET') return json({ error: 'Method not allowed' }, 405, request)
-  if (!env.CF_API_TOKEN || !env.CF_ACCOUNT_ID) {
-    return json({ error: 'Worker secrets are not configured' }, 500, request)
-  }
-
-  const end = new Date()
-  const start = new Date(end.getTime() - 7 * 24 * 60 * 60 * 1000)
-  const filter = rumFilter(start, end)
-  const query = `
-    query MostRead {
-      viewer {
-        accounts(filter: { accountTag: ${JSON.stringify(env.CF_ACCOUNT_ID)} }) {
-          pages: rumPageloadEventsAdaptiveGroups(filter: ${filter}, limit: 100, orderBy: [count_DESC]) {
-            count
-            avg { sampleInterval }
-            dimensions { requestPath }
-          }
-        }
-      }
-    }
-  `
-
-  try {
-    const payload = await runGraphQL(env, query)
-    const rows = payload.data?.viewer?.accounts?.[0]?.pages || []
-    const posts = mergeNumeric(rows, (row) => normalizeRequestPath(row.dimensions?.requestPath || ''), (row) => estimate(row))
-      .map(([path, views]) => ({ path, views }))
-      .filter((item) => POST_PATH.test(item.path))
-      .sort((a, b) => b.views - a.views)
-      .slice(0, 5)
-    return json({ posts }, 200, request, 300)
-  } catch (error) {
-    return json({ error: error.message || 'Unable to load most-read posts' }, 500, request, 0)
   }
 }
 

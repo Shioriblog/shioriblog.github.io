@@ -185,8 +185,17 @@
       <script src="{{ '/assets/js/likes.js' | relative_url }}?v={{ site.time | date: '%s' }}" data-api="{{ site.dashboard_api_url }}"></script>
     {% endif %}
     {% if site.cloudflare_beacon_token and page.analytics != false %}
-      <!-- Cloudflare Web Analytics -->
-      <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "{{ site.cloudflare_beacon_token }}"}'></script>
+      <!-- Cloudflare Web Analytics（在统计页勾选「这台设备不计入统计」后，这个浏览器不加载） -->
+      <script>
+        (() => {
+          try { if (localStorage.getItem('shiori-skip-analytics') === '1') return } catch (_) {}
+          const beacon = document.createElement('script')
+          beacon.defer = true
+          beacon.src = 'https://static.cloudflareinsights.com/beacon.min.js'
+          beacon.setAttribute('data-cf-beacon', {{ site.cloudflare_beacon_token | prepend: '{"token": "' | append: '"}' | jsonify }})
+          document.body.appendChild(beacon)
+        })()
+      </script>
       <!-- End Cloudflare Web Analytics -->
     {% endif %}
   </body>

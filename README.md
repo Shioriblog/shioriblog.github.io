@@ -73,6 +73,8 @@ npx wrangler secret put CF_ACCOUNT_ID
 
 阅读统计页在 `/dashboard/`，不会被搜索引擎收录，但没有密码，知道网址的人都能打开。
 
+统计页顶部有「这台设备不计入统计」开关，勾选后这个浏览器访问博客不会被 Cloudflare 统计。每台设备、每个浏览器要分别勾选，清除浏览器数据后需要重新勾选。
+
 ## 其他页面
 
 - `about.md` 关于、`friends.md` 友链、`privacy.md` 隐私说明

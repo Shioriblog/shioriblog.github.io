@@ -14,6 +14,7 @@ subscription: false
       <p class="stats-kicker">BLOG STATS</p>
       <h1>阅读统计</h1>
       <p class="stats-lede">shioriblog.org 的阅读、互动与 ZINE 下载统计。</p>
+      <label class="stats-comment-filter stats-self-toggle"><input id="stats-skip-self" type="checkbox">这台设备不计入统计</label>
     </div>
     <div class="stats-range" role="group" aria-label="统计范围">
       <button type="button" data-days="1" aria-pressed="false">24H</button>
@@ -203,6 +204,26 @@ subscription: false
     ]
   }
 </script>
+<script>
+  (() => {
+    const toggle = document.getElementById('stats-skip-self')
+    if (!toggle) return
+    const key = 'shiori-skip-analytics'
+    try {
+      toggle.checked = localStorage.getItem(key) === '1'
+    } catch (_) {
+      toggle.disabled = true
+      toggle.parentElement.title = '这个浏览器不能保存设置'
+      return
+    }
+    toggle.addEventListener('change', () => {
+      try {
+        if (toggle.checked) localStorage.setItem(key, '1')
+        else localStorage.removeItem(key)
+      } catch (_) {}
+    })
+  })()
+</script>
 <script src="{{ '/assets/js/zine-downloads.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/twikoo@1.7.22/dist/twikoo.all.min.js"></script>
 <script src="{{ '/assets/js/dashboard.js' | relative_url }}?v={{ site.time | date: '%s' }}"></script>
@@ -357,6 +378,7 @@ subscription: false
   .stats-response-card small { display: block; margin-top: .4rem; color: var(--stats-muted); font-size: .76rem; }
   .stats-comment-filter { display: inline-flex; align-items: center; gap: .4rem; color: var(--stats-muted); font-size: .75rem; cursor: pointer; white-space: nowrap; }
   .stats-comment-filter input { width: 1rem; height: 1rem; margin: 0; accent-color: var(--accent); }
+  .stats-self-toggle { margin-top: .7rem; }
   .stats-comment-nick { font-size: .78rem; }
   .stats-comment-time, .stats-comment-post { color: var(--stats-muted); font-size: .7rem; }
   .stats-comment-text { font-size: .88rem; }
