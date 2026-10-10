@@ -9,8 +9,7 @@ sitemap: false
 ---
 <main class="simple-page zines-page" id="content">
   <header class="zines-intro">
-    <p class="zines-kicker">独居日记 · 小册子</p>
-    <h1>ZINE</h1>
+    <h1 class="zines-kicker">ZINE</h1>
     <p class="zines-lede">按主题选编一些旧文做成可带走的电子小册子。</p>
   </header>
 
@@ -66,7 +65,7 @@ sitemap: false
           {% if zine.contents and zine.contents.size > 0 %}
             <details class="zine-contents">
               <summary>收录篇目<span class="zine-contents-symbol" aria-hidden="true">+</span></summary>
-              <ol>{% for title in zine.contents %}<li>{{ title | escape }}</li>{% endfor %}</ol>
+              <ol>{% for title in zine.contents %}{% assign source_post = site.posts | where: 'title', title | first %}<li>{% if source_post %}<a href="{{ source_post.url | relative_url }}">{{ title | escape }}</a>{% else %}{{ title | escape }}{% endif %}</li>{% endfor %}</ol>
             </details>
           {% endif %}
         </div>
@@ -77,8 +76,7 @@ sitemap: false
 
 <style>
   .zines-intro { margin-bottom: 3.1rem; }
-  .zines-kicker { margin: 0 0 .5rem; color: var(--accent); font-family: var(--sans); font-size: .71rem; letter-spacing: .08em; }
-  .zines-page h1 { margin-bottom: .65rem; letter-spacing: .045em; }
+  .zines-page h1.zines-kicker { margin: 0 0 1rem; color: var(--accent); font-family: var(--sans); font-size: .72rem; font-weight: 500; letter-spacing: .16em; line-height: 1.5; }
   .zines-lede { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.8; }
   .zine-entry { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 3.5rem; align-items: start; padding: 2.7rem 0; border-top: 1px solid var(--line); }
   .zine-entry:last-child { padding-bottom: 0; }
@@ -113,6 +111,8 @@ sitemap: false
   .zine-contents[open] .zine-contents-symbol { transform: rotate(45deg); }
   .zine-contents ol { margin: .2rem 0 .25rem; padding-left: 1.65rem; color: var(--body); font-size: .85rem; line-height: 2; }
   .zine-contents li { padding-left: .25rem; }
+  .zine-contents li a { color: var(--body); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: .22em; }
+  .zine-contents li a:hover { color: var(--accent); text-decoration-color: var(--accent); }
   .zine-contents li::marker { color: var(--muted); font-family: var(--sans); font-size: .68rem; }
   .zines-page a:focus-visible, .zine-contents summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
   @media (max-width: 760px) {

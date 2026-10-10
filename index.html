@@ -36,10 +36,10 @@ nav: home
             <p class="home-zine-description">{{ latest_zine.description | escape }}</p>
             <p class="home-zine-meta">{{ latest_zine.collection | escape }} · PDF{% if latest_zine.pages and latest_zine.pages != '' %} · {{ latest_zine.pages }} 页{% endif %}{% if latest_zine.file_size and latest_zine.file_size != '' %} · {{ latest_zine.file_size | escape }}{% endif %}</p>
             <div class="home-zine-actions">
+              <a class="home-zine-download" href="{{ zine_pdf_url | escape }}" download="{{ latest_zine.download_name | escape }}" aria-label="下载《{{ latest_zine.title | escape }}》PDF">下载 PDF <span aria-hidden="true">↓</span></a>
               {% if latest_zine.reader_url and latest_zine.reader_url != '' %}
                 <a class="home-zine-read-online" href="{{ zine_reader_url | escape }}">在线阅读 <span aria-hidden="true">→</span></a>
               {% endif %}
-              <a class="home-zine-download-link" href="{{ zine_pdf_url | escape }}" download="{{ latest_zine.download_name | escape }}" aria-label="下载《{{ latest_zine.title | escape }}》PDF">下载 PDF <span aria-hidden="true">↓</span></a>
               {% if latest_zine.intro_url and latest_zine.intro_url != '' %}
                 <a class="home-zine-intro-link" href="{{ zine_intro_url | escape }}">阅读介绍 <span aria-hidden="true">↗</span></a>
               {% endif %}
@@ -413,10 +413,10 @@ nav: home
   .home-zine-description { margin: 0 0 1rem; color: var(--body); font-size: .91rem; line-height: 1.9; }
   .home-zine-meta { margin: 0; color: var(--muted); font-family: var(--sans); font-size: .7rem; line-height: 1.8; }
   .home-zine-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1.3rem; margin-top: 1.55rem; font-family: var(--sans); font-size: .75rem; }
-  .home-zine-read-online { display: inline-flex; align-items: center; justify-content: center; gap: .85rem; min-height: 44px; padding: .55rem 1rem; border: 1px solid var(--accent); background: var(--accent); color: #fff; text-decoration: none; }
-  .home-zine-read-online:hover { background: var(--ink); border-color: var(--ink); color: #fff; }
-  .home-zine-download-link, .home-zine-intro-link { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; color: var(--accent); text-decoration: none; }
-  .home-zine-download-link:hover, .home-zine-intro-link:hover { text-decoration: underline; text-underline-offset: .2em; }
+  .home-zine-download { display: inline-flex; align-items: center; justify-content: center; gap: .85rem; min-height: 44px; padding: .55rem 1rem; border: 1px solid var(--accent); background: var(--accent); color: #fff; text-decoration: none; }
+  .home-zine-download:hover { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .home-zine-read-online, .home-zine-intro-link { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; color: var(--accent); text-decoration: none; }
+  .home-zine-read-online:hover, .home-zine-intro-link:hover { text-decoration: underline; text-underline-offset: .2em; }
   .home-zine-intro-link { color: var(--muted); }
   .home-zine-section a:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
   @media (max-width: 760px) {
