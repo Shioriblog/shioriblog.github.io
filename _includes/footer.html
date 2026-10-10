@@ -1,5 +1,110 @@
-<footer class="site-footer">
-  <span>© {{ site.time | date: '%Y' }} {{ site.author }}</span>
-  <a href="{{ '/newsletter.xml' | relative_url }}">RSS</a>
-  <a href="{{ '/privacy/' | relative_url }}">Privacy</a>
+{% assign footer_subscribe = true %}
+{% if page.subscription == false or page.footer_subscribe == false %}{% assign footer_subscribe = false %}{% endif %}
+<footer class="site-footer{% unless footer_subscribe %} is-compact{% endunless %}">
+  <div class="site-footer-main">
+    <div class="site-footer-about">
+      <p class="site-footer-name">{{ site.title }}</p>
+      <p>本博客已稳定运行 <strong id="blog-age" data-start="2026-09-14">计算中…</strong><span class="site-footer-cats" aria-hidden="true">🐈🐈‍⬛🐈🐈‍⬛</span></p>
+      <p>已发表 <strong>{{ site.posts | size }}</strong> 篇文章<span id="site-footer-chars" hidden> · 总计约 <strong></strong> 字</span></p>
+      <p class="site-footer-rights">文章与图片除特别注明外，版权归 {{ site.author }} 所有，请勿全文转载。</p>
+    </div>
+
+    {% if footer_subscribe %}
+      <section class="site-footer-subscribe" id="site-footer-subscribe" aria-labelledby="site-footer-subscribe-title">
+        <p class="site-footer-kicker" id="site-footer-subscribe-title">SUBSCRIBE</p>
+        <p>新文章发布时，收到一封邮件。</p>
+
+        <p id="footer-subscribe-success" class="site-footer-status" role="status" hidden>感谢订阅！更新时会收到邮件 ^_^</p>
+
+        <form id="footer-subscribe-form" class="site-footer-form" action="https://3693b1ad.sibforms.com/serve/MUIFAJi0O7F8qH7agDpwSWg6oAHlzhb-LHTu98WhY3r3yl4pYcWiAApt44BkjoJrBlTeQHIAJRBKyCJLlhjq-y0oURNC0TfTIjtSMN0A_Ft5ATNSyb3dfEkz3_sxQ9YSL7eF-0Q37f-Mm-WN_-Aq0HFa6-1qqdu-e6LoV3T2ivgpGah7gtKfxP7jitbT8coO_FQfJm_yvkHp_6SzIQ==" method="POST" target="footer-subscribe-target">
+          <label class="sr-only" for="footer-brevo-email">Email address</label>
+          <input id="footer-brevo-email" type="email" name="EMAIL" placeholder="Email address" autocomplete="email" required>
+          <button id="footer-subscribe-button" type="submit">订阅</button>
+          <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;">
+          <input type="hidden" name="locale" value="en">
+        </form>
+        <iframe id="footer-subscribe-target" name="footer-subscribe-target" title="订阅提交结果" hidden></iframe>
+
+        <p>也可以用 <a href="{{ '/newsletter.xml' | relative_url }}">RSS</a> 订阅 · 邮箱只用于更新通知</p>
+      </section>
+    {% endif %}
+  </div>
+
+  <div class="site-footer-bottom">
+    <span>© {{ site.time | date: '%Y' }} {{ site.author }}</span>
+    <nav class="site-footer-links" aria-label="页脚链接">
+      <a href="{{ '/newsletter.xml' | relative_url }}">RSS</a>
+      <a href="{{ '/about/' | relative_url }}">关于</a>
+      <a href="{{ '/privacy/' | relative_url }}">Privacy</a>
+    </nav>
+  </div>
 </footer>
+
+<script>
+  (() => {
+    // 运行天数
+    const output = document.getElementById('blog-age')
+    if (output) {
+      const [year, month, day] = output.dataset.start.split('-').map(Number)
+      const start = new Date(year, month - 1, day)
+      const now = new Date()
+      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+      if (end >= start) {
+        let years = end.getFullYear() - start.getFullYear()
+        let cursor = new Date(start.getFullYear() + years, start.getMonth(), start.getDate())
+        if (cursor > end) {
+          years -= 1
+          cursor = new Date(start.getFullYear() + years, start.getMonth(), start.getDate())
+        }
+        let months = (end.getFullYear() - cursor.getFullYear()) * 12 + end.getMonth() - cursor.getMonth()
+        let monthCursor = new Date(cursor.getFullYear(), cursor.getMonth() + months, cursor.getDate())
+        if (monthCursor > end) {
+          months -= 1
+          monthCursor = new Date(cursor.getFullYear(), cursor.getMonth() + months, cursor.getDate())
+        }
+        const days = Math.floor((Date.UTC(end.getFullYear(), end.getMonth(), end.getDate()) - Date.UTC(monthCursor.getFullYear(), monthCursor.getMonth(), monthCursor.getDate())) / 86400000)
+        const parts = []
+        if (years) parts.push(`${years}年`)
+        if (months) parts.push(`${months}个月`)
+        if (days || parts.length === 0) parts.push(`${days}天`)
+        output.textContent = parts.join('')
+      }
+    }
+
+    // 总字数（构建时生成在 /assets/site-stats.json）
+    const chars = document.getElementById('site-footer-chars')
+    if (chars) {
+      fetch({{ '/assets/site-stats.json' | relative_url | jsonify }})
+        .then((response) => response.ok ? response.json() : null)
+        .then((stats) => {
+          if (!stats || !stats.charsLabel) return
+          chars.querySelector('strong').textContent = stats.charsLabel
+          chars.hidden = false
+        })
+        .catch(() => {})
+    }
+
+    // 页脚订阅表单
+    const form = document.getElementById('footer-subscribe-form')
+    const frame = document.getElementById('footer-subscribe-target')
+    const success = document.getElementById('footer-subscribe-success')
+    const button = document.getElementById('footer-subscribe-button')
+    if (!form || !frame || !success || !button) return
+
+    let submitted = false
+    form.addEventListener('submit', () => {
+      submitted = true
+      button.disabled = true
+      button.textContent = '提交中…'
+      success.hidden = true
+    })
+    frame.addEventListener('load', () => {
+      if (!submitted) return
+      submitted = false
+      success.hidden = false
+      form.reset()
+      button.disabled = false
+      button.textContent = '订阅'
+    })
+  })()
+</script>

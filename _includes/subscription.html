@@ -45,6 +45,15 @@
       bottom: 1.25rem;
       z-index: 80;
       font-family: var(--sans);
+      transition: opacity .2s ease, transform .2s ease, visibility .2s;
+    }
+
+    /* 页脚的订阅框出现在屏幕上时，浮动按钮让开 */
+    .subscription-float.is-footer-visible {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(.5rem);
+      pointer-events: none;
     }
 
     .subscription-launcher {
@@ -215,6 +224,15 @@
         panel.hidden = !open
         launcher.setAttribute('aria-expanded', String(open))
         if (open && email) window.setTimeout(() => email.focus(), 50)
+      }
+
+      const footerSubscribe = document.getElementById('site-footer-subscribe')
+      if (footerSubscribe && 'IntersectionObserver' in window) {
+        new IntersectionObserver((entries) => {
+          const visible = entries.some((entry) => entry.isIntersecting)
+          if (visible && !panel.hidden) setOpen(false)
+          root.classList.toggle('is-footer-visible', visible)
+        }, { threshold: 0.2 }).observe(footerSubscribe)
       }
 
       launcher.addEventListener('click', () => setOpen(panel.hidden))

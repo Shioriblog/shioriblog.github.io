@@ -3,6 +3,8 @@ layout: default
 title: About
 permalink: /about/
 nav: about
+# 关于页底部已经有订阅框，页脚就不再重复显示
+footer_subscribe: false
 ---
 
 <main class="about-page" id="content">
