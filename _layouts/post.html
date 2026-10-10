@@ -22,7 +22,7 @@ layout: default
         </span>
       </p>
     </header>
-    <div class="article-content">{{ content }}</div>
+    <div class="article-content">{{ content | replace: '<img ', '<img loading="lazy" decoding="async" ' }}</div>
 
     <div class="article-endmatter" aria-label="文章相关信息">
       <footer class="article-copyright" aria-label="文章版权与反馈">
