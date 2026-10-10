@@ -2,11 +2,11 @@
 layout: default
 ---
 <main class="simple-page category-archive-page" id="content">
-  <p class="category-archive-kicker" lang="ja">{{ page.category_name }}</p>
-  <h1>{{ page.category_description }}</h1>
-  <a class="category-back" href="{{ '/categories/' | relative_url }}">← Categories</a>
-
   {% assign category_posts = site.categories[page.category_name] %}
+
+  <p class="category-archive-kicker"><a href="{{ '/categories/' | relative_url }}">CATEGORIES</a><span aria-hidden="true">/</span></p>
+  <h1 lang="ja">{{ page.category_name }}</h1>
+  <p class="category-archive-subtitle">{{ page.category_description }} · {{ category_posts | size }} 篇</p>
 
   {% assign has_visible_tags = false %}
   {% for tag in site.tags %}
@@ -21,6 +21,11 @@ layout: default
 
   <div class="category-archive-grid">
     <div class="category-archive-main">
+      <p class="category-filter-status" id="category-filter-status" role="status" hidden>
+        <span>标签「<span id="category-filter-name" lang="ja"></span>」</span>
+        <span class="category-filter-count" id="category-filter-count"></span>
+        <button type="button" id="category-filter-clear">显示全部 ×</button>
+      </p>
       {% assign category_years = category_posts | group_by_exp: 'post', "post.date | date: '%Y'" %}
       {% for year in category_years %}
         <section class="category-archive-year-group" aria-label="{{ year.name }}年">
@@ -91,6 +96,10 @@ layout: default
       const posts = yearGroups.flatMap(group => Array.from(group.querySelectorAll('.category-archive-posts li')))
       if (!yearGroups.length || !posts.length || !filters.length) return
 
+      const status = document.getElementById('category-filter-status')
+      const statusName = document.getElementById('category-filter-name')
+      const statusCount = document.getElementById('category-filter-count')
+
       const params = new URLSearchParams(window.location.search)
       const requestedTag = params.get('tag')
       let activeTag = requestedTag && filters.some(button => button.dataset.tagFilter === requestedTag)
@@ -126,6 +135,14 @@ layout: default
           button.setAttribute('aria-pressed', String(active))
         })
 
+        if (status) {
+          status.hidden = activeTag === 'all'
+          if (activeTag !== 'all') {
+            statusName.textContent = activeTag
+            statusCount.textContent = `${posts.filter(post => !post.hidden).length} 篇`
+          }
+        }
+
         if (updateUrl) syncUrl()
       }
 
@@ -136,6 +153,11 @@ layout: default
         })
       })
 
+      document.getElementById('category-filter-clear')?.addEventListener('click', () => {
+        activeTag = 'all'
+        render(true)
+      })
+
       render(false)
     })()
   </script>
@@ -143,32 +165,75 @@ layout: default
 
 <style>
   .category-archive-kicker {
-    margin: 0 0 .55rem;
+    margin: 0 0 1rem;
+    font-family: var(--sans);
+    font-size: .72rem;
+    font-weight: 500;
+    letter-spacing: .16em;
+  }
+
+  .category-archive-kicker a {
     color: var(--accent);
-    font-family: "Noto Serif JP", "Yu Mincho", serif;
-    font-size: .88rem;
-    letter-spacing: .08em;
+    text-decoration: none;
+  }
+
+  .category-archive-kicker a:hover,
+  .category-archive-kicker a:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: .25em;
+  }
+
+  .category-archive-kicker span {
+    margin-left: .45rem;
+    color: var(--muted);
   }
 
   .category-archive-page h1 {
-    margin: 0 0 1.15rem;
+    margin: 0 0 .35rem;
+    font-size: clamp(1.9rem, 4.6vw, 2.3rem);
   }
 
-  .category-back {
-    display: inline-flex;
-    align-items: center;
+  .category-archive-subtitle {
     margin: 0;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .68rem;
-    letter-spacing: .035em;
-    text-decoration: none;
-    transition: color .15s ease;
+    font-size: .82rem;
   }
 
-  .category-back:hover,
-  .category-back:focus-visible {
+  .category-filter-status {
+    display: flex;
+    align-items: baseline;
+    gap: .6rem;
+    margin: 0 0 1.6rem;
+    padding: .6rem .8rem;
+    background: var(--soft);
+    color: var(--body);
+    font-family: var(--sans);
+    font-size: .8rem;
+  }
+
+  .category-filter-status[hidden] {
+    display: none;
+  }
+
+  .category-filter-count {
+    color: var(--muted);
+  }
+
+  .category-filter-status button {
+    margin-left: auto;
+    padding: 0;
+    border: 0;
+    background: none;
     color: var(--accent);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .category-filter-status button:hover,
+  .category-filter-status button:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: .22em;
   }
 
   .category-archive-grid {
@@ -187,33 +252,34 @@ layout: default
   }
 
   .category-tag-title {
-    margin: 0 0 1.35rem;
+    margin: 0 0 .9rem;
     color: var(--accent);
     font-family: var(--sans);
-    font-size: .61rem;
+    font-size: .72rem;
     font-weight: 500;
-    letter-spacing: .17em;
+    letter-spacing: .16em;
   }
 
   .category-tag-list {
     display: grid;
-    gap: .58rem;
+    gap: .25rem;
   }
 
   .category-archive-tag {
     position: relative;
     width: fit-content;
     max-width: 100%;
-    padding: 0;
+    padding: .18rem 0 .18rem .7rem;
     border: 0;
+    border-left: 2px solid transparent;
     background: transparent;
-    color: var(--muted);
+    color: var(--body);
     font-family: var(--sans);
-    font-size: .72rem;
-    line-height: 1.45;
+    font-size: .84rem;
+    line-height: 1.5;
     text-align: left;
     cursor: pointer;
-    transition: color .15s ease;
+    transition: color .15s ease, border-color .15s ease;
   }
 
   .category-archive-tag span {
@@ -221,24 +287,24 @@ layout: default
   }
 
   .category-archive-tag sup {
-    position: relative;
-    top: -.28em;
-    margin-left: .24rem;
+    position: static;
+    margin-left: .4rem;
     color: var(--muted);
-    font-size: .53rem;
+    font-size: .74rem;
+    font-variant-numeric: tabular-nums;
     line-height: 1;
+    vertical-align: baseline;
   }
 
   .category-archive-tag:hover,
-  .category-archive-tag:focus-visible,
-  .category-archive-tag.is-active {
+  .category-archive-tag:focus-visible {
     color: var(--accent);
   }
 
-  .category-archive-tag.is-active span {
-    text-decoration: underline;
-    text-underline-offset: .25rem;
-    text-decoration-thickness: 1px;
+  .category-archive-tag.is-active {
+    border-left-color: var(--accent);
+    color: var(--ink);
+    font-weight: 500;
   }
 
   .category-archive-tag.has-tooltip::after {
@@ -362,7 +428,14 @@ layout: default
     }
 
     .category-archive-tag {
-      font-size: .7rem;
+      padding: .1rem 0;
+      border-left: 0;
+      border-bottom: 2px solid transparent;
+      font-size: .82rem;
+    }
+
+    .category-archive-tag.is-active {
+      border-bottom-color: var(--accent);
     }
 
     .category-archive-posts li {
