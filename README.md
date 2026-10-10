@@ -28,6 +28,16 @@ travel_image: /assets/images/posts/2026/09/封面.jpg
 travel_excerpt: 一两句话简介。
 ```
 
+### 引文
+
+```markdown
+> 原文
+> <br>_（译文）_
+> <br>—— 出处
+```
+
+译文会显示成浅灰色、不斜体的一行；出处显示成右对齐的小字。出处也可以单独成段（`> —— 出处`）。
+
 ### 图片
 
 - 放在 `assets/images/posts/年/月/` 下面，文件名用英文、数字或连字符。

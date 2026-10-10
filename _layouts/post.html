@@ -22,7 +22,14 @@ layout: default
         </span>
       </p>
     </header>
-    <div class="article-content">{{ content | replace: '<img ', '<img loading="lazy" decoding="async" ' }}</div>
+    {% comment %}
+      引文的写法约定（在 Markdown 里照常写即可）：
+      > 原文
+      > <br>_（译文）_        → 译文：浅灰、不斜体、单独一行
+      > <br>—— 出处           → 出处：右对齐的灰色小字（也可以单独成段：> —— 出处）
+    {% endcomment %}
+    {% assign article_html = content | replace: '<img ', '<img loading="lazy" decoding="async" ' | replace: '<br /><em>（', '<em class="quote-translation">（' | replace: '<br /><em>(', '<em class="quote-translation">(' | replace: '<br />—— ', '</p><p class="quote-source">—— ' | replace: '<p>—— ', '<p class="quote-source">—— ' %}
+    <div class="article-content">{{ article_html }}</div>
 
     <div class="article-endmatter" aria-label="文章相关信息">
       <footer class="article-copyright" aria-label="文章版权与反馈">
