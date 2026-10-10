@@ -15,7 +15,8 @@ description: 按分类与主题翻看独居日记里的文章。
   <div class="category-index-grid">
     {% for row in category_index %}
       {% assign parts = row | split: "|" %}
-      {% assign category_posts = site.categories[parts[0]] %}
+      {% assign category_name = parts[0] %}
+      {% assign category_posts = site.categories[category_name] %}
       {% assign show = parts[3] | plus: 0 %}
       <section class="category-index-card{% if forloop.first %} is-wide{% endif %}" aria-labelledby="category-index-{{ forloop.index }}">
         <a class="category-index-head" href="{{ parts[2] | relative_url }}">
