@@ -5,7 +5,7 @@ permalink: /archive/
 nav: archive
 ---
 <main class="simple-page archive-page" id="content">
-  <h1>Archives</h1>
+  <h1 class="archive-kicker">ARCHIVES</h1>
 
   {% assign posts_by_year = site.posts | group_by_exp: 'post', 'post.date | date: "%Y"' %}
 
@@ -147,6 +147,21 @@ nav: archive
         yearPanels.forEach((panel) => {
           panel.hidden = panel.dataset.yearPanel !== String(year)
         })
+
+        // 屏幕放不下整年时：今年滑到今天附近，往年从 1 月开始
+        const scroller = document.querySelector('.calendar-scroll')
+        if (scroller) {
+          scroller.scrollLeft = 0
+          const now = new Date()
+          if (year === now.getFullYear() && scroller.scrollWidth > scroller.clientWidth) {
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+            const todayCell = grid.children[Math.round((today - start) / dayLength)]
+            if (todayCell) {
+              const cellRight = todayCell.getBoundingClientRect().right - scroller.getBoundingClientRect().left
+              scroller.scrollLeft = Math.max(0, cellRight - scroller.clientWidth + 24)
+            }
+          }
+        }
       }
 
       yearButtons.forEach((button) => {
@@ -163,6 +178,16 @@ nav: archive
 <style>
   .archive-page {
     width: min(860px, calc(100% - 4rem));
+  }
+
+  .archive-page h1.archive-kicker {
+    margin: 0 0 1.6rem;
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: .72rem;
+    font-weight: 500;
+    letter-spacing: .16em;
+    line-height: 1.5;
   }
 
   .archive-calendar {
