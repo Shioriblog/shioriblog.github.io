@@ -17,27 +17,27 @@ nav: friends
   <section class="friends-blogroll" aria-labelledby="blogroll-title">
     <h2 id="blogroll-title">BLOGROLL</h2>
     <ul class="friends-list">
-      <li><a href="https://hippostank.org/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://hippostank.org&sz=32" alt="" loading="lazy">河马吐槽</a></li>
-      <li><a href="https://thirdshire.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://thirdshire.com&sz=32" alt="" loading="lazy">第三夏尔 | Third Shire</a></li>
-      <li><a href="https://tortie.me/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://tortie.me&sz=32" alt="" loading="lazy">A Purrception</a></li>
-      <li><a href="https://imick.github.io/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://imick.github.io&sz=32" alt="" loading="lazy">Chiaroscuro</a></li>
-      <li><a href="https://www.kylinbag.top/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://www.kylinbag.top&sz=32" alt="" loading="lazy">锁麟囊</a></li>
-      <li><a href="https://www.after27.me/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://www.after27.me&sz=32" alt="" loading="lazy">After 27</a></li>
-      <li><a href="https://blog.douchi.space/#gsc.tab=0"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://blog.douchi.space&sz=32" alt="" loading="lazy">椒盐豆豉</a></li>
-      <li><a href="https://pensieve.wangxindi.org/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://pensieve.wangxindi.org&sz=32" alt="" loading="lazy">邓布利多的冥想盆</a></li>
-      <li><a href="https://fourxiajiao.github.io/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://fourxiajiao.github.io&sz=32" alt="" loading="lazy">一笼虾饺有四个</a></li>
-      <li><a href="https://blog.himikouchuu.com/"><img class="friend-favicon" src="{{ '/assets/images/friends/himikouchuu.svg' | relative_url }}" alt="" loading="lazy">愚人船</a></li>
-      <li><a href="https://zhuzi.dev/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://zhuzi.dev&sz=32" alt="" loading="lazy">Blah Blah Booooom</a></li>
-      <li><a href="https://blackcatmeiqiu.blogspot.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://blackcatmeiqiu.blogspot.com&sz=32" alt="" loading="lazy">两人森林|猫猫文学</a></li>
-      <li><a href="https://www.joeyrambles.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://www.joeyrambles.com&sz=32" alt="" loading="lazy">小小日常</a></li>
-      <li><a href="https://aliangx.blog/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://aliangx.blog&sz=32" alt="" loading="lazy">蛰洲</a></li>
-      <li><a href="https://solanalifeblog.vercel.app/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://solanalifeblog.vercel.app&sz=32" alt="" loading="lazy">在世一日</a></li>
-      <li><a href="https://www.gigigatgat.ca/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://www.gigigatgat.ca&sz=32" alt="" loading="lazy">嘰嘰乞乞</a></li>
-      <li><a href="https://mokuyo.neocities.org/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://mokuyo.neocities.org&sz=32" alt="" loading="lazy">光明岛</a></li>
-      <li><a href="https://foxat4.github.io/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://foxat4.github.io&sz=32" alt="" loading="lazy">青群山丘</a></li>
-      <li><a href="https://circleyellowthere.de/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://circleyellowthere.de&sz=32" alt="" loading="lazy">Circleyellowthere</a></li>
-      <li><a href="https://www.yocson.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://www.yocson.com&sz=32" alt="" loading="lazy">散步中</a></li>
-      <li><a href="https://ignativssss.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://ignativssss.com&sz=32" alt="" loading="lazy">豚骨拉面馆🍜</a></li>
+      <li><a target="_blank" rel="noopener" href="https://hippostank.org/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://hippostank.org&sz=32" alt="" loading="lazy">河马吐槽</a></li>
+      <li><a target="_blank" rel="noopener" href="https://thirdshire.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://thirdshire.com&sz=32" alt="" loading="lazy">第三夏尔 | Third Shire</a></li>
+      <li><a target="_blank" rel="noopener" href="https://tortie.me/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://tortie.me&sz=32" alt="" loading="lazy">A Purrception</a></li>
+      <li><a target="_blank" rel="noopener" href="https://imick.github.io/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://imick.github.io&sz=32" alt="" loading="lazy">Chiaroscuro</a></li>
+      <li><a target="_blank" rel="noopener" href="https://www.kylinbag.top/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://www.kylinbag.top&sz=32" alt="" loading="lazy">锁麟囊</a></li>
+      <li><a target="_blank" rel="noopener" href="https://www.after27.me/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://www.after27.me&sz=32" alt="" loading="lazy">After 27</a></li>
+      <li><a target="_blank" rel="noopener" href="https://blog.douchi.space/#gsc.tab=0"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://blog.douchi.space&sz=32" alt="" loading="lazy">椒盐豆豉</a></li>
+      <li><a target="_blank" rel="noopener" href="https://pensieve.wangxindi.org/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://pensieve.wangxindi.org&sz=32" alt="" loading="lazy">邓布利多的冥想盆</a></li>
+      <li><a target="_blank" rel="noopener" href="https://fourxiajiao.github.io/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://fourxiajiao.github.io&sz=32" alt="" loading="lazy">一笼虾饺有四个</a></li>
+      <li><a target="_blank" rel="noopener" href="https://blog.himikouchuu.com/"><span class="friend-favicon friend-favicon-letter" aria-hidden="true">愚</span>愚人船</a></li>
+      <li><a target="_blank" rel="noopener" href="https://zhuzi.dev/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://zhuzi.dev&sz=32" alt="" loading="lazy">Blah Blah Booooom</a></li>
+      <li><a target="_blank" rel="noopener" href="https://blackcatmeiqiu.blogspot.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://blackcatmeiqiu.blogspot.com&sz=32" alt="" loading="lazy">两人森林|猫猫文学</a></li>
+      <li><a target="_blank" rel="noopener" href="https://www.joeyrambles.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://www.joeyrambles.com&sz=32" alt="" loading="lazy">小小日常</a></li>
+      <li><a target="_blank" rel="noopener" href="https://aliangx.blog/"><span class="friend-favicon friend-favicon-letter" aria-hidden="true">蛰</span>蛰洲</a></li>
+      <li><a target="_blank" rel="noopener" href="https://solanalifeblog.vercel.app/"><span class="friend-favicon friend-favicon-letter" aria-hidden="true">在</span>在世一日</a></li>
+      <li><a target="_blank" rel="noopener" href="https://www.gigigatgat.ca/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://www.gigigatgat.ca&sz=32" alt="" loading="lazy">嘰嘰乞乞</a></li>
+      <li><a target="_blank" rel="noopener" href="https://mokuyo.neocities.org/"><span class="friend-favicon friend-favicon-letter" aria-hidden="true">光</span>光明岛</a></li>
+      <li><a target="_blank" rel="noopener" href="https://foxat4.github.io/"><span class="friend-favicon friend-favicon-letter" aria-hidden="true">青</span>青群山丘</a></li>
+      <li><a target="_blank" rel="noopener" href="https://circleyellowthere.de/"><span class="friend-favicon friend-favicon-letter" aria-hidden="true">C</span>Circleyellowthere</a></li>
+      <li><a target="_blank" rel="noopener" href="https://www.yocson.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://www.yocson.com&sz=32" alt="" loading="lazy">散步中</a></li>
+      <li><a target="_blank" rel="noopener" href="https://ignativssss.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://ignativssss.com&sz=32" alt="" loading="lazy">豚骨拉面馆🍜</a></li>
     </ul>
   </section>
 
@@ -121,8 +121,19 @@ nav: friends
     width: 18px;
     height: 18px;
     flex: 0 0 18px;
-    border-radius: 4px;
+    border-radius: 0;
     object-fit: contain;
+  }
+
+  /* 抓不到图标、或图标在浅色底上看不见的站：用名字的第一个字 */
+  .friend-favicon-letter {
+    display: inline-grid;
+    place-items: center;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--serif);
+    font-size: .68rem;
+    line-height: 1;
   }
 
   .friends-list a:hover {
@@ -147,6 +158,10 @@ nav: friends
 
     .friends-list {
       grid-template-columns: 1fr;
+    }
+
+    .friends-list a {
+      padding: .62rem 0;
     }
   }
 </style>
