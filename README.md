@@ -40,6 +40,14 @@ travel_excerpt: 一两句话简介。
 
 译文会显示成浅灰色、不斜体的一行；出处显示成右对齐的小字。出处也可以单独成段（`> —— 出处`）。
 
+### 月记
+
+复制 `_drafts/monthly-diary-template.md`，里面已经写好了各部分的写法：
+
+- 开头一句 `<p class="diary-lede">`，下面是题词（引文后面加一行 `{: .diary-epigraph}`）。
+- 每一天用 `<h3 class="diary-entry-date">10月1日（木）</h3>`。有 3 天以上时，开头会自动出现「DAYS」日期索引，右侧目录不显示。
+- 和朋友的对话用 `conversation-log diary-conversation` 的列表，「我」加 `is-self`。
+
 ### 图片
 
 - 放在 `assets/images/posts/年/月/` 下面，文件名用英文、数字或连字符。
