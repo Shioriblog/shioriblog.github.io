@@ -622,11 +622,6 @@ body.post-category-utakata .article-content h3.diary-entry-date::after {
   text-underline-offset: .2em;
 }
 
-/* 宽屏右侧已有「ON THIS PAGE」目录，就不再重复显示 */
-@media (min-width: 1121px) {
-  .article-content .diary-index { display: none; }
-}
-
 /* 月记里夹着的对话 */
 .article-content .conversation-log.diary-conversation {
   margin: 1.4rem 0 1.6rem;

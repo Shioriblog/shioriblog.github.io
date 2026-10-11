@@ -124,7 +124,7 @@ layout: default
   </script>
 
   <script>
-    // 月记：有 3 个以上 <h3 class="diary-entry-date"> 时，在第一天前面生成「DAYS 3 4 5 …」索引
+    // 月记：有 3 个以上 <h3 class="diary-entry-date"> 时，在第一天前面生成「DAYS 3 4 5 …」索引（这时右侧目录不显示）
     (() => {
       const content = document.querySelector('.article-content')
       if (!content) return
@@ -159,6 +159,9 @@ layout: default
       const toc = document.getElementById('article-toc')
       const list = document.getElementById('article-toc-list')
       if (!content || !toc || !list) return
+
+      // 月记已经有正文里的「DAYS」日期索引，右侧不再重复列出每一天
+      if (content.querySelector('.diary-index')) return
 
       const headings = Array.from(content.querySelectorAll('h2, h3'))
       if (headings.length < 2) return
