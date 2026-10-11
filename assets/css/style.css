@@ -188,10 +188,15 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
 .comments .el-input-group__prepend { border-color: var(--line); border-radius: 0; background: var(--soft); color: var(--muted); }
 .comments .el-input__inner,
 .comments .el-textarea__inner { border-radius: 0; }
-.comments .tk-icon { color: var(--muted); }
-.comments .tk-icon svg { fill: currentColor; }
+.comments .tk-icon,
+.comments .tk-comments-actions .tk-icon.__comments { color: var(--muted); }
+.comments .tk-icon svg,
+.comments .tk-icon svg path { fill: currentColor; }
 .comments .tk-icon:hover,
+.comments .tk-comments-actions .tk-icon.__comments:hover,
 .comments .tk-action-icon:hover { color: var(--accent); }
+.comments .tk-comments-search .el-button--primary { border-color: var(--ink); border-radius: 0; background: var(--ink); color: #fff; }
+.comments .tk-comments-search .el-button--primary:hover { border-color: var(--accent); background: var(--accent); }
 .comments .tk-comments-container a,
 .comments .tk-action-link,
 .comments .tk-nick-link { color: var(--accent); }
