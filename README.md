@@ -73,7 +73,7 @@ travel_excerpt: 一两句话简介。
 | 访问统计 | Cloudflare Web Analytics | `_config.yml` 的 `cloudflare_beacon_token` |
 | 点赞、阅读统计页 | 自己的 Cloudflare Worker（`shiori-stats`） | `cloudflare-worker/`，网址在 `_config.yml` 的 `dashboard_api_url` |
 | ZINE 下载数 | GitHub Releases 的下载计数 | `_data/zines.yml` 的 `release_asset_id` |
-| 域名 | WordPress.com（DNS 也在这里，自动续费） | WordPress.com 的 Domains 页面 |
+| 域名和 DNS | Cloudflare Registrar（每年 11 月自动续费；DNS 记录只解析、不开代理） | Cloudflare 的 Domain Registration 和 DNS 页面 |
 
 换服务或加服务时，记得同步更新 `privacy.md`。
 

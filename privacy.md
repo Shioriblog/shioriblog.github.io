@@ -31,7 +31,7 @@ permalink: /privacy/
 
   <section>
     <h2>网站托管与外部资源</h2>
-    <p>本站托管在 GitHub Pages，域名在 WordPress.com 注册。页面还会从 Google Fonts 和 jsDelivr 加载字体或前端脚本；这些服务可能会接收到浏览器请求资源时产生的常规技术信息。</p>
+    <p>本站托管在 GitHub Pages，域名在 Cloudflare 注册，DNS 也由 Cloudflare 解析（不经过 Cloudflare 代理）。页面还会从 Google Fonts 和 jsDelivr 加载字体或前端脚本；这些服务可能会接收到浏览器请求资源时产生的常规技术信息。</p>
   </section>
 
   <p class="privacy-note">如果本站以后增加或更换会影响读者隐私的功能，这一页也会随之更新。</p>
