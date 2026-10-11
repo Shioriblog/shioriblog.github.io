@@ -1,10 +1,10 @@
 :root {
-  --paper: #f7f4ee;
+  --paper: #fdfcfa;
   --ink: #1d1c1a;
   --body: #2c2a27;
   --muted: #6f6a64;
-  --line: #e4ded4;
-  --soft: #efebe3;
+  --line: #ebe7e1;
+  --soft: #f4f2ee;
   --accent: #4f5a49;
   --serif: "Noto Serif SC", "Songti SC", "Source Han Serif SC", "Yu Mincho", serif;
   --sans: Inter, "Noto Sans CJK SC", "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;
@@ -242,7 +242,7 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
   color: var(--accent);
   border: 1px solid #d8d3cc;
   border-radius: 0;
-  background: rgba(247, 244, 238, .94);
+  background: rgba(253, 252, 250, .94);
   box-shadow: 0 6px 20px rgba(29, 28, 26, .08);
   opacity: 0;
   visibility: hidden;
