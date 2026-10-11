@@ -28,7 +28,7 @@ layout: default
       > <br>_（译文）_        → 译文：浅灰、不斜体、单独一行
       > <br>—— 出处           → 出处：右对齐的灰色小字（也可以单独成段：> —— 出处）
     {% endcomment %}
-    {% assign article_html = content | replace: '<img ', '<img loading="lazy" decoding="async" ' | replace: '<br /><em>（', '<em class="quote-translation">（' | replace: '<br /><em>(', '<em class="quote-translation">(' | replace: '<br />—— ', '</p><p class="quote-source">—— ' | replace: '<p>—— ', '<p class="quote-source">—— ' %}
+    {% assign article_html = content | replace: '<img ', '<img loading="lazy" decoding="async" ' | replace: '<br /><em>（', '<em class="quote-translation">（' | replace: '<br /><em>(', '<em class="quote-translation">(' | replace: '<br />—— ', '</p><p class="quote-source">—— ' | replace: '<p>—— ', '<p class="quote-source">—— ' | replace: '<span class="conversation-speaker">S</span>', '<span class="conversation-speaker is-self">S</span>' %}
     <div class="article-content">{{ article_html }}</div>
 
     <div class="article-endmatter" aria-label="文章相关信息">

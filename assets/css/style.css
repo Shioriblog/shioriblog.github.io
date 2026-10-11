@@ -446,13 +446,24 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
 }
 
 .article-content .conversation-date {
-  margin: 3rem 0 1rem;
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  margin: 2.6rem 0 1.1rem;
   color: var(--muted);
   font-family: var(--sans);
-  font-size: .8125rem;
+  font-size: .78rem;
   font-weight: 500;
-  letter-spacing: .03em;
+  letter-spacing: .06em;
   line-height: 1.5;
+}
+
+/* 日期后面一条细线，像日记的分隔 */
+.article-content .conversation-date::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
 }
 
 .article-content .conversation-date:first-child {
@@ -463,14 +474,14 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
   margin: 0;
   padding: 0;
   list-style: none;
-  line-height: 1.82;
+  line-height: 1.75;
 }
 
 .article-content .conversation-turn {
   display: grid;
-  grid-template-columns: 1.85em minmax(0, 1fr);
+  grid-template-columns: 2.4em minmax(0, 1fr);
   align-items: baseline;
-  margin: 0 0 .25rem;
+  margin: 0 0 .6rem;
   line-height: inherit;
 }
 
@@ -483,15 +494,17 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
 }
 
 .article-content .conversation-speaker {
-  color: var(--body);
-  font-family: var(--serif);
-  font-size: 1em;
-  font-weight: 500;
+  color: #9a7b5f;
+  font-family: var(--sans);
+  font-size: .86em;
+  font-weight: 600;
+  letter-spacing: .04em;
   line-height: inherit;
 }
 
-.article-content .conversation-speaker::after {
-  content: "：";
+/* 作者自己（S）用主题绿，朋友用暖棕色 */
+.article-content .conversation-speaker.is-self {
+  color: var(--accent);
 }
 
 .article-content .conversation-line {
@@ -509,7 +522,7 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
 }
 
 .article-content .conversation-note {
-  margin: .1875rem 0 .4375rem 2em;
+  margin: .1875rem 0 .6rem 2.4em;
   font-size: .92em;
   line-height: 1.75;
 }
