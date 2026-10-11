@@ -259,8 +259,8 @@ nav: home
     background: transparent;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .72rem;
-    font-weight: 500;
+    font-size: .8rem;
+    font-weight: 400;
     letter-spacing: .04em;
     line-height: 1.4;
     cursor: pointer;
@@ -273,21 +273,17 @@ nav: home
     border-bottom-color: rgba(79, 90, 73, .38);
   }
 
-  .home-all-posts.is-active {
-    color: var(--accent);
-    border-bottom-color: currentColor;
-  }
-
+  /* 去旅行页的链接：不是筛选，放在这一行最右边 */
   .home-travel-link {
     position: relative;
     display: inline-flex;
     align-items: center;
-    margin-left: .2rem;
+    margin-left: auto;
     padding: .22rem .05rem;
-    color: var(--accent);
+    color: var(--muted);
     font-family: var(--sans);
-    font-size: .72rem;
-    font-weight: 500;
+    font-size: .8rem;
+    font-weight: 400;
     letter-spacing: .02em;
     line-height: 1.4;
     text-decoration: none;
@@ -297,7 +293,7 @@ nav: home
 
   .home-travel-link:hover,
   .home-travel-link:focus-visible {
-    color: var(--ink);
+    color: var(--accent);
     border-bottom-color: rgba(79, 90, 73, .38);
   }
 
@@ -309,8 +305,8 @@ nav: home
     z-index: 10;
     padding: .22rem .38rem;
     border: 1px solid rgba(111, 106, 100, .16);
-    border-radius: 3px;
-    background: rgba(247, 246, 243, .96);
+    border-radius: 0;
+    background: rgba(253, 252, 250, .97);
     color: var(--muted);
     box-shadow: 0 2px 8px rgba(29, 28, 26, .06);
     font-family: var(--sans);
@@ -354,9 +350,12 @@ nav: home
     color: var(--accent);
   }
 
-  .home-category-link.is-active {
-    border-bottom-color: currentColor;
-    color: var(--accent);
+  /* 选中的那一个：深色、稍粗、带下划线（All posts 和分类一样） */
+  .category-strip .home-all-posts.is-active,
+  .category-strip .home-category-link.is-active {
+    border-bottom-color: var(--ink);
+    color: var(--ink);
+    font-weight: 500;
   }
 
   .home-category-link.has-tooltip::after {
@@ -367,8 +366,8 @@ nav: home
     z-index: 10;
     padding: .22rem .38rem;
     border: 1px solid rgba(111, 106, 100, .16);
-    border-radius: 3px;
-    background: rgba(247, 246, 243, .96);
+    border-radius: 0;
+    background: rgba(253, 252, 250, .97);
     color: var(--muted);
     box-shadow: 0 2px 8px rgba(29, 28, 26, .06);
     font-family: var(--sans);
