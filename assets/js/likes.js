@@ -147,7 +147,9 @@
     button.setAttribute('aria-pressed', String(liked))
     button.setAttribute('aria-label', liked ? '取消喜欢这篇文章' : '喜欢这篇文章')
     heart.textContent = liked ? '♥' : '♡'
-    count.textContent = String(likes)
+    // 还没有人点赞时不显示「0」
+    count.textContent = likes > 0 ? String(likes) : ''
+    count.hidden = likes === 0
     button.hidden = false
     button.disabled = false
   }

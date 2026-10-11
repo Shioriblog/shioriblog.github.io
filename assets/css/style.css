@@ -177,6 +177,25 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
 .comments .tk-meta-input .el-input__inner:focus { border-color: #aaa49b; }
 .comments .tk-submit .el-button--primary { border-color: var(--ink); border-radius: 0; background: var(--ink); color: #fff; }
 .comments .tk-submit .el-button--primary:hover { border-color: var(--accent); background: var(--accent); }
+/* 留言区：去掉 Twikoo 自带的蓝色和圆角，跟全站一致 */
+.comments .tk-submit .el-button--primary.is-disabled,
+.comments .tk-submit .el-button--primary.is-disabled:hover,
+.comments .tk-submit .el-button--primary.is-disabled:focus { border-color: var(--line); background: var(--soft); color: #aaa49b; }
+.comments .el-button { border-radius: 0; }
+.comments .el-button--default { border-color: var(--line); background: transparent; color: var(--muted); }
+.comments .el-button--default:hover,
+.comments .el-button--default:focus { border-color: var(--accent); background: transparent; color: var(--accent); }
+.comments .el-input-group__prepend { border-color: var(--line); border-radius: 0; background: var(--soft); color: var(--muted); }
+.comments .el-input__inner,
+.comments .el-textarea__inner { border-radius: 0; }
+.comments .tk-icon { color: var(--muted); }
+.comments .tk-icon svg { fill: currentColor; }
+.comments .tk-icon:hover,
+.comments .tk-action-icon:hover { color: var(--accent); }
+.comments .tk-comments-container a,
+.comments .tk-action-link,
+.comments .tk-nick-link { color: var(--accent); }
+.comments .el-loading-spinner .path { stroke: var(--accent); }
 .service-note { font-family: var(--sans); font-size: .78rem !important; }
 .pagination { display: flex; justify-content: space-between; color: var(--muted); font-size: .84rem; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }

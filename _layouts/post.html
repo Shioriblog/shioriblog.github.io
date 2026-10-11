@@ -32,30 +32,7 @@ layout: default
     <div class="article-content">{{ article_html }}</div>
 
     <div class="article-endmatter" aria-label="文章相关信息">
-      <footer class="article-copyright" aria-label="文章版权与反馈">
-        <p>© Shiori 栞 · All rights reserved · 给这个博客一点反馈 → <a href="https://docs.google.com/forms/d/e/1FAIpQLSfvrh7kUD01h4HPE1ecbRLPFcDISm2tCY-r0zif0h6fe-2COA/viewform" target="_blank" rel="noopener noreferrer"><strong>填写问卷</strong></a></p>
-      </footer>
-    <div class="article-meta-actions" aria-label="文章标签与互动">
-    {% assign has_visible_tags = false %}
-    {% for tag in page.tags %}
-      {% unless tag == 'featured' %}
-        {% assign has_visible_tags = true %}
-      {% endunless %}
-    {% endfor %}
-    {% if has_visible_tags %}
-      <div class="article-tags" aria-label="文章标签">
-        <span class="article-tags-label">TAGS</span>
-        <div class="article-tags-list">
-          {% assign primary_category = page.categories | first %}
-          {% for tag in page.tags %}
-            {% unless tag == 'featured' %}
-              <a href="{{ '/categories/' | relative_url }}?category={{ primary_category | url_encode }}&tag={{ tag | url_encode }}">{{ tag }}</a>
-            {% endunless %}
-          {% endfor %}
-        </div>
-      </div>
-    {% endif %}
-
+    {% comment %} 文末顺序：喜欢 → 标签 → 版权和反馈（小字） {% endcomment %}
     {% if page.categories contains '食べたり、歩いたり' %}
       {% assign lyket_id = page.date | date: 'post-%Y%m%d%H%M%S' %}
     {% elsif page.wordpress_id %}
@@ -76,12 +53,34 @@ layout: default
         data-lyket-font-family="Inter, system-ui, sans-serif"
       ></div>
     </div>
-    </div>
 
+    {% assign has_visible_tags = false %}
+    {% for tag in page.tags %}
+      {% unless tag == 'featured' %}
+        {% assign has_visible_tags = true %}
+      {% endunless %}
+    {% endfor %}
+    {% if has_visible_tags %}
+      <div class="article-tags" aria-label="文章标签">
+        <span class="article-tags-label">TAGS</span>
+        <div class="article-tags-list">
+          {% assign primary_category = page.categories | first %}
+          {% for tag in page.tags %}
+            {% unless tag == 'featured' %}
+              <a href="{{ '/categories/' | relative_url }}?category={{ primary_category | url_encode }}&tag={{ tag | url_encode }}">{{ tag }}</a>
+            {% endunless %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+      <footer class="article-copyright" aria-label="文章版权与反馈">
+        <p>© Shiori 栞 · All rights reserved · 给这个博客一点反馈 → <a href="https://docs.google.com/forms/d/e/1FAIpQLSfvrh7kUD01h4HPE1ecbRLPFcDISm2tCY-r0zif0h6fe-2COA/viewform" target="_blank" rel="noopener noreferrer"><strong>填写问卷</strong></a></p>
+      </footer>
 
     <nav class="article-nav" aria-label="相邻文章">
-      {% if page.previous %}<a href="{{ page.previous.url | relative_url }}">← {{ page.previous.title }}</a>{% else %}<span></span>{% endif %}
-      {% if page.next %}<a href="{{ page.next.url | relative_url }}">{{ page.next.title }} →</a>{% endif %}
+      {% if page.previous %}<a class="article-nav-prev" href="{{ page.previous.url | relative_url }}"><span class="article-nav-label">上一篇</span><span class="article-nav-title">← {{ page.previous.title }}</span></a>{% else %}<span></span>{% endif %}
+      {% if page.next %}<a class="article-nav-next" href="{{ page.next.url | relative_url }}"><span class="article-nav-label">下一篇</span><span class="article-nav-title">{{ page.next.title }} →</span></a>{% endif %}
     </nav>
 
     </div>
@@ -377,14 +376,6 @@ layout: default
     border-top: 1px solid var(--line);
   }
 
-  .article-meta-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: .6rem 1.25rem;
-    margin-top: 1.7rem;
-  }
-
   .article-endmatter .article-tags {
     margin: 0;
   }
@@ -394,7 +385,7 @@ layout: default
   }
 
   .article-endmatter .article-copyright {
-    margin: 0;
+    margin: 1.6rem 0 0;
     color: var(--muted);
     font-family: var(--sans);
     font-size: .72rem;
@@ -463,12 +454,58 @@ layout: default
     text-underline-offset: .22em;
   }
 
+  /* 读完第一眼看到的：居中的「喜欢」 */
   .article-like {
     display: none;
+    justify-content: center;
     align-items: center;
-    margin: 0;
+    margin: 0 0 2.2rem;
     font-family: var(--sans);
     font-size: .78rem;
+  }
+
+  .article-like .post-like-button {
+    gap: .5rem;
+    padding: .6rem 1.15rem;
+    font-size: .84rem;
+  }
+
+  .article-like .post-like-heart {
+    font-size: 1.15rem;
+  }
+
+  /* 上一篇／下一篇 */
+  .article-nav a {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    max-width: 48%;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .article-nav .article-nav-next {
+    margin-left: auto;
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .article-nav-label {
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .72rem;
+    letter-spacing: .08em;
+  }
+
+  .article-nav-title {
+    font-size: .9rem;
+    line-height: 1.55;
+  }
+
+  .article-nav a:hover .article-nav-title,
+  .article-nav a:focus-visible .article-nav-title {
+    text-decoration: underline;
+    text-underline-offset: .22em;
   }
 
   .article-like:has(button),
@@ -540,13 +577,8 @@ layout: default
   }
 
   @media (max-width: 520px) {
-    .article-meta-actions {
-      align-items: flex-start;
-      gap: .55rem;
-    }
-
-    .article-tags {
-      flex-basis: 100%;
+    .article-nav a {
+      max-width: 100%;
     }
 
     .article-info-divider {
