@@ -79,9 +79,9 @@ body.post-category-travel .article-content h3 strong {
   font-weight: inherit;
 }
 
-/* 分隔线后面紧接着日期时，不用再留那么大的空 */
-body.post-category-travel .article-content hr + h3 {
-  margin-top: 2.2rem;
+/* 日期上方已经有墨绿短线，紧挨着的分隔线就不再显示，免得两条线叠在一起 */
+body.post-category-travel .article-content hr:has(+ h3) {
+  display: none;
 }
 
 @media (max-width: 640px) {
