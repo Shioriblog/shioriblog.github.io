@@ -135,6 +135,15 @@ nav: home
                 </div>
                 <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
                 <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 150 }} <a class="read-more" href="{{ post.url | relative_url }}">Read more...</a></p>
+                {% assign visible_tags = post.tags | where_exp: 'tag', "tag != 'featured'" %}
+                {% if visible_tags.size > 0 %}
+                  {% assign primary_category = post.categories | first %}
+                  <div class="home-post-tags" aria-label="标签">
+                    {% for tag in visible_tags %}
+                      <a href="{{ '/categories/' | relative_url }}?category={{ primary_category | url_encode }}&amp;tag={{ tag | url_encode }}">{{ tag }}</a>
+                    {% endfor %}
+                  </div>
+                {% endif %}
               </div>
               {% if cover != '' %}
                 <a class="home-post-cover" href="{{ post.url | relative_url }}" tabindex="-1" aria-hidden="true">
@@ -382,6 +391,35 @@ nav: home
 
   .home-post-inner {
     display: block;
+  }
+
+  /* 摘要下面的标签：灰色小字，点了去分类页筛出同一标签的文章 */
+  .home-post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .3rem .9rem;
+    margin: .9rem 0 0;
+    font-family: var(--sans);
+    font-size: .76rem;
+    letter-spacing: .02em;
+    line-height: 1.5;
+  }
+
+  .home-post-tags a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .home-post-tags a::before {
+    content: "#";
+    margin-right: .15em;
+    color: var(--accent);
+    opacity: .7;
+  }
+
+  .home-post-tags a:hover,
+  .home-post-tags a:focus-visible {
+    color: var(--accent);
   }
 
   /* 有图的文章：右边放一张方形小图；没图的保持原样 */
