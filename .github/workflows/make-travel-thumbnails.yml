@@ -1,6 +1,7 @@
-# 发布或修改旅行文章后，自动为 travel_image 生成旅行页用的小图（assets/images/thumbs/）。
-# 小图不带任何照片信息（包括位置）。已经有小图的文章会跳过。
-name: 生成旅行页缩略图
+# 发布或修改文章后，自动生成两种小图（不带任何照片信息，包括位置；已经有的会跳过）：
+# - 旅行页用的 travel_image 小图 → assets/images/thumbs/
+# - 首页文章列表用的方形小图 → assets/images/covers/
+name: 生成缩略图
 
 on:
   push:
@@ -9,6 +10,7 @@ on:
       - '_posts/**'
       - 'assets/images/posts/**'
       - 'tools/make_travel_thumbs.py'
+      - 'tools/make_cover_thumbs.py'
   workflow_dispatch:
 
 permissions:
@@ -33,7 +35,8 @@ jobs:
       - name: Make missing thumbnails
         run: |
           python3 tools/make_travel_thumbs.py | tee -a "$GITHUB_STEP_SUMMARY"
-          if [ -n "$(git status --porcelain assets/images/thumbs)" ]; then
+          python3 tools/make_cover_thumbs.py | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ -n "$(git status --porcelain assets/images/thumbs assets/images/covers)" ]; then
             echo "changed=1" >> "$GITHUB_ENV"
           fi
 
@@ -42,8 +45,8 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add assets/images/thumbs
-          git commit -q -m "自动生成旅行页缩略图"
+          git add assets/images/thumbs assets/images/covers
+          git commit -q -m "自动生成缩略图"
           git pull -q --rebase origin main
           git push -q origin HEAD:main
 

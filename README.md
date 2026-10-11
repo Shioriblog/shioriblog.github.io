@@ -8,6 +8,8 @@
 2. 修改顶部的 `title`、`date`、`categories` 和 `excerpt`（首页显示的简介）。
 3. 写正文，然后用 GitHub Desktop Commit 并 Push。
 
+首页文章列表会在右边放一张方形小图，默认用正文里的第一张图；没有图的文章就不显示。想换一张图，在 front matter 写 `cover: /assets/images/posts/...`；不想显示，写 `cover: false`。小图（`assets/images/covers/`）由 GitHub Actions 的「生成缩略图」在推送后自动生成，也可以在本地运行 `python3 tools/make_cover_thumbs.py`。
+
 网址默认由 `date` 和文件名生成。如果写了 `permalink`，**发表后不要再改**：留言和点赞都跟着网址或日期走，改了会对不上。网址里最好不要有空格。
 
 ### 分类
@@ -28,7 +30,7 @@ travel_image: /assets/images/posts/2026/09/封面.jpg
 travel_excerpt: 一两句话简介。
 ```
 
-旅行页用的小图（`assets/images/thumbs/`）会在推送后由 GitHub Actions 的「生成旅行页缩略图」自动生成，也可以在本地运行 `python3 tools/make_travel_thumbs.py`。
+旅行页用的小图（`assets/images/thumbs/`）会在推送后由 GitHub Actions 的「生成缩略图」自动生成，也可以在本地运行 `python3 tools/make_travel_thumbs.py`。
 
 ### 引文
 

@@ -104,13 +104,30 @@ nav: home
         {% endfor %}
         {% if show_in_all or home_category_match %}
           {% assign rendered_count = rendered_count | plus: 1 %}
+          {% comment %} 首页小图：cover: 路径 → 用这张；cover: false → 不显示；没写 → 正文第一张图 {% endcomment %}
+          {% assign cover = '' %}
+          {% if post.cover == false %}
+            {% assign cover = '' %}
+          {% elsif post.cover %}
+            {% assign cover = post.cover %}
+          {% else %}
+            {% assign img_parts = post.content | split: '<img ' %}
+            {% if img_parts.size > 1 %}
+              {% assign src_parts = img_parts[1] | split: 'src="' %}
+              {% if src_parts.size > 1 %}{% assign cover = src_parts[1] | split: '"' | first %}{% endif %}
+            {% endif %}
+          {% endif %}
+          {% assign cover_thumb = cover %}
+          {% if cover contains '/assets/images/posts/' %}
+            {% assign cover_thumb = cover | replace_first: '/assets/images/posts/', '/assets/images/covers/' %}
+          {% endif %}
           <article
             class="post-preview home-post-item"
             data-categories="{{ post.categories | join: '|' | escape }}"
             data-show-in-all="{% if show_in_all %}true{% else %}false{% endif %}"
             {% unless show_in_all %}hidden{% endunless %}
           >
-            <div class="home-post-inner">
+            <div class="home-post-inner{% if cover != '' %} has-cover{% endif %}">
               <div class="home-post-copy">
                 <div class="post-meta">
                   <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>
@@ -119,6 +136,11 @@ nav: home
                 <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
                 <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 150 }} <a class="read-more" href="{{ post.url | relative_url }}">Read more...</a></p>
               </div>
+              {% if cover != '' %}
+                <a class="home-post-cover" href="{{ post.url | relative_url }}" tabindex="-1" aria-hidden="true">
+                  <img src="{{ cover_thumb | relative_url }}" alt="" width="150" height="150" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='{{ cover | relative_url }}'">
+                </a>
+              {% endif %}
             </div>
           </article>
         {% endif %}
@@ -360,6 +382,48 @@ nav: home
 
   .home-post-inner {
     display: block;
+  }
+
+  /* 有图的文章：右边放一张方形小图；没图的保持原样 */
+  .home-post-inner.has-cover {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 150px;
+    gap: 2.2rem;
+    align-items: start;
+  }
+
+  .home-post-cover {
+    display: block;
+    width: 150px;
+    height: 150px;
+    margin-top: 2.1rem;
+    overflow: hidden;
+    background: var(--soft);
+  }
+
+  .home-post-cover img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity .2s ease;
+  }
+
+  .home-post-cover:hover img {
+    opacity: .85;
+  }
+
+  @media (max-width: 640px) {
+    .home-post-inner.has-cover {
+      grid-template-columns: minmax(0, 1fr) 80px;
+      gap: 1rem;
+    }
+
+    .home-post-cover {
+      width: 80px;
+      height: 80px;
+      margin-top: 1.9rem;
+    }
   }
 
   .home-post-copy {
