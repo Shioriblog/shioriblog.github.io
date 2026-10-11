@@ -124,6 +124,36 @@ layout: default
   </script>
 
   <script>
+    // 月记：有 3 个以上 <h3 class="diary-entry-date"> 时，在第一天前面生成「DAYS 3 4 5 …」索引
+    (() => {
+      const content = document.querySelector('.article-content')
+      if (!content) return
+      const days = Array.from(content.querySelectorAll('h3.diary-entry-date'))
+      if (days.length < 3) return
+
+      const nav = document.createElement('nav')
+      nav.className = 'diary-index'
+      nav.setAttribute('aria-label', '日期索引')
+      const label = document.createElement('span')
+      label.className = 'diary-index-label'
+      label.textContent = 'DAYS'
+      nav.appendChild(label)
+
+      days.forEach((heading, index) => {
+        const match = heading.textContent.match(/(\d+)月(\d+)日/)
+        if (!heading.id) heading.id = match ? `day-${match[1]}-${match[2]}` : `day-${index + 1}`
+        const link = document.createElement('a')
+        link.href = `#${heading.id}`
+        link.textContent = match ? match[2] : String(index + 1)
+        link.setAttribute('aria-label', heading.textContent.trim())
+        nav.appendChild(link)
+      })
+
+      days[0].before(nav)
+    })()
+  </script>
+
+  <script>
     (() => {
       const content = document.querySelector('.article-content')
       const toc = document.getElementById('article-toc')

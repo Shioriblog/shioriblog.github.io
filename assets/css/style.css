@@ -549,10 +549,10 @@ body.post-category-utakata .article-content .conversation-log + h3 {
 
 /* September diary: softer lead and daily date markers. */
 .article-content .diary-lede {
-  margin: 0 0 1.15rem;
+  margin: 0 0 1.6rem;
   color: var(--ink);
-  font-size: clamp(1.1rem, 1.8vw, 1.25rem);
-  font-weight: 500;
+  font-size: clamp(1.08rem, 1.7vw, 1.18rem);
+  font-weight: 400;
   line-height: 1.65;
   letter-spacing: .01em;
 }
@@ -561,13 +561,14 @@ body.post-category-utakata .article-content h3.diary-entry-date {
   display: flex;
   align-items: center;
   gap: .8rem;
-  margin: 3.15rem 0 .7rem;
-  color: #354234;
+  margin: 2.9rem 0 .9rem;
+  color: var(--accent);
   font-family: var(--sans);
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-size: .86rem;
+  font-weight: 600;
   line-height: 1.5;
-  letter-spacing: .02em;
+  letter-spacing: .06em;
+  scroll-margin-top: 1.5rem;
 }
 
 body.post-category-utakata .article-content h3.diary-entry-date::after {
@@ -575,5 +576,58 @@ body.post-category-utakata .article-content h3.diary-entry-date::after {
   flex: 1 1 auto;
   content: "";
   height: 1px;
-  background: #eff0ed;
+  background: var(--line);
+}
+
+/* 月记开头的题词：不加底纹，细线缩进 */
+.article-content blockquote.diary-epigraph {
+  margin: 0 0 2.2rem 1.4rem;
+  padding: 0 0 0 1rem;
+  border-left: 1px solid var(--line);
+  background: none;
+}
+
+/* 月记的日期索引（由 post.html 里的脚本生成） */
+.article-content .diary-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .2rem .9rem;
+  margin: 0 0 2.4rem;
+  padding: .8rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: .8rem;
+  line-height: 1.8;
+}
+
+.article-content .diary-index-label {
+  margin-right: .4rem;
+  color: var(--accent);
+  font-weight: 500;
+  letter-spacing: .12em;
+}
+
+.article-content .diary-index a {
+  color: var(--body);
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.article-content .diary-index a:hover,
+.article-content .diary-index a:focus-visible {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+
+/* 宽屏右侧已有「ON THIS PAGE」目录，就不再重复显示 */
+@media (min-width: 1121px) {
+  .article-content .diary-index { display: none; }
+}
+
+/* 月记里夹着的对话 */
+.article-content .conversation-log.diary-conversation {
+  margin: 1.4rem 0 1.6rem;
 }
