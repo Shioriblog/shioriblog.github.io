@@ -3,9 +3,14 @@ const SITE_HOST = 'shioriblog.org'
 const ALLOWED_ORIGIN = 'https://shioriblog.org'
 const SITE_TIME_ZONE = 'America/Chicago'
 const LIKE_STORE_NAME = 'shioriblog-post-likes'
+const DASHBOARD_CACHE_NAME = 'shioriblog-dashboard-cache'
+const DASHBOARD_RANGES = [1, 7, 30]
+// A cron trigger (wrangler.jsonc) refreshes every range every 10 minutes,
+// so the dashboard normally reads a ready-made copy instead of waiting on GraphQL.
+const DASHBOARD_FRESH_MS = 15 * 60 * 1000
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url)
 
     if (request.method === 'OPTIONS') {
@@ -20,7 +25,11 @@ export default {
       return json({ error: 'Method not allowed' }, 405, request)
     }
 
-    return handleDashboard(request, env, url)
+    return handleDashboard(request, env, url, ctx)
+  },
+
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(refreshDashboardCache(env))
   }
 }
 
@@ -31,6 +40,21 @@ export class LikeStore {
 
   async fetch(request) {
     const url = new URL(request.url)
+
+    if (url.pathname.startsWith('/__cache/')) {
+      const key = `cache:${url.pathname.slice('/__cache/'.length)}`
+      if (request.method === 'GET') {
+        const entry = await this.ctx.storage.get(key)
+        return entry ? internalJson(entry) : internalJson({ error: 'Not cached' }, 404)
+      }
+      if (request.method === 'PUT') {
+        const entry = await safeJson(request)
+        if (typeof entry?.body !== 'string' || !Number.isFinite(entry?.at)) return internalJson({ error: 'Invalid cache entry' }, 400)
+        await this.ctx.storage.put(key, { body: entry.body, at: entry.at })
+        return internalJson({ ok: true })
+      }
+      return internalJson({ error: 'Method not allowed' }, 405)
+    }
 
     if (url.pathname === '/__summary' && request.method === 'GET') {
       const entries = await this.ctx.storage.list({ prefix: 'count:' })
@@ -84,9 +108,9 @@ export class LikeStore {
   }
 }
 
-async function handleDashboard(request, env, url) {
+async function handleDashboard(request, env, url, ctx) {
   const days = Number(url.searchParams.get('days') || 7)
-  if (![1, 7, 30].includes(days)) {
+  if (!DASHBOARD_RANGES.includes(days)) {
     return json({ error: 'days must be 1, 7, or 30' }, 400, request)
   }
 
@@ -94,6 +118,79 @@ async function handleDashboard(request, env, url) {
     return json({ error: 'Worker secrets are not configured' }, 500, request)
   }
 
+  const cached = await readDashboardCache(env, days)
+  if (cached && Date.now() - cached.at < DASHBOARD_FRESH_MS) {
+    return cachedResponse(cached.body, request, 'hit')
+  }
+
+  try {
+    const body = JSON.stringify(await buildDashboard(env, days))
+    const write = writeDashboardCache(env, days, body)
+    if (ctx?.waitUntil) ctx.waitUntil(write)
+    else await write
+    return cachedResponse(body, request, 'miss')
+  } catch (error) {
+    // Analytics API hiccup: an older copy is better than an empty page.
+    if (cached) return cachedResponse(cached.body, request, 'stale')
+    return json({ error: error.message || 'Unexpected Worker error' }, 500, request)
+  }
+}
+
+async function refreshDashboardCache(env) {
+  if (!env.CF_API_TOKEN || !env.CF_ACCOUNT_ID) return
+  for (const days of DASHBOARD_RANGES) {
+    try {
+      await writeDashboardCache(env, days, JSON.stringify(await buildDashboard(env, days)))
+    } catch (error) {
+      console.error(`Dashboard refresh failed for ${days}d`, error)
+    }
+  }
+}
+
+function dashboardCacheStub(env) {
+  if (!env.LIKES) return null
+  return env.LIKES.get(env.LIKES.idFromName(DASHBOARD_CACHE_NAME))
+}
+
+async function readDashboardCache(env, days) {
+  const stub = dashboardCacheStub(env)
+  if (!stub) return null
+  try {
+    const response = await stub.fetch(`https://likes.internal/__cache/dashboard-${days}`)
+    if (!response.ok) return null
+    const entry = await response.json()
+    return typeof entry?.body === 'string' && Number.isFinite(entry?.at) ? entry : null
+  } catch (_) {
+    return null
+  }
+}
+
+async function writeDashboardCache(env, days, body) {
+  const stub = dashboardCacheStub(env)
+  if (!stub) return
+  try {
+    await stub.fetch(`https://likes.internal/__cache/dashboard-${days}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ body, at: Date.now() })
+    })
+  } catch (error) {
+    console.error('Dashboard cache write failed', error)
+  }
+}
+
+function cachedResponse(body, request, state) {
+  return new Response(body, {
+    status: 200,
+    headers: {
+      ...corsHeaders(request, 60),
+      'Content-Type': 'application/json; charset=utf-8',
+      'X-Dashboard-Cache': state
+    }
+  })
+}
+
+async function buildDashboard(env, days) {
   const end = new Date()
   const start = new Date(end.getTime() - days * 24 * 60 * 60 * 1000)
   const previousEnd = start
@@ -148,79 +245,75 @@ async function handleDashboard(request, env, url) {
     }
   `
 
-  try {
-    const payload = await runGraphQL(env, query)
-    const account = payload.data?.viewer?.accounts?.[0]
-    if (!account) return json({ error: 'No analytics data returned for this account' }, 502, request)
+  const payload = await runGraphQL(env, query)
+  const account = payload.data?.viewer?.accounts?.[0]
+  if (!account) throw new Error('No analytics data returned for this account')
 
-    const total = account.total?.[0] || {}
-    const previousTotal = account.previousTotal?.[0] || {}
-    const views = estimate(total)
-    const visits = Math.round(total.sum?.visits || 0)
-    const previousViews = estimate(previousTotal)
-    const previousVisits = Math.round(previousTotal.sum?.visits || 0)
+  const total = account.total?.[0] || {}
+  const previousTotal = account.previousTotal?.[0] || {}
+  const views = estimate(total)
+  const visits = Math.round(total.sum?.visits || 0)
+  const previousViews = estimate(previousTotal)
+  const previousVisits = Math.round(previousTotal.sum?.visits || 0)
 
-    const pageMap = mergeRows(account.pages, (row) => normalizeRequestPath(row.dimensions?.requestPath || '/'), (row) => ({
-      views: estimate(row),
-      visits: Math.round(row.sum?.visits || 0)
-    }))
+  const pageMap = mergeRows(account.pages, (row) => normalizeRequestPath(row.dimensions?.requestPath || '/'), (row) => ({
+    views: estimate(row),
+    visits: Math.round(row.sum?.visits || 0)
+  }))
 
-    const referrerMap = mergeRows(account.referrers, (row) => row.dimensions?.refererHost || 'Direct', (row) => ({
-      views: estimate(row),
-      visits: Math.round(row.sum?.visits || 0)
-    }))
+  const referrerMap = mergeRows(account.referrers, (row) => row.dimensions?.refererHost || 'Direct', (row) => ({
+    views: estimate(row),
+    visits: Math.round(row.sum?.visits || 0)
+  }))
 
-    const referrerPostMap = mergeRows(account.referrerPosts, (row) => {
-      const path = normalizeRequestPath(row.dimensions?.requestPath || '')
-      const referrer = row.dimensions?.refererHost || 'Direct'
-      return path ? `${path}\u0000${referrer}` : ''
-    }, (row) => ({
-      views: estimate(row),
-      visits: Math.round(row.sum?.visits || 0)
-    }))
+  const referrerPostMap = mergeRows(account.referrerPosts, (row) => {
+    const path = normalizeRequestPath(row.dimensions?.requestPath || '')
+    const referrer = row.dimensions?.refererHost || 'Direct'
+    return path ? `${path}\u0000${referrer}` : ''
+  }, (row) => ({
+    views: estimate(row),
+    visits: Math.round(row.sum?.visits || 0)
+  }))
 
-    const likes = await getLikeSummary(env)
+  const likes = await getLikeSummary(env)
 
-    return json({
-      views,
-      visits,
-      likes: likes || {},
-      likesAvailable: likes !== null,
-      generatedAt: end.toISOString(),
-      range: {
-        start: start.toISOString(),
-        end: end.toISOString(),
-        startDate: localDateKey(start),
-        endDate: localDateKey(end),
-        timeZone: SITE_TIME_ZONE
-      },
-      previous: {
-        start: previousStart.toISOString(),
-        end: previousEnd.toISOString(),
-        views: previousViews,
-        visits: previousVisits,
-        pagesPerVisit: previousVisits ? previousViews / previousVisits : null
-      },
-      label: days === 1 ? 'Last 24 hours' : `Last ${days} days`,
-      comparisonLabel: days === 1 ? 'vs previous 24h' : `vs previous ${days} days`,
-      series: dailySeries(account.series, start, end),
-      pages: Array.from(pageMap.entries())
-        .map(([label, value]) => ({ label, ...value }))
-        .sort((a, b) => b.views - a.views),
-      referrers: Array.from(referrerMap.entries())
-        .map(([label, value]) => ({ label, ...value }))
-        .sort((a, b) => (b.visits - a.visits) || (b.views - a.views)),
-      referrerPosts: Array.from(referrerPostMap.entries())
-        .map(([key, value]) => {
-          const [path, referrer] = key.split('\u0000')
-          return { path, referrer, ...value }
-        })
-        .sort((a, b) => (b.visits - a.visits) || (b.views - a.views)),
-      countries: mergeNumeric(account.countries, (row) => row.dimensions?.countryName || 'Unknown', (row) => estimate(row))
-        .map(([label, value]) => ({ label, views: value }))
-    }, 200, request, 60)
-  } catch (error) {
-    return json({ error: error.message || 'Unexpected Worker error' }, 500, request)
+  return {
+    views,
+    visits,
+    likes: likes || {},
+    likesAvailable: likes !== null,
+    generatedAt: end.toISOString(),
+    range: {
+      start: start.toISOString(),
+      end: end.toISOString(),
+      startDate: localDateKey(start),
+      endDate: localDateKey(end),
+      timeZone: SITE_TIME_ZONE
+    },
+    previous: {
+      start: previousStart.toISOString(),
+      end: previousEnd.toISOString(),
+      views: previousViews,
+      visits: previousVisits,
+      pagesPerVisit: previousVisits ? previousViews / previousVisits : null
+    },
+    label: days === 1 ? 'Last 24 hours' : `Last ${days} days`,
+    comparisonLabel: days === 1 ? 'vs previous 24h' : `vs previous ${days} days`,
+    series: dailySeries(account.series, start, end),
+    pages: Array.from(pageMap.entries())
+      .map(([label, value]) => ({ label, ...value }))
+      .sort((a, b) => b.views - a.views),
+    referrers: Array.from(referrerMap.entries())
+      .map(([label, value]) => ({ label, ...value }))
+      .sort((a, b) => (b.visits - a.visits) || (b.views - a.views)),
+    referrerPosts: Array.from(referrerPostMap.entries())
+      .map(([key, value]) => {
+        const [path, referrer] = key.split('\u0000')
+        return { path, referrer, ...value }
+      })
+      .sort((a, b) => (b.visits - a.visits) || (b.views - a.views)),
+    countries: mergeNumeric(account.countries, (row) => row.dimensions?.countryName || 'Unknown', (row) => estimate(row))
+      .map(([label, value]) => ({ label, views: value }))
   }
 }
 
