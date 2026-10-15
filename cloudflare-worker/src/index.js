@@ -190,52 +190,60 @@ function cachedResponse(body, request, state) {
   })
 }
 
-async function buildDashboard(env, days) {
-  const end = new Date()
-  const start = new Date(end.getTime() - days * 24 * 60 * 60 * 1000)
-  const previousEnd = start
-  const previousStart = new Date(previousEnd.getTime() - days * 24 * 60 * 60 * 1000)
-  const currentFilter = rumFilter(start, end)
-  const previousFilter = rumFilter(previousStart, previousEnd)
+// Cloudflare Web Analytics went live on the site on 2026-09-15 around noon (Chicago).
+// Anything before this has no data, so a comparison period that starts earlier is incomplete.
+const ANALYTICS_SINCE = new Date('2026-09-15T17:00:00Z')
+// Long ranges get sampled by Cloudflare (counts come back rounded to 10s). Querying in
+// windows of at most a week keeps each query small enough to come back unsampled.
+const QUERY_WINDOW_DAYS = 7
+const DAY_MS = 24 * 60 * 60 * 1000
 
-  const query = `
+function timeWindows(start, end) {
+  const windows = []
+  let cursor = start.getTime()
+  while (cursor < end.getTime()) {
+    const next = Math.min(end.getTime(), cursor + QUERY_WINDOW_DAYS * DAY_MS)
+    windows.push([new Date(cursor), new Date(next)])
+    cursor = next
+  }
+  return windows
+}
+
+function windowQuery(accountId, start, end) {
+  const filter = rumFilter(start, end)
+  return `
     query BlogDashboard {
       viewer {
-        accounts(filter: { accountTag: ${JSON.stringify(env.CF_ACCOUNT_ID)} }) {
-          total: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 1) {
+        accounts(filter: { accountTag: ${JSON.stringify(accountId)} }) {
+          total: rumPageloadEventsAdaptiveGroups(filter: ${filter}, limit: 1) {
             count
             avg { sampleInterval }
             sum { visits }
           }
-          previousTotal: rumPageloadEventsAdaptiveGroups(filter: ${previousFilter}, limit: 1) {
-            count
-            avg { sampleInterval }
-            sum { visits }
-          }
-          series: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 1000, orderBy: [datetimeHour_ASC]) {
+          series: rumPageloadEventsAdaptiveGroups(filter: ${filter}, limit: 1000, orderBy: [datetimeHour_ASC]) {
             count
             avg { sampleInterval }
             dimensions { datetimeHour }
           }
-          pages: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 200, orderBy: [count_DESC]) {
+          pages: rumPageloadEventsAdaptiveGroups(filter: ${filter}, limit: 200, orderBy: [count_DESC]) {
             count
             avg { sampleInterval }
             sum { visits }
             dimensions { requestPath }
           }
-          referrers: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 100, orderBy: [count_DESC]) {
+          referrers: rumPageloadEventsAdaptiveGroups(filter: ${filter}, limit: 100, orderBy: [count_DESC]) {
             count
             avg { sampleInterval }
             sum { visits }
             dimensions { refererHost }
           }
-          referrerPosts: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 500, orderBy: [count_DESC]) {
+          referrerPosts: rumPageloadEventsAdaptiveGroups(filter: ${filter}, limit: 500, orderBy: [count_DESC]) {
             count
             avg { sampleInterval }
             sum { visits }
             dimensions { requestPath refererHost }
           }
-          countries: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 40, orderBy: [count_DESC]) {
+          countries: rumPageloadEventsAdaptiveGroups(filter: ${filter}, limit: 40, orderBy: [count_DESC]) {
             count
             avg { sampleInterval }
             dimensions { countryName }
@@ -244,29 +252,75 @@ async function buildDashboard(env, days) {
       }
     }
   `
+}
 
+function totalQuery(accountId, start, end) {
+  return `
+    query BlogDashboardTotal {
+      viewer {
+        accounts(filter: { accountTag: ${JSON.stringify(accountId)} }) {
+          total: rumPageloadEventsAdaptiveGroups(filter: ${rumFilter(start, end)}, limit: 1) {
+            count
+            avg { sampleInterval }
+            sum { visits }
+          }
+        }
+      }
+    }
+  `
+}
+
+async function queryAccount(env, query) {
   const payload = await runGraphQL(env, query)
   const account = payload.data?.viewer?.accounts?.[0]
   if (!account) throw new Error('No analytics data returned for this account')
+  return account
+}
 
-  const total = account.total?.[0] || {}
-  const previousTotal = account.previousTotal?.[0] || {}
-  const views = estimate(total)
-  const visits = Math.round(total.sum?.visits || 0)
-  const previousViews = estimate(previousTotal)
-  const previousVisits = Math.round(previousTotal.sum?.visits || 0)
+function maxSampleInterval(rows) {
+  return (rows || []).reduce((max, row) => Math.max(max, Number(row?.avg?.sampleInterval || 1)), 1)
+}
 
-  const pageMap = mergeRows(account.pages, (row) => normalizeRequestPath(row.dimensions?.requestPath || '/'), (row) => ({
+async function buildDashboard(env, days) {
+  const end = new Date()
+  const start = new Date(end.getTime() - days * DAY_MS)
+  const previousEnd = start
+  const previousStart = new Date(previousEnd.getTime() - days * DAY_MS)
+  const previousCoverageStart = new Date(Math.max(previousStart.getTime(), ANALYTICS_SINCE.getTime()))
+  const previousPartial = previousStart < ANALYTICS_SINCE
+
+  const currentAccounts = await Promise.all(
+    timeWindows(start, end).map(([from, to]) => queryAccount(env, windowQuery(env.CF_ACCOUNT_ID, from, to)))
+  )
+  const previousAccounts = previousCoverageStart < previousEnd
+    ? await Promise.all(timeWindows(previousCoverageStart, previousEnd).map(([from, to]) => queryAccount(env, totalQuery(env.CF_ACCOUNT_ID, from, to))))
+    : []
+
+  const rows = (accounts, key) => accounts.flatMap((account) => account[key] || [])
+  const sumTotals = (accounts) => rows(accounts, 'total').reduce((acc, row) => ({
+    views: acc.views + estimate(row),
+    visits: acc.visits + Math.round(row.sum?.visits || 0)
+  }), { views: 0, visits: 0 })
+
+  const { views, visits } = sumTotals(currentAccounts)
+  const { views: previousViews, visits: previousVisits } = sumTotals(previousAccounts)
+
+  const sampleInterval = Math.max(
+    ...['total', 'series', 'pages', 'referrers', 'referrerPosts', 'countries'].map((key) => maxSampleInterval(rows(currentAccounts, key))),
+    maxSampleInterval(rows(previousAccounts, 'total'))
+  )
+
+  const pageMap = mergeRows(rows(currentAccounts, 'pages'), (row) => normalizeRequestPath(row.dimensions?.requestPath || '/'), (row) => ({
     views: estimate(row),
     visits: Math.round(row.sum?.visits || 0)
   }))
 
-  const referrerMap = mergeRows(account.referrers, (row) => row.dimensions?.refererHost || 'Direct', (row) => ({
+  const referrerMap = mergeRows(rows(currentAccounts, 'referrers'), (row) => row.dimensions?.refererHost || 'Direct', (row) => ({
     views: estimate(row),
     visits: Math.round(row.sum?.visits || 0)
   }))
 
-  const referrerPostMap = mergeRows(account.referrerPosts, (row) => {
+  const referrerPostMap = mergeRows(rows(currentAccounts, 'referrerPosts'), (row) => {
     const path = normalizeRequestPath(row.dimensions?.requestPath || '')
     const referrer = row.dimensions?.refererHost || 'Direct'
     return path ? `${path}\u0000${referrer}` : ''
@@ -283,6 +337,10 @@ async function buildDashboard(env, days) {
     likes: likes || {},
     likesAvailable: likes !== null,
     generatedAt: end.toISOString(),
+    // true when Cloudflare sampled any part of the data: counts are estimates.
+    sampled: sampleInterval > 1,
+    sampleInterval,
+    trackingSince: ANALYTICS_SINCE.toISOString(),
     range: {
       start: start.toISOString(),
       end: end.toISOString(),
@@ -293,13 +351,16 @@ async function buildDashboard(env, days) {
     previous: {
       start: previousStart.toISOString(),
       end: previousEnd.toISOString(),
+      // The comparison period began before analytics existed, so its totals are incomplete.
+      partial: previousPartial,
+      coverageStart: previousCoverageStart.toISOString(),
       views: previousViews,
       visits: previousVisits,
       pagesPerVisit: previousVisits ? previousViews / previousVisits : null
     },
     label: days === 1 ? 'Last 24 hours' : `Last ${days} days`,
     comparisonLabel: days === 1 ? 'vs previous 24h' : `vs previous ${days} days`,
-    series: dailySeries(account.series, start, end),
+    series: dailySeries(rows(currentAccounts, 'series'), start, end),
     pages: Array.from(pageMap.entries())
       .map(([label, value]) => ({ label, ...value }))
       .sort((a, b) => b.views - a.views),
@@ -312,7 +373,7 @@ async function buildDashboard(env, days) {
         return { path, referrer, ...value }
       })
       .sort((a, b) => (b.visits - a.visits) || (b.views - a.views)),
-    countries: mergeNumeric(account.countries, (row) => row.dimensions?.countryName || 'Unknown', (row) => estimate(row))
+    countries: mergeNumeric(rows(currentAccounts, 'countries'), (row) => row.dimensions?.countryName || 'Unknown', (row) => estimate(row))
       .map(([label, value]) => ({ label, views: value }))
   }
 }

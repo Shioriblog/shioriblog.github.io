@@ -30,6 +30,7 @@ subscription: false
       <div><span class="dash-label">访问</span><strong id="dash-visits">—</strong><small id="dash-visits-note"></small></div>
       <div><span class="dash-label">每次访问页数</span><strong id="dash-ppv">—</strong><small id="dash-ppv-note"></small></div>
     </div>
+    <p class="dash-small" id="dash-data-note" hidden></p>
   </section>
 
   <section class="dash-section" aria-labelledby="dash-h-echo">
@@ -191,6 +192,7 @@ subscription: false
   .dash-metrics strong { display: block; margin-top: .2rem; color: var(--ink); font-family: "Source Serif 4", var(--serif); font-size: 2.1rem; font-weight: 400; line-height: 1.25; font-variant-numeric: tabular-nums; }
   .dash-metrics small { display: block; min-height: 1.4em; color: var(--muted); font-size: .8rem; }
   .dash-metrics small.is-up { color: var(--accent); }
+  #dash-data-note { margin-top: 1.6rem; }
   .dash-label { display: inline-flex; align-items: center; gap: .45rem; color: var(--muted); font-family: var(--sans); font-size: .75rem; letter-spacing: .12em; }
   .dash-label svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 

@@ -115,6 +115,7 @@
     visitsNote: $('dash-visits-note'),
     ppv: $('dash-ppv'),
     ppvNote: $('dash-ppv-note'),
+    dataNote: $('dash-data-note'),
     days: $('dash-days'),
     postsTitle: $('dash-h-posts'),
     posts: $('dash-posts'),
@@ -139,8 +140,12 @@
 
   // ---------- opening ----------
 
-  const changeNote = (node, current, previous, words) => {
+  const changeNote = (node, current, previous, words, partial) => {
     node.classList.remove('is-up')
+    if (partial) {
+      node.textContent = `${words.prevShort}统计不完整`
+      return
+    }
     if (!previous) {
       node.textContent = `${words.prevShort}暂无数据`
       return
@@ -163,7 +168,8 @@
     const visits = Number(data.visits || 0)
     const prev = data.previous || {}
     const ppv = visits ? views / visits : null
-    const prevPpv = prev.pagesPerVisit
+    const partial = prev.partial === true
+    const prevPpv = partial ? null : prev.pagesPerVisit
 
     if (days === 1) el.rangeText.textContent = `${zhDateTime(range.start)} — ${zhDateTime(range.end)} · 芝加哥时间`
     else {
@@ -175,10 +181,16 @@
     el.views.textContent = fmt(views)
     el.visits.textContent = fmt(visits)
     el.ppv.textContent = ppv == null ? '—' : ppv.toFixed(2)
-    changeNote(el.viewsNote, views, Number(prev.views || 0), words)
-    changeNote(el.visitsNote, visits, Number(prev.visits || 0), words)
+    changeNote(el.viewsNote, views, Number(prev.views || 0), words, partial)
+    changeNote(el.visitsNote, visits, Number(prev.visits || 0), words, partial)
     el.ppvNote.classList.remove('is-up')
-    el.ppvNote.textContent = prevPpv ? `${words.prevShort} ${prevPpv.toFixed(2)}` : `${words.prevShort}暂无数据`
+    el.ppvNote.textContent = partial ? `${words.prevShort}统计不完整` : prevPpv ? `${words.prevShort} ${prevPpv.toFixed(2)}` : `${words.prevShort}暂无数据`
+
+    const notes = []
+    if (partial && data.trackingSince) notes.push(`博客的统计从 ${zhDate(data.trackingSince, true)}才开始记录，${words.prev}的数据不完整，所以这次不做比较。`)
+    if (data.sampled) notes.push('这段时间的数据被 Cloudflare 抽样过，数字是按比例估算的，个位数可能不准。')
+    el.dataNote.hidden = !notes.length
+    el.dataNote.textContent = notes.join('')
 
     if (!views) {
       setChildren(el.lede, `${words.period}，还没有人来读。`)
@@ -186,7 +198,7 @@
     }
 
     const parts = [`${words.period}，独居日记被翻开了 `, h('b', {}, fmt(views)), ' 次，来自 ', h('b', {}, fmt(visits)), ' 次访问']
-    const prevVisits = Number(prev.visits || 0)
+    const prevVisits = partial ? 0 : Number(prev.visits || 0)
     if (prevVisits) {
       const diff = visits - prevVisits
       parts.push(diff > 0 ? `，访问比${words.prev}多了 ${fmt(diff)} 次` : diff < 0 ? `，访问比${words.prev}少了 ${fmt(-diff)} 次` : `，访问和${words.prev}一样多`)
@@ -460,6 +472,7 @@
   const showError = (message) => {
     el.error.textContent = `统计暂时无法读取：${message}`
     el.error.hidden = false
+    el.dataNote.hidden = true
     setChildren(el.lede, '统计暂时无法读取。')
     ;[el.views, el.visits, el.ppv].forEach((node) => { node.textContent = '—' })
     ;[el.viewsNote, el.visitsNote, el.ppvNote].forEach((node) => { node.textContent = '' })
