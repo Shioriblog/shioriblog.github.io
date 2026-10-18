@@ -3,8 +3,9 @@ layout: default
 title: About
 permalink: /about/
 nav: about
-# 关于页底部已经有订阅框，页脚就不再重复显示
+# 关于页底部已经有订阅框，页脚和左下角的浮动订阅按钮都不再重复显示
 footer_subscribe: false
+subscription: false
 ---
 
 <main class="about-page" id="content">
@@ -16,18 +17,8 @@ footer_subscribe: false
       <h1 id="about-name">Shiori 栞</h1>
       <p class="about-japanese">本とお酒を楽しめる女子 <span class="about-heart" aria-hidden="true">♡</span></p>
       <p class="about-bio">坐标北美，平成废物<br>一般读者，又宅又腐<br>好好吃饭，随时摆烂</p>
-      <a class="about-podcast" href="https://open.spotify.com/show/6hUUlQ8zkJkx2CzdLXiI0F" target="_blank" rel="noopener"><span>Podcast:</span> 普通读者</a>
+      <a class="about-podcast" href="https://open.spotify.com/show/6hUUlQ8zkJkx2CzdLXiI0F" target="_blank" rel="noopener"><span class="about-podcast-label">Podcast:</span> 普通读者<span class="about-arrow" aria-hidden="true">↗</span></a>
     </div>
-
-    <aside class="about-profile-side" aria-label="Support this blog">
-      <div class="about-side-block about-side-support">
-        <p class="about-mini-label">SUPPORT</p>
-        <a class="about-kofi-button" href="https://ko-fi.com/shioriblog" target="_blank" rel="noopener">
-          <img src="{{ '/assets/images/kofi-logo.png' | relative_url }}" alt="" aria-hidden="true">
-          <span>Buy me a coffee</span>
-        </a>
-      </div>
-    </aside>
   </section>
 
   <section class="about-history" aria-labelledby="about-history-label">
@@ -39,7 +30,7 @@ footer_subscribe: false
         <span class="about-timeline-dot" aria-hidden="true"></span>
         <div class="about-timeline-copy">
           <p>在 Notion 上重新开始写 blog。<br>最初只是想记录生活上的一些改变和新的开始。</p>
-          <a class="about-timeline-link" href="{{ '/2022/06/07/生活上的改变和新开始/' | relative_url }}">生活上的改变和新开始 <span aria-hidden="true">↗</span></a>
+          <a class="about-timeline-link" href="{{ '/2022/06/07/生活上的改变和新开始/' | relative_url }}">生活上的改变和新开始 <span aria-hidden="true">→</span></a>
         </div>
       </article>
 
@@ -56,7 +47,7 @@ footer_subscribe: false
         <span class="about-timeline-dot" aria-hidden="true"></span>
         <div class="about-timeline-copy">
           <p>改变了写 blog 的方式，更加日常随笔化，并正式把这里改名为「独居日记」。</p>
-          <a class="about-timeline-link" href="{{ '/2025/02/25/生活的基石/' | relative_url }}">生活的基石 <span aria-hidden="true">↗</span></a>
+          <a class="about-timeline-link" href="{{ '/2025/02/25/生活的基石/' | relative_url }}">生活的基石 <span aria-hidden="true">→</span></a>
         </div>
       </article>
 
@@ -65,7 +56,7 @@ footer_subscribe: false
         <span class="about-timeline-dot" aria-hidden="true"></span>
         <div class="about-timeline-copy">
           <p>从 WordPress 搬到 GitHub Pages。<br>和 ChatGPT 一起搭起了现在这个个人静态 blog。<br>发布了第一本 digital zine。</p>
-          <a class="about-timeline-link" href="{{ '/2026/09/23/zine-issue-01/' | relative_url }}">独居日记 · zine · issue 01 <span aria-hidden="true">↗</span></a>
+          <a class="about-timeline-link" href="{{ '/2026/09/23/zine-issue-01/' | relative_url }}">独居日记 · zine · issue 01 <span aria-hidden="true">→</span></a>
         </div>
       </article>
     </div>
@@ -74,7 +65,7 @@ footer_subscribe: false
   <section class="about-survey" aria-labelledby="about-survey-label">
     <p class="about-section-kicker" id="about-survey-label">READER SURVEY</p>
     <p class="about-survey-copy">如果你偶尔会来这里读东西，我很好奇你是怎么来到这里、喜欢看什么。愿意的话，可以花几分钟填写一份小问卷。</p>
-    <a class="about-survey-link" href="https://docs.google.com/forms/d/e/1FAIpQLSfvrh7kUD01h4HPE1ecbRLPFcDISm2tCY-r0zif0h6fe-2COA/viewform" target="_blank" rel="noopener">填写问卷 <span aria-hidden="true">↗</span></a>
+    <a class="about-button" href="https://docs.google.com/forms/d/e/1FAIpQLSfvrh7kUD01h4HPE1ecbRLPFcDISm2tCY-r0zif0h6fe-2COA/viewform" target="_blank" rel="noopener">填写问卷 <span class="about-arrow" aria-hidden="true">↗</span></a>
   </section>
 
   <section class="about-subscribe" aria-labelledby="about-subscribe-label">
@@ -95,6 +86,15 @@ footer_subscribe: false
 
     <iframe id="about-brevo-subscribe-target" name="about-brevo-subscribe-target" title="订阅提交结果" hidden></iframe>
     <p class="about-side-privacy">仅用于博客更新通知 · <a href="{{ '/privacy/' | relative_url }}">Privacy</a></p>
+  </section>
+
+  <section class="about-kofi" aria-labelledby="about-kofi-label">
+    <p class="about-section-kicker" id="about-kofi-label">SUPPORT</p>
+    <a class="about-button" href="https://ko-fi.com/shioriblog" target="_blank" rel="noopener">
+      <img src="{{ '/assets/images/kofi-logo.png' | relative_url }}" alt="" aria-hidden="true">
+      <span>Buy me a coffee</span>
+      <span class="about-arrow" aria-hidden="true">↗</span>
+    </a>
   </section>
 
   <script>
@@ -126,6 +126,9 @@ footer_subscribe: false
 </main>
 
 <style>
+  /* 字号只用这几档：
+     小标签 .7rem（大写 + 字距）· 辅助信息 .8rem · 按钮 .85rem · 说明文字 .95rem · 正文 .98–1rem */
+
   .about-page {
     width: min(680px, calc(100% - 4rem));
     margin: 0 auto;
@@ -134,8 +137,8 @@ footer_subscribe: false
 
   .about-profile {
     display: grid;
-    grid-template-columns: 148px minmax(0, 1fr) 188px;
-    gap: 1.55rem;
+    grid-template-columns: 148px minmax(0, 1fr);
+    gap: 2.2rem;
     align-items: center;
   }
 
@@ -144,18 +147,18 @@ footer_subscribe: false
   }
 
   .about-kicker,
-  .about-section-kicker,
-  .about-mini-label {
+  .about-section-kicker {
     margin: 0;
     color: var(--accent);
     font-family: var(--sans);
-    font-size: .61rem;
+    font-size: .7rem;
     font-weight: 500;
-    letter-spacing: .17em;
+    letter-spacing: .16em;
+    line-height: 1.6;
   }
 
   .about-kicker {
-    margin-bottom: .6rem;
+    margin-bottom: .55rem;
   }
 
   .about-portrait {
@@ -176,40 +179,41 @@ footer_subscribe: false
   }
 
   .about-japanese {
-    margin: .34rem 0 .95rem;
+    margin: .4rem 0 1rem;
     color: var(--accent);
     font-family: var(--serif-ja);
-    font-size: .86rem;
-    line-height: 1.45;
+    font-size: .92rem;
+    line-height: 1.5;
   }
 
   .about-heart {
     display: inline-block;
-    margin-left: .08em;
+    margin-left: .1em;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: 1.14rem;
+    font-size: 1.1em;
     line-height: 1;
-    vertical-align: -.07em;
+    vertical-align: -.05em;
   }
 
   .about-bio {
     margin: 0;
     color: var(--body);
-    font-size: .89rem;
-    line-height: 1.8;
+    font-size: 1rem;
+    line-height: 1.85;
   }
 
   .about-podcast {
     display: inline-block;
-    margin-top: .8rem;
+    margin-top: .85rem;
     color: var(--body);
     font-family: var(--sans);
-    font-size: .68rem;
+    font-size: .82rem;
+    line-height: 1.5;
     text-decoration: none;
   }
 
-  .about-podcast span {
+  .about-podcast-label {
     color: var(--muted);
   }
 
@@ -217,22 +221,166 @@ footer_subscribe: false
     color: var(--accent);
   }
 
-  .about-profile-side {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    align-self: center;
-    min-width: 0;
+  /* 链接末尾的小箭头：站内 →，站外 ↗ */
+  .about-arrow {
+    display: inline-block;
+    margin-left: .15rem;
+    color: var(--accent);
+    transition: transform .15s ease;
   }
 
-  .about-side-block {
-    min-width: 0;
+  .about-podcast:hover .about-arrow,
+  .about-button:hover .about-arrow {
+    transform: translate(2px, -2px);
   }
 
-  .about-mini-label {
-    margin-bottom: .48rem;
+  .about-history {
+    margin-top: 4rem;
+  }
+
+  .about-history > .about-section-kicker {
+    margin-bottom: 1.6rem;
+  }
+
+  .about-timeline {
+    position: relative;
+  }
+
+  /* 竖线对准圆点中心：日期列 78px + 圆点列的一半 16px */
+  .about-timeline::before {
+    content: '';
+    position: absolute;
+    top: .7rem;
+    bottom: .7rem;
+    left: 94px;
+    width: 1px;
+    background: var(--line);
+  }
+
+  .about-timeline-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 78px 32px minmax(0, 1fr);
+    align-items: start;
+    padding-bottom: 2.2rem;
+  }
+
+  .about-timeline-item:last-child {
+    padding-bottom: 0;
+  }
+
+  .about-timeline-date {
+    padding-top: .18rem;
     color: var(--muted);
-    font-size: .60rem;
+    font-family: var(--sans);
+    font-size: .8rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .02em;
+    line-height: 1.7;
+    white-space: nowrap;
+  }
+
+  .about-timeline-dot {
+    z-index: 1;
+    justify-self: center;
+    width: 7px;
+    height: 7px;
+    margin-top: .68rem;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px var(--paper);
+  }
+
+  .about-timeline-copy {
+    min-width: 0;
+  }
+
+  .about-timeline-copy p {
+    margin: 0;
+    color: var(--body);
+    font-family: var(--serif);
+    font-size: .98rem;
+    line-height: 1.8;
+  }
+
+  .about-timeline-link {
+    display: inline-block;
+    margin-top: .6rem;
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: .8rem;
+    line-height: 1.5;
+    text-decoration: none;
+  }
+
+  .about-timeline-link span {
+    display: inline-block;
+    margin-left: .1rem;
+    transition: transform .15s ease;
+  }
+
+  .about-timeline-link:hover span {
+    transform: translateX(3px);
+  }
+
+  .about-survey,
+  .about-subscribe,
+  .about-kofi {
+    margin-top: 3.6rem;
+  }
+
+  .about-survey > .about-section-kicker,
+  .about-subscribe > .about-section-kicker,
+  .about-kofi > .about-section-kicker {
+    margin-bottom: .8rem;
+  }
+
+  .about-survey-copy,
+  .about-subscribe-copy {
+    margin: 0 0 1.05rem;
+    color: var(--muted);
+    font-family: var(--sans);
+    font-size: .95rem;
+    line-height: 1.7;
+  }
+
+  .about-subscribe-copy a {
+    color: var(--accent);
+    font-weight: 600;
+    text-underline-offset: 2px;
+  }
+
+  /* 问卷和 Ko-fi 用同一种按钮 */
+  .about-button {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    min-height: 44px;
+    padding: .6rem .9rem;
+    border: 1px solid var(--line);
+    border-radius: 0;
+    background: var(--paper);
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: .85rem;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+
+  .about-button:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .about-button img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+  }
+
+  .about-button .about-arrow {
+    margin-left: 0;
   }
 
   .about-side-subscribe-form {
@@ -245,13 +393,13 @@ footer_subscribe: false
   .about-side-subscribe-form input {
     min-width: 0;
     width: 100%;
-    padding: .68rem .72rem;
+    padding: .72rem .8rem;
     border: 1px solid var(--line);
     border-radius: 0;
     background: var(--paper);
     color: var(--body);
     font-family: var(--sans);
-    font-size: .82rem;
+    font-size: .88rem;
   }
 
   .about-side-subscribe-form input:focus {
@@ -260,13 +408,13 @@ footer_subscribe: false
   }
 
   .about-side-subscribe-form button {
-    padding: .68rem .84rem;
+    padding: .72rem 1rem;
     border: 1px solid var(--accent);
     border-radius: 0;
     background: var(--accent);
     color: #fff;
     font-family: var(--sans);
-    font-size: .80rem;
+    font-size: .88rem;
     cursor: pointer;
   }
 
@@ -283,191 +431,20 @@ footer_subscribe: false
     background: var(--soft);
     color: var(--body);
     font-family: var(--sans);
-    font-size: .76rem;
+    font-size: .85rem;
     line-height: 1.5;
   }
 
   .about-side-privacy {
-    margin: .55rem 0 0;
+    margin: .6rem 0 0;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .66rem;
+    font-size: .78rem;
     line-height: 1.5;
   }
 
-  .about-side-privacy a,
-  .about-subscribe-copy a {
+  .about-side-privacy a {
     color: var(--accent);
-  }
-
-  .about-subscribe-copy a {
-    font-weight: 600;
-    text-underline-offset: 2px;
-  }
-
-  .about-side-support {
-    padding-top: .1rem;
-  }
-
-  .about-kofi-button {
-    display: inline-flex;
-    align-items: center;
-    gap: .42rem;
-    padding: .46rem .64rem;
-    border: 1px solid var(--line);
-    border-radius: 0;
-    background: var(--paper);
-    color: var(--body);
-    font-family: var(--sans);
-    font-size: .72rem;
-    text-decoration: none;
-    transition: border-color .15s ease, color .15s ease, transform .15s ease;
-  }
-
-  .about-kofi-button:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    transform: translateY(-1px);
-  }
-
-  .about-kofi-button img {
-    width: 18px;
-    height: 18px;
-    object-fit: contain;
-  }
-
-  .about-history {
-    margin-top: 3.8rem;
-  }
-
-  .about-history > .about-section-kicker {
-    margin-bottom: 1.55rem;
-  }
-
-  .about-timeline {
-    position: relative;
-  }
-
-  .about-timeline::before {
-    content: '';
-    position: absolute;
-    top: .52rem;
-    bottom: .52rem;
-    left: 84px;
-    width: 1px;
-    background: var(--line);
-  }
-
-  .about-timeline-item {
-    position: relative;
-    display: grid;
-    grid-template-columns: 68px 32px minmax(0, 1fr);
-    align-items: start;
-    padding-bottom: 2.05rem;
-  }
-
-  .about-timeline-item:last-child {
-    padding-bottom: 0;
-  }
-
-  .about-timeline-date {
-    padding-top: .05rem;
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: .65rem;
-    letter-spacing: .04em;
-    line-height: 1.7;
-    white-space: nowrap;
-  }
-
-  .about-timeline-dot {
-    z-index: 1;
-    justify-self: center;
-    width: 6px;
-    height: 6px;
-    margin-top: .47rem;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 0 4px var(--paper);
-  }
-
-  .about-timeline-copy {
-    min-width: 0;
-  }
-
-  .about-timeline-copy p {
-    margin: 0;
-    color: var(--body);
-    font-family: var(--serif);
-    font-size: .88rem;
-    line-height: 1.75;
-  }
-
-  .about-timeline-link {
-    display: inline-block;
-    margin-top: .58rem;
-    color: var(--accent);
-    font-family: var(--sans);
-    font-size: .67rem;
-    line-height: 1.5;
-    text-decoration: none;
-  }
-
-  .about-timeline-link span {
-    display: inline-block;
-    margin-left: .08rem;
-    transition: transform .15s ease;
-  }
-
-  .about-timeline-link:hover span {
-    transform: translate(2px, -2px);
-  }
-
-  .about-survey,
-  .about-subscribe {
-    margin-top: 3.6rem;
-  }
-
-  .about-survey > .about-section-kicker,
-  .about-subscribe > .about-section-kicker {
-    margin-bottom: .75rem;
-  }
-
-  .about-survey-copy,
-  .about-subscribe-copy {
-    margin: 0 0 1rem;
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: .86rem;
-    line-height: 1.6;
-  }
-
-  .about-survey-link {
-    display: inline-flex;
-    align-items: center;
-    gap: .28rem;
-    padding: .5rem .72rem;
-    border: 1px solid var(--line);
-    border-radius: 0;
-    background: var(--paper);
-    color: var(--accent);
-    font-family: var(--sans);
-    font-size: .72rem;
-    text-decoration: none;
-    transition: border-color .15s ease, transform .15s ease;
-  }
-
-  .about-survey-link span {
-    transition: transform .15s ease;
-  }
-
-  .about-survey-link:hover {
-    border-color: var(--accent);
-    transform: translateY(-1px);
-  }
-
-  .about-survey-link:hover span {
-    transform: translate(2px, -2px);
   }
 
   @media (max-width: 700px) {
@@ -478,7 +455,7 @@ footer_subscribe: false
 
     .about-profile {
       grid-template-columns: 132px minmax(0, 1fr);
-      gap: 1.35rem 1.45rem;
+      gap: 1.6rem;
     }
 
     .about-portrait {
@@ -489,53 +466,44 @@ footer_subscribe: false
     .about-profile h1 {
       font-size: 1.9rem;
     }
-
-    .about-profile-side {
-      grid-column: 2;
-      margin-top: -.15rem;
-    }
   }
 
   @media (max-width: 520px) {
     .about-profile {
       grid-template-columns: 1fr;
-      gap: 1.1rem;
+      gap: 1.2rem;
     }
 
     .about-portrait {
-      width: 146px;
-      height: 146px;
-    }
-
-    .about-profile-side {
-      grid-column: 1;
-      width: min(100%, 280px);
-      margin-top: .15rem;
+      width: 128px;
+      height: 128px;
     }
 
     .about-history {
       margin-top: 3.4rem;
     }
 
+    /* 日期列 58px + 圆点列的一半 12px */
     .about-timeline::before {
-      left: 62px;
+      left: 70px;
     }
 
     .about-timeline-item {
-      grid-template-columns: 48px 28px minmax(0, 1fr);
-      padding-bottom: 1.8rem;
+      grid-template-columns: 58px 24px minmax(0, 1fr);
+      padding-bottom: 2rem;
     }
 
     .about-timeline-date {
-      font-size: .59rem;
+      font-size: .76rem;
     }
 
     .about-timeline-copy p {
-      font-size: .83rem;
+      font-size: .95rem;
     }
 
     .about-survey,
-    .about-subscribe {
+    .about-subscribe,
+    .about-kofi {
       margin-top: 3rem;
     }
 
