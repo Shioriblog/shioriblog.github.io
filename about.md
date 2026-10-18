@@ -88,8 +88,8 @@ subscription: false
     <p class="about-side-privacy">仅用于博客更新通知 · <a href="{{ '/privacy/' | relative_url }}">Privacy</a></p>
   </section>
 
-  <section class="about-support" aria-labelledby="about-support-label">
-    <p class="about-section-kicker" id="about-support-label">SUPPORT</p>
+  <section class="about-kofi" aria-labelledby="about-kofi-label">
+    <p class="about-section-kicker" id="about-kofi-label">SUPPORT</p>
     <a class="about-button" href="https://ko-fi.com/shioriblog" target="_blank" rel="noopener">
       <img src="{{ '/assets/images/kofi-logo.png' | relative_url }}" alt="" aria-hidden="true">
       <span>Buy me a coffee</span>
@@ -325,13 +325,13 @@ subscription: false
 
   .about-survey,
   .about-subscribe,
-  .about-support {
+  .about-kofi {
     margin-top: 3.6rem;
   }
 
   .about-survey > .about-section-kicker,
   .about-subscribe > .about-section-kicker,
-  .about-support > .about-section-kicker {
+  .about-kofi > .about-section-kicker {
     margin-bottom: .8rem;
   }
 
@@ -503,7 +503,7 @@ subscription: false
 
     .about-survey,
     .about-subscribe,
-    .about-support {
+    .about-kofi {
       margin-top: 3rem;
     }
 
