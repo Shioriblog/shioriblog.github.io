@@ -232,3 +232,39 @@ body.post-category-tabetari .article-content .wp-block-jetpack-tiled-gallery .co
     line-height: 1.85;
   }
 }
+
+/* 照片排版（新写的游记用）：
+   <div class="photo-row cols-2">…</div>  一行两张（cols-1 / cols-2 / cols-3）
+   加 square 裁成正方形，加 portrait 裁成竖图；cols-1 按原比例显示 */
+.article-content .photo-row {
+  display: grid;
+  grid-template-columns: repeat(var(--photo-cols, 2), minmax(0, 1fr));
+  gap: 7px;
+  margin: 1.35rem 0;
+}
+
+.article-content .photo-row + .photo-row {
+  margin-top: calc(7px - 1.35rem);
+}
+
+.article-content .photo-row.cols-1 { --photo-cols: 1; }
+.article-content .photo-row.cols-2 { --photo-cols: 2; }
+.article-content .photo-row.cols-3 { --photo-cols: 3; }
+
+.article-content .photo-row img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.article-content .photo-row.square img { aspect-ratio: 1 / 1; }
+.article-content .photo-row.portrait img { aspect-ratio: 3 / 4; }
+.article-content .photo-row.cols-1 img { aspect-ratio: auto; }
+
+@media (max-width: 640px) {
+  .article-content .photo-row { gap: 5px; }
+  .article-content .photo-row + .photo-row { margin-top: calc(5px - 1.35rem); }
+}
