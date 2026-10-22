@@ -114,6 +114,11 @@ subscription: false
         <strong class="dash-likes-total" id="dash-likes-total">—</strong>
         <ol class="dash-rows is-compact" id="dash-likes"></ol>
       </div>
+      <div>
+        <span class="dash-label"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v4l2.5 2.5"></path></svg>最近收到心的文章</span>
+        <ol class="dash-rows is-compact dash-recent-likes" id="dash-recent-likes"><li class="dash-empty">正在读取…</li></ol>
+        <p class="dash-small" id="dash-recent-likes-note">不随上方时段切换</p>
+      </div>
       <p class="dash-note" id="dash-likes-note"></p>
     </div>
   </section>
@@ -278,6 +283,8 @@ subscription: false
 
   .dash-likes { display: flex; flex-wrap: wrap; gap: 2rem 2.5rem; }
   .dash-likes > div, .dash-likes > p { flex: 1 1 280px; min-width: 0; }
+  .dash-recent-likes { margin-top: .9rem; }
+  .dash-recent-likes small { flex: none; }
   .dash-likes-total { display: block; margin: .3rem 0 1rem; color: var(--ink); font-family: "Source Serif 4", var(--serif); font-size: 2.5rem; font-weight: 400; line-height: 1.2; }
 
   .dash-footer { padding-top: 2.4rem; color: var(--muted); font-family: var(--sans); font-size: .8rem; line-height: 1.9; }

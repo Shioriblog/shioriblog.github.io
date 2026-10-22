@@ -5,6 +5,10 @@ const SITE_TIME_ZONE = 'America/Chicago'
 const LIKE_STORE_NAME = 'shioriblog-post-likes'
 const DASHBOARD_CACHE_NAME = 'shioriblog-dashboard-cache'
 const DASHBOARD_RANGES = [1, 7, 30]
+// Likes given before this log existed have no time attached, so the
+// "recently liked" list only starts filling from the day it was deployed.
+const RECENT_LIKES_KEY = 'recent-likes'
+const RECENT_LIKES_LIMIT = 30
 // A cron trigger (wrangler.jsonc) refreshes every range every 10 minutes,
 // so the dashboard normally reads a ready-made copy instead of waiting on GraphQL.
 const DASHBOARD_FRESH_MS = 15 * 60 * 1000
@@ -62,7 +66,8 @@ export class LikeStore {
       for (const [key, value] of entries) {
         likes[key.slice('count:'.length)] = Number(value) || 0
       }
-      return internalJson({ likes })
+      const recent = (await this.getRecent()).map(({ post, at }) => ({ post, at }))
+      return internalJson({ likes, recent })
     }
 
     const postId = decodeURIComponent(url.pathname.replace(/^\//, ''))
@@ -84,19 +89,30 @@ export class LikeStore {
       const key = voterKey(postId, visitor)
       const liked = Boolean(await this.ctx.storage.get(key))
 
+      const recent = (await this.getRecent()).filter((item) => !(item.post === postId && item.visitor === visitor))
       if (liked) {
         count = Math.max(0, count - 1)
         await this.ctx.storage.delete(key)
       } else {
+        const at = Date.now()
         count += 1
-        await this.ctx.storage.put(key, true)
+        await this.ctx.storage.put(key, at)
+        recent.unshift({ post: postId, visitor, at })
       }
+      // The visitor id never leaves the Durable Object; it is kept only so an
+      // un-like can take the matching entry back out of the list.
+      await this.ctx.storage.put(RECENT_LIKES_KEY, recent.slice(0, RECENT_LIKES_LIMIT))
 
       await this.ctx.storage.put(countKey(postId), count)
       return internalJson({ likes: count, liked: !liked })
     }
 
     return internalJson({ error: 'Method not allowed' }, 405)
+  }
+
+  async getRecent() {
+    const stored = await this.ctx.storage.get(RECENT_LIKES_KEY)
+    return Array.isArray(stored) ? stored.filter((item) => item && validPostId(item.post) && Number.isFinite(item.at)) : []
   }
 
   async getCount(postId) {
@@ -280,7 +296,8 @@ async function buildDashboard(env, days) {
   return {
     views,
     visits,
-    likes: likes || {},
+    likes: likes?.likes || {},
+    recentLikes: likes?.recent || [],
     likesAvailable: likes !== null,
     generatedAt: end.toISOString(),
     range: {
@@ -356,7 +373,7 @@ async function getLikeSummary(env) {
     const response = await stub.fetch('https://likes.internal/__summary')
     if (!response.ok) return null
     const data = await response.json()
-    return data.likes || {}
+    return { likes: data.likes || {}, recent: Array.isArray(data.recent) ? data.recent : [] }
   } catch (_) {
     return null
   }

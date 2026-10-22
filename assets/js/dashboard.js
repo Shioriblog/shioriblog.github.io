@@ -129,6 +129,8 @@
     likesTotal: $('dash-likes-total'),
     likes: $('dash-likes'),
     likesNote: $('dash-likes-note'),
+    recentLikes: $('dash-recent-likes'),
+    recentLikesNote: $('dash-recent-likes-note'),
     updated: $('dash-updated'),
     comments: $('dash-comments'),
     commentsNote: $('dash-comments-note'),
@@ -438,6 +440,42 @@
       : ['收到心最多的是《', postLink(top.path), `》，一共 ${fmt(top.likes)} 颗。`])
   }
 
+  // Newest first; one row per post, with how many of the logged hearts it got.
+  // The log only began when like times started being recorded (2026-10-21).
+  const renderRecentLikes = (recent, available) => {
+    if (!available) {
+      setChildren(el.recentLikes)
+      el.recentLikesNote.textContent = ''
+      return
+    }
+    const pathByLike = new Map([...posts.entries()].map(([path, info]) => [info.like, path]))
+    const rows = new Map()
+    for (const item of recent || []) {
+      const path = pathByLike.get(item?.post)
+      const at = Number(item?.at)
+      if (!path || !Number.isFinite(at)) continue
+      const row = rows.get(path)
+      if (row) row.count += 1
+      else rows.set(path, { path, at, count: 1 })
+    }
+    const list = [...rows.values()].sort((a, b) => b.at - a.at).slice(0, 5)
+    el.recentLikesNote.textContent = '从 2026 年 10 月 21 日开始记录，更早的心没有时间 · 不随上方时段切换'
+    if (!list.length) {
+      setChildren(el.recentLikes, emptyItem('下一颗心会出现在这里'))
+      return
+    }
+    setChildren(el.recentLikes, list.map((row) => {
+      const when = new Date(row.at)
+      return h('li', {},
+        h('span', {}, postLink(row.path)),
+        h('small', { className: Date.now() - row.at < 86400000 ? 'is-accent' : null },
+          h('time', { datetime: when.toISOString(), title: zhDateTime(when) }, relativeTime(when)),
+          row.count > 1 ? ` · ${row.count} 颗` : ''
+        )
+      )
+    }))
+  }
+
   // ---------- loading stats ----------
 
   const cache = new Map()
@@ -452,6 +490,7 @@
     renderSources(data)
     renderCountries(data, days)
     renderLikes(data.likes, likesAvailable)
+    renderRecentLikes(data.recentLikes, likesAvailable)
     el.updated.textContent = data.generatedAt
       ? `数据更新于 ${zhDateTime(data.generatedAt)} · 每 10 分钟刷新一次 · 来自 Cloudflare Web Analytics`
       : '数据来自 Cloudflare Web Analytics，每 10 分钟刷新一次。'
