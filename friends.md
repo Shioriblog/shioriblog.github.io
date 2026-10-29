@@ -38,6 +38,7 @@ nav: friends
       <li><a target="_blank" rel="noopener" href="https://circleyellowthere.de/"><span class="friend-favicon friend-favicon-letter" aria-hidden="true">C</span>Circleyellowthere</a></li>
       <li><a target="_blank" rel="noopener" href="https://www.yocson.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://www.yocson.com&sz=32" alt="" loading="lazy">散步中</a></li>
       <li><a target="_blank" rel="noopener" href="https://ignativssss.com/"><img class="friend-favicon" src="https://www.google.com/s2/favicons?domain_url=https://ignativssss.com&sz=32" alt="" loading="lazy">豚骨拉面馆🍜</a></li>
+      <li><a target="_blank" rel="noopener" href="https://gardendenpa.cn/"><span class="friend-favicon friend-favicon-letter" aria-hidden="true">花</span>花园电波</a></li>
     </ul>
   </section>
 
