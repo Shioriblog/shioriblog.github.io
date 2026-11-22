@@ -140,11 +140,12 @@ subscription: false
       })
     }
 
-    // 右栏近期留言（Twikoo）。博主自己的回复不显示。
+    // 右栏近期留言（Twikoo）。博主自己的回复、友链页的留言（交换友链的申请）不显示。
     const envId = {{ site.twikoo_env_id | jsonify }}
     const box = document.getElementById('side-comments')
     if (!envId || !box) return
     const ownerNames = ['shiori', 'shiori栞', 'shiori 栞']
+    const skipPages = ['/friends/']
     let titles = {}
     try {
       const raw = JSON.parse(document.getElementById('side-comment-titles').textContent)
@@ -163,9 +164,13 @@ subscription: false
     const show = async () => {
       try {
         await load()
-        const items = await window.twikoo.getRecentComments({ envId, pageSize: 20, includeReply: true })
+        const items = await window.twikoo.getRecentComments({ envId, pageSize: 30, includeReply: true })
         const list = box.querySelector('ul')
-        const picked = items.filter((item) => !ownerNames.includes(String(item.nick || '').trim().toLowerCase())).slice(0, 5)
+        const pagePath = (item) => { try { return decodeURI(item.url || '/') } catch (error) { return item.url || '/' } }
+        const picked = items
+          .filter((item) => !ownerNames.includes(String(item.nick || '').trim().toLowerCase()))
+          .filter((item) => !skipPages.includes(pagePath(item)))
+          .slice(0, 5)
         if (!picked.length) return
         picked.forEach((item) => {
           const li = document.createElement('li')
