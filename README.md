@@ -30,6 +30,10 @@ travel_image: /assets/images/posts/2026/09/封面.jpg
 travel_excerpt: 一两句话简介。
 ```
 
+- `travel_date` 写旅行开始的日子，旅行页显示它的年月；文章如果是隔了一段时间才写的，下面会多一行「月.日 记」（取 `date`）。
+- 同一趟旅行写了几篇的，每篇都加一行 `trip:`，写同一个名字（比如 `trip: 2025-欧洲`），旅行页会把它们按旅行顺序排在一起、用细线连起来。
+- 页面顶部的「FOOTPRINTS」足迹总览在 `_data/travel_log.yml`，去了新地方就在最上面加一行（没写游记的旅行也可以写进去）。
+
 旅行页用的小图（`assets/images/thumbs/`）会在推送后由 GitHub Actions 的「生成缩略图」自动生成，也可以在本地运行 `python3 tools/make_travel_thumbs.py`。
 
 ### 引文

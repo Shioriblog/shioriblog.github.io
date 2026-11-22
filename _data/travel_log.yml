@@ -1,0 +1,21 @@
+# 旅行页顶部的「FOOTPRINTS」足迹总览。
+# 新的年份写在最上面；同一年里，新的月份写在前面。
+- year: 2026
+  trips:
+    - { month: Jun, place: Shanxi }
+    - { month: Mar, place: Vancouver }
+    - { month: Feb, place: Tainan · Taipei }
+- year: 2025
+  trips:
+    - { month: Jul, place: Hong Kong · Macau }
+    - { month: Jul, place: Chicago }
+    - { month: Apr, place: Berlin · Prague }
+    - { month: Mar, place: "Columbus, Ohio" }
+- year: 2024
+  trips:
+    - { month: Jun, place: Taipei · Beijing }
+    - { month: Apr, place: Paris }
+    - { month: Mar, place: Seattle }
+- year: 2023
+  trips:
+    - { month: Mar, place: Boston }
