@@ -669,8 +669,8 @@ body.post-category-utakata .article-content h3.diary-entry-date::after {
 @media (max-width: 640px) {
   .site-header { width: 100%; padding-top: 0; }
   .site-header nav { margin-top: 0; padding: .9rem 1rem; }
-  .site-header nav ul { justify-content: center; gap: .55rem 1.15rem; }
-  .site-header nav a { letter-spacing: .08em; }
+  .site-header nav ul { justify-content: center; gap: .55rem .95rem; }
+  .site-header nav a { letter-spacing: .02em; }
   .site-header .brand { padding-top: 1.8rem; }
   .home-page .site-header .brand { padding-top: 2.4rem; }
   .home-page .site-header .brand-name { font-size: 1.8rem; }
