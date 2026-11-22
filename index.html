@@ -2,525 +2,491 @@
 layout: default
 title: 独居日记
 nav: home
+# 首页右栏已经有订阅框，页脚的订阅框和左下角的浮动订阅按钮都不再显示
+subscription: false
 ---
-<main class="home-main" id="content">
-  {% if paginator.page == 1 %}
-    {% assign latest_zine = site.data.zines | first %}
-    {% if latest_zine and latest_zine.pdf and latest_zine.pdf != '' %}
-      {% assign zine_pdf_url = latest_zine.pdf %}
-      {% unless zine_pdf_url contains '://' %}{% assign zine_pdf_url = zine_pdf_url | relative_url %}{% endunless %}
-      {% assign zine_intro_url = latest_zine.intro_url %}
-      {% unless zine_intro_url contains '://' %}{% assign zine_intro_url = zine_intro_url | relative_url %}{% endunless %}
-      {% assign zine_reader_url = latest_zine.reader_url %}
-      {% unless zine_reader_url contains '://' %}{% assign zine_reader_url = zine_reader_url | relative_url %}{% endunless %}
-      <section class="home-zine-section" aria-labelledby="home-zine-heading">
-        <div class="home-zine-section-heading">
-          <h1 class="page-title" id="home-zine-heading">最新 ZINE</h1>
-          <a href="{{ '/zines/' | relative_url }}" aria-label="查看全部 ZINE">全部 ZINE <span aria-hidden="true">↗</span></a>
-        </div>
-        <article class="home-zine-entry" aria-labelledby="home-zine-title">
-          <div class="home-zine-cover-wrap">
-            {% if latest_zine.cover and latest_zine.cover != '' %}
-              <a href="{% if latest_zine.reader_url and latest_zine.reader_url != '' %}{{ zine_reader_url | escape }}{% else %}{{ '/zines/' | relative_url }}{% endif %}" aria-label="在线阅读《{{ latest_zine.title | escape }}》">
-                <img src="{{ latest_zine.cover | relative_url }}"
-                     alt="《{{ latest_zine.title | escape }}》封面"
-                     width="{{ latest_zine.cover_width | default: 521 }}"
-                     height="{{ latest_zine.cover_height | default: 753 }}"
-                     decoding="async" fetchpriority="high">
-              </a>
-            {% endif %}
-          </div>
-          <div class="home-zine-body">
-            <p class="home-zine-number">ISSUE {{ latest_zine.issue | escape }}{% if latest_zine.date_label %}<span aria-hidden="true"> / </span>{{ latest_zine.date_label | escape }}{% endif %}</p>
-            <h2 id="home-zine-title"><a href="{% if latest_zine.reader_url and latest_zine.reader_url != '' %}{{ zine_reader_url | escape }}{% else %}{{ '/zines/' | relative_url }}{% endif %}">{{ latest_zine.title | escape }}</a></h2>
-            <p class="home-zine-description">{{ latest_zine.description | escape }}</p>
-            <p class="home-zine-meta">{{ latest_zine.collection | escape }} · PDF{% if latest_zine.pages and latest_zine.pages != '' %} · {{ latest_zine.pages }} 页{% endif %}{% if latest_zine.file_size and latest_zine.file_size != '' %} · {{ latest_zine.file_size | escape }}{% endif %}</p>
-            <div class="home-zine-actions">
-              <a class="home-zine-download" href="{{ zine_pdf_url | escape }}" download="{{ latest_zine.download_name | escape }}" aria-label="下载《{{ latest_zine.title | escape }}》PDF">下载 PDF <span aria-hidden="true">↓</span></a>
-              {% if latest_zine.reader_url and latest_zine.reader_url != '' %}
-                <a class="home-zine-read-online" href="{{ zine_reader_url | escape }}">在线阅读 <span aria-hidden="true">→</span></a>
-              {% endif %}
-              {% if latest_zine.intro_url and latest_zine.intro_url != '' %}
-                <a class="home-zine-intro-link" href="{{ zine_intro_url | escape }}">阅读介绍 <span aria-hidden="true">↗</span></a>
-              {% endif %}
-            </div>
-          </div>
-        </article>
-      </section>
-    {% endif %}
-  {% endif %}
-
-  <h1 class="page-title">Latest Posts</h1>
-
-  {% if site.categories.size > 0 %}
-    {% assign home_categories = "日記の練習|言葉と歩く日記|うたかたの日々" | split: "|" %}
-    <div class="category-strip" aria-label="文章分类">
-      <button type="button" class="home-all-posts is-active" aria-pressed="true">All posts</button>
-      {% for category_name in home_categories %}
-        {% assign category_description = '' %}
-        {% case category_name %}
-          {% when 'うたかたの日々' %}{% assign category_description = '岁月的泡沫' %}
-          {% when '日記の練習' %}{% assign category_description = '日常随笔' %}
-          {% when '言葉と歩く日記' %}{% assign category_description = '旅行随笔' %}
-        {% endcase %}
-        <button
-          type="button"
-          class="home-category-link{% if category_description != '' %} has-tooltip{% endif %}"
-          data-category="{{ category_name | escape }}"
-          aria-pressed="false"
-          {% if category_description != '' %}data-tooltip="{{ category_description }}" aria-label="{{ category_name }} — {{ category_description }}"{% endif %}
-        >{{ category_name }}</button>
-      {% endfor %}
-      <a
-        class="home-travel-link has-tooltip"
-        href="{{ '/travel/' | relative_url }}"
-        data-tooltip="旅行流水账"
-        aria-label="食べたり、歩いたり — 旅行流水账"
-      >食べたり、歩いたり →</a>
-    </div>
-  {% endif %}
-
-  <div class="post-list home-post-list" aria-label="文章列表">
+{% assign latest_zine = site.data.zines | first %}
+<div class="home-layout">
+  <main class="home-feed" id="content" aria-label="文章列表">
     {% assign rendered_count = 0 %}
-    {% for post in site.posts %}
-      {% unless post.categories contains '食べたり、歩いたり' %}
-        {% assign on_current_page = false %}
-        {% for paginated_post in paginator.posts %}
-          {% if paginated_post.url == post.url %}
-            {% assign on_current_page = true %}
-            {% break %}
-          {% endif %}
-        {% endfor %}
-        {% assign show_in_all = on_current_page %}
-        {% if paginator.page == 1 and post.categories contains 'zine' %}
-          {% assign show_in_all = false %}
+    {% for post in paginator.posts %}
+      {% if post.categories contains '食べたり、歩いたり' %}{% continue %}{% endif %}
+      {% assign rendered_count = rendered_count | plus: 1 %}
+      {% comment %} 小图：cover: 路径 → 用这张；cover: false → 不显示；没写 → 正文第一张图 {% endcomment %}
+      {% assign cover = '' %}
+      {% if post.cover == false %}
+        {% assign cover = '' %}
+      {% elsif post.cover %}
+        {% assign cover = post.cover %}
+      {% else %}
+        {% assign img_parts = post.content | split: '<img ' %}
+        {% if img_parts.size > 1 %}
+          {% assign src_parts = img_parts[1] | split: 'src="' %}
+          {% if src_parts.size > 1 %}{% assign cover = src_parts[1] | split: '"' | first %}{% endif %}
         {% endif %}
-        {% assign home_category_match = false %}
-        {% for category_name in home_categories %}
-          {% if post.categories contains category_name %}
-            {% assign home_category_match = true %}
-            {% break %}
+      {% endif %}
+      {% assign cover_thumb = cover %}
+      {% if cover contains '/assets/images/posts/' %}
+        {% assign cover_thumb = cover | replace_first: '/assets/images/posts/', '/assets/images/covers/' %}
+      {% endif %}
+      <article class="feed-post">
+        <p class="feed-meta">
+          <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>
+          {% if post.categories.size > 0 %}<span aria-hidden="true">·</span>{{ post.categories | first }}{% endif %}
+        </p>
+        <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+        <div class="feed-row{% if cover == '' %} no-cover{% endif %}">
+          {% if cover != '' %}
+            <a class="feed-cover" href="{{ post.url | relative_url }}" tabindex="-1" aria-hidden="true">
+              <img src="{{ cover_thumb | relative_url }}" alt="" width="170" height="170" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='{{ cover | relative_url }}'">
+            </a>
           {% endif %}
-        {% endfor %}
-        {% if show_in_all or home_category_match %}
-          {% assign rendered_count = rendered_count | plus: 1 %}
-          {% comment %} 首页小图：cover: 路径 → 用这张；cover: false → 不显示；没写 → 正文第一张图 {% endcomment %}
-          {% assign cover = '' %}
-          {% if post.cover == false %}
-            {% assign cover = '' %}
-          {% elsif post.cover %}
-            {% assign cover = post.cover %}
-          {% else %}
-            {% assign img_parts = post.content | split: '<img ' %}
-            {% if img_parts.size > 1 %}
-              {% assign src_parts = img_parts[1] | split: 'src="' %}
-              {% if src_parts.size > 1 %}{% assign cover = src_parts[1] | split: '"' | first %}{% endif %}
-            {% endif %}
-          {% endif %}
-          {% assign cover_thumb = cover %}
-          {% if cover contains '/assets/images/posts/' %}
-            {% assign cover_thumb = cover | replace_first: '/assets/images/posts/', '/assets/images/covers/' %}
-          {% endif %}
-          <article
-            class="post-preview home-post-item"
-            data-categories="{{ post.categories | join: '|' | escape }}"
-            data-show-in-all="{% if show_in_all %}true{% else %}false{% endif %}"
-            {% unless show_in_all %}hidden{% endunless %}
-          >
-            <div class="home-post-inner{% if cover != '' %} has-cover{% endif %}">
-              <div class="home-post-copy">
-                <div class="post-meta">
-                  <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%Y.%m.%d' }}</time>
-                  {% if post.categories.size > 0 %}<span> · {{ post.categories | join: ' · ' }}</span>{% endif %}
-                </div>
-                <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-                <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 150 }} <a class="read-more" href="{{ post.url | relative_url }}">Read more...</a></p>
-                {% assign visible_tags = post.tags | where_exp: 'tag', "tag != 'featured'" %}
-                {% if visible_tags.size > 0 %}
-                  {% assign primary_category = post.categories | first %}
-                  <div class="home-post-tags" aria-label="标签">
-                    {% for tag in visible_tags %}
-                      <a href="{{ '/categories/' | relative_url }}?category={{ primary_category | url_encode }}&amp;tag={{ tag | url_encode }}">{{ tag }}</a>
-                    {% endfor %}
-                  </div>
-                {% endif %}
-              </div>
-              {% if cover != '' %}
-                <a class="home-post-cover" href="{{ post.url | relative_url }}" tabindex="-1" aria-hidden="true">
-                  <img src="{{ cover_thumb | relative_url }}" alt="" width="150" height="150" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='{{ cover | relative_url }}'">
-                </a>
-              {% endif %}
-            </div>
-          </article>
-        {% endif %}
-      {% endunless %}
+          <div class="feed-copy">
+            <p>{{ post.excerpt | strip_html | normalize_whitespace | truncate: 110 }}</p>
+            <a class="feed-more" href="{{ post.url | relative_url }}" aria-label="阅读全文：{{ post.title | escape }}">阅读全文</a>
+          </div>
+        </div>
+      </article>
     {% endfor %}
     {% if rendered_count == 0 %}
-      <p class="empty-state">文章迁移完成后，会从这里开始排列。</p>
+      <p class="empty-state">这一页的文章都在<a href="{{ '/travel/' | relative_url }}">旅行</a>里。</p>
     {% endif %}
-    <p class="empty-state home-filter-empty" hidden>这个分类里还没有文章。</p>
-  </div>
 
-  {% if paginator.total_pages > 1 %}
-    <nav class="pagination" aria-label="文章分页">
-      {% if paginator.previous_page %}<a href="{{ paginator.previous_page_path | relative_url }}">← 更新</a>{% endif %}
-      <span>{{ paginator.page }} / {{ paginator.total_pages }}</span>
-      {% if paginator.next_page %}<a href="{{ paginator.next_page_path | relative_url }}">更早 →</a>{% endif %}
-    </nav>
-  {% endif %}
+    {% if paginator.total_pages > 1 %}
+      <nav class="pagination" aria-label="文章分页">
+        {% if paginator.previous_page %}<a href="{{ paginator.previous_page_path | relative_url }}">← 更新</a>{% else %}<span></span>{% endif %}
+        <span>{{ paginator.page }} / {{ paginator.total_pages }}</span>
+        {% if paginator.next_page %}<a href="{{ paginator.next_page_path | relative_url }}">更早 →</a>{% else %}<span></span>{% endif %}
+      </nav>
+    {% endif %}
+  </main>
 
-  <script>
-    (() => {
-      const buttons = Array.from(document.querySelectorAll('.home-category-link[data-category]'))
-      const allPostsButton = document.querySelector('.home-all-posts')
-      const postItems = Array.from(document.querySelectorAll('.home-post-item'))
-      const emptyState = document.querySelector('.home-filter-empty')
-      const pagination = document.querySelector('.pagination')
+  <aside class="home-sidebar" aria-label="侧栏">
+    <section class="side-hello" aria-labelledby="side-hello-title">
+      <h2 class="side-title" id="side-hello-title">HELLO</h2>
+      <a href="{{ '/about/' | relative_url }}" tabindex="-1" aria-hidden="true"><img src="{{ '/assets/images/about-shiori.jpg' | relative_url }}" alt="" width="150" height="150" loading="lazy" decoding="async"></a>
+      <p>我是 Shiori 栞。<br>坐标北美，平成废物<br>一般读者，又宅又腐<br>好好吃饭，随时摆烂</p>
+      <a class="side-link" href="{{ '/about/' | relative_url }}">关于我 →</a>
+    </section>
 
-      if (!buttons.length || !allPostsButton || !postItems.length) return
+    {% if latest_zine %}
+      {% assign zine_link = latest_zine.reader_url | default: '/zines/' %}
+      <section class="side-zine" aria-labelledby="side-zine-title">
+        <h2 class="side-title" id="side-zine-title">ZINE</h2>
+        <a href="{{ zine_link | relative_url }}">
+          {% if latest_zine.cover %}<img src="{{ latest_zine.cover | relative_url }}" alt="《{{ latest_zine.title | escape }}》封面" width="{{ latest_zine.cover_width | default: 521 }}" height="{{ latest_zine.cover_height | default: 753 }}" loading="lazy" decoding="async">{% endif %}
+          <span class="side-zine-title">{{ latest_zine.title }}</span>
+        </a>
+        <p class="side-zine-meta">ISSUE {{ latest_zine.issue }} · <a href="{{ zine_link | relative_url }}">在线阅读 →</a></p>
+      </section>
+    {% endif %}
 
-      let activeCategory = null
+    <section class="side-categories" aria-labelledby="side-categories-title">
+      <h2 class="side-title" id="side-categories-title">CATEGORIES</h2>
+      <a href="{{ '/categories/daily/' | relative_url }}" lang="ja">日記の練習</a>
+      <a href="{{ '/categories/words/' | relative_url }}" lang="ja">言葉と歩く日記</a>
+      <a href="{{ '/categories/utakata/' | relative_url }}" lang="ja">うたかたの日々</a>
+    </section>
 
-      const setButtonState = (category) => {
-        const showingAll = category === null
-        allPostsButton.classList.toggle('is-active', showingAll)
-        allPostsButton.setAttribute('aria-pressed', showingAll ? 'true' : 'false')
+    <section class="side-comments" id="side-comments" aria-labelledby="side-comments-title" hidden>
+      <h2 class="side-title" id="side-comments-title">RECENT COMMENTS</h2>
+      <ul></ul>
+    </section>
 
-        buttons.forEach((button) => {
-          const isActive = button.dataset.category === category
-          button.classList.toggle('is-active', isActive)
-          button.setAttribute('aria-pressed', isActive ? 'true' : 'false')
-        })
-      }
+    <section class="side-subscribe" aria-labelledby="side-subscribe-title">
+      <h2 class="side-title" id="side-subscribe-title">SUBSCRIBE</h2>
+      <p>新文章发布时，收到一封邮件。</p>
+      <p id="side-subscribe-success" class="side-subscribe-status" role="status" hidden>感谢订阅！更新时会收到邮件 ^_^</p>
+      <form id="side-subscribe-form" action="https://3693b1ad.sibforms.com/serve/MUIFAJi0O7F8qH7agDpwSWg6oAHlzhb-LHTu98WhY3r3yl4pYcWiAApt44BkjoJrBlTeQHIAJRBKyCJLlhjq-y0oURNC0TfTIjtSMN0A_Ft5ATNSyb3dfEkz3_sxQ9YSL7eF-0Q37f-Mm-WN_-Aq0HFa6-1qqdu-e6LoV3T2ivgpGah7gtKfxP7jitbT8coO_FQfJm_yvkHp_6SzIQ==" method="POST" target="side-subscribe-target">
+        <label class="sr-only" for="side-brevo-email">Email address</label>
+        <input id="side-brevo-email" type="email" name="EMAIL" placeholder="你的邮箱" autocomplete="email" required>
+        <button id="side-subscribe-button" type="submit">订阅</button>
+        <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;">
+        <input type="hidden" name="locale" value="en">
+      </form>
+      <iframe id="side-subscribe-target" name="side-subscribe-target" title="订阅提交结果" hidden></iframe>
+      <p class="side-subscribe-note">也可以用 <a href="{{ '/newsletter.xml' | relative_url }}">RSS</a> 订阅</p>
+    </section>
+  </aside>
+</div>
 
-      const showAll = () => {
-        activeCategory = null
-        setButtonState(null)
-        postItems.forEach((item) => {
-          item.hidden = item.dataset.showInAll !== 'true'
-        })
-        if (emptyState) emptyState.hidden = true
-        if (pagination) pagination.hidden = false
-      }
-
-      const showCategory = (category) => {
-        activeCategory = category
-        setButtonState(category)
-        let visibleCount = 0
-        postItems.forEach((item) => {
-          const categories = (item.dataset.categories || '').split('|')
-          const matches = categories.includes(category)
-          item.hidden = !matches
-          if (matches) visibleCount += 1
-        })
-        if (emptyState) emptyState.hidden = visibleCount !== 0
-        if (pagination) pagination.hidden = true
-      }
-
-      allPostsButton.addEventListener('click', showAll)
-
-      buttons.forEach((button) => {
-        button.addEventListener('click', () => {
-          const category = button.dataset.category
-          if (activeCategory === category) {
-            showAll()
-          } else {
-            showCategory(category)
-          }
-        })
+{% comment %} 近期留言：文章网址 → 标题，用来在留言下面写出是哪篇文章 {% endcomment %}
+<script type="application/json" id="side-comment-titles">{
+{%- for post in site.posts -%}{{ post.url | jsonify }}: {{ post.title | jsonify }},{%- endfor -%}
+"/about/": "关于", "/friends/": "友链", "/zines/": "ZINE", "/travel/": "旅行"
+}</script>
+<script>
+  (() => {
+    // 右栏订阅表单
+    const form = document.getElementById('side-subscribe-form')
+    const frame = document.getElementById('side-subscribe-target')
+    const success = document.getElementById('side-subscribe-success')
+    const button = document.getElementById('side-subscribe-button')
+    if (form && frame && success && button) {
+      let submitted = false
+      form.addEventListener('submit', () => {
+        submitted = true
+        button.disabled = true
+        button.textContent = '提交中…'
+        success.hidden = true
       })
-    })()
-  </script>
-</main>
+      frame.addEventListener('load', () => {
+        if (!submitted) return
+        submitted = false
+        success.hidden = false
+        form.reset()
+        button.disabled = false
+        button.textContent = '订阅'
+      })
+    }
+
+    // 右栏近期留言（Twikoo）。博主自己的回复不显示。
+    const envId = {{ site.twikoo_env_id | jsonify }}
+    const box = document.getElementById('side-comments')
+    if (!envId || !box) return
+    const ownerNames = ['shiori', 'shiori栞', 'shiori 栞']
+    let titles = {}
+    try {
+      const raw = JSON.parse(document.getElementById('side-comment-titles').textContent)
+      Object.keys(raw).forEach((url) => { titles[decodeURI(url)] = raw[url] })
+    } catch (error) {}
+
+    const load = () => new Promise((resolve, reject) => {
+      if (window.twikoo && typeof window.twikoo.getRecentComments === 'function') return resolve()
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/twikoo@1.7.22/dist/twikoo.min.js'
+      script.onload = resolve
+      script.onerror = reject
+      document.head.appendChild(script)
+    })
+
+    const show = async () => {
+      try {
+        await load()
+        const items = await window.twikoo.getRecentComments({ envId, pageSize: 20, includeReply: true })
+        const list = box.querySelector('ul')
+        const picked = items.filter((item) => !ownerNames.includes(String(item.nick || '').trim().toLowerCase())).slice(0, 5)
+        if (!picked.length) return
+        picked.forEach((item) => {
+          const li = document.createElement('li')
+          const a = document.createElement('a')
+          let path = item.url || '/'
+          try { path = decodeURI(path) } catch (error) {}
+          a.href = encodeURI(path) + (item.id ? '#' + item.id : '')
+          const text = document.createElement('span')
+          text.className = 'side-comment-text'
+          const plain = String(item.commentText || '').replace(/\s+/g, ' ').trim()
+          text.textContent = plain.length > 46 ? plain.slice(0, 46) + '…' : plain
+          const meta = document.createElement('span')
+          meta.className = 'side-comment-meta'
+          meta.textContent = (item.nick || '匿名') + (titles[path] ? ' · ' + titles[path] : '')
+          a.append(text, meta)
+          li.append(a)
+          list.append(li)
+        })
+        box.hidden = false
+      } catch (error) {}
+    }
+
+    // 右栏快滚到眼前时再加载，不拖慢首页
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          observer.disconnect()
+          show()
+        }
+      }, { rootMargin: '600px 0px' })
+      observer.observe(document.querySelector('.side-categories') || box)
+    } else {
+      show()
+    }
+  })()
+</script>
 
 <style>
-  .home-main {
-    padding-top: 2.2rem;
+  .home-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 250px;
+    gap: 4rem;
+    width: min(1000px, calc(100% - 4rem));
+    margin: 0 auto;
+    padding: 2.6rem 0 5rem;
   }
 
-  .home-marginalia {
-    margin: 0 0 1.35rem;
-    color: var(--muted);
-    font-size: .72rem;
-    line-height: 1.7;
-    opacity: .78;
+  /* 文章 */
+  .feed-post {
+    margin: 0 0 2.6rem;
+    padding: 0 0 2.6rem;
+    border-bottom: 1px solid var(--line);
+    text-align: center;
   }
 
-  .home-marginalia em {
-    font-style: italic;
-  }
-
-  .home-all-posts {
-    appearance: none;
-    margin-right: .25rem;
-    padding: .22rem .08rem;
-    border: 0;
-    border-bottom: 1px solid transparent;
-    background: transparent;
+  .feed-meta {
+    margin: 0 0 .55rem;
     color: var(--muted);
     font-family: var(--sans);
-    font-size: .8rem;
-    font-weight: 400;
-    letter-spacing: .04em;
-    line-height: 1.4;
-    cursor: pointer;
-    transition: color .15s ease, border-color .15s ease;
+    font-size: .68rem;
+    letter-spacing: .12em;
   }
 
-  .home-all-posts:hover,
-  .home-all-posts:focus-visible {
-    color: var(--accent);
-    border-bottom-color: rgba(79, 90, 73, .38);
+  .feed-meta span {
+    margin: 0 .5rem;
   }
 
-  /* 去旅行页的链接：不是筛选，放在这一行最右边 */
-  .home-travel-link {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    margin-left: auto;
-    padding: .22rem .05rem;
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: .8rem;
-    font-weight: 400;
-    letter-spacing: .02em;
+  .feed-post h2 {
+    margin: 0 0 1.4rem;
+    font-size: 1.55rem;
+    font-weight: 500;
+    letter-spacing: .06em;
     line-height: 1.4;
+    text-wrap: balance;
+  }
+
+  .feed-post h2 a {
+    color: var(--ink);
     text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: color .15s ease, border-color .15s ease;
   }
 
-  .home-travel-link:hover,
-  .home-travel-link:focus-visible {
+  .feed-post h2 a:hover {
     color: var(--accent);
-    border-bottom-color: rgba(79, 90, 73, .38);
   }
 
-  .home-travel-link.has-tooltip::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    left: 50%;
-    bottom: calc(100% + .42rem);
-    z-index: 10;
-    padding: .22rem .38rem;
-    border: 1px solid rgba(111, 106, 100, .16);
-    border-radius: 0;
-    background: rgba(253, 252, 250, .97);
-    color: var(--muted);
-    box-shadow: 0 2px 8px rgba(29, 28, 26, .06);
+  .feed-row {
+    display: grid;
+    grid-template-columns: 170px minmax(0, 1fr);
+    gap: 1.6rem;
+    align-items: start;
+    text-align: left;
+  }
+
+  .feed-row.no-cover {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .feed-cover img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+
+  .feed-copy p {
+    margin: 0 0 1.1rem;
+    color: var(--body);
+    font-size: .92rem;
+    line-height: 1.95;
+  }
+
+  .feed-more {
+    display: inline-block;
+    padding: .5rem 1.4rem;
+    border: 1px solid var(--ink);
+    color: var(--ink);
     font-family: var(--sans);
-    font-size: .6rem;
-    font-weight: 400;
-    letter-spacing: .015em;
-    line-height: 1.2;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transform: translate(-50%, .12rem);
-    transition: opacity .12s ease, transform .12s ease;
+    font-size: .74rem;
+    letter-spacing: .2em;
+    text-decoration: none;
+    transition: background .15s ease, color .15s ease;
   }
 
-  .home-travel-link.has-tooltip:hover::after,
-  .home-travel-link.has-tooltip:focus-visible::after {
-    opacity: 1;
-    transform: translate(-50%, 0);
+  .feed-more:hover,
+  .feed-more:focus-visible {
+    background: var(--ink);
+    color: var(--paper);
   }
 
-  .home-category-link {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    appearance: none;
-    font: inherit;
-    cursor: pointer;
-    padding: .22rem .08rem;
-    border: 0;
-    border-bottom: 1px solid transparent;
-    border-radius: 0;
-    background: transparent;
+  .home-feed .pagination {
+    margin-top: -.6rem;
+  }
+
+  /* 右栏 */
+  .home-sidebar section {
+    margin: 0 0 2.6rem;
+    text-align: center;
+  }
+
+  .side-title {
+    margin: 0 0 1rem;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: .66rem;
+    font-weight: 600;
+    letter-spacing: .24em;
+  }
+
+  .side-hello img {
+    width: 150px;
+    height: 150px;
+    margin: 0 0 .9rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .side-hello p {
+    margin: 0 0 .6rem;
+    color: var(--body);
+    font-size: .84rem;
+    line-height: 1.9;
+  }
+
+  .side-link,
+  .side-zine-meta a {
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: .7rem;
+    text-decoration: none;
+  }
+
+  .side-zine a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .side-zine img {
+    display: block;
+    width: 120px;
+    height: auto;
+    margin: 0 auto;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, .08);
+  }
+
+  .side-zine-title {
+    display: block;
+    margin-top: .75rem;
+    font-size: .9rem;
+  }
+
+  .side-zine-meta {
+    margin: .25rem 0 0;
     color: var(--muted);
+    font-family: var(--sans);
+    font-size: .68rem;
+  }
+
+  .side-categories a {
+    display: block;
+    margin: 0 0 .45rem;
+    padding: .55rem 0;
+    border: 1px solid var(--line);
+    color: var(--body);
+    font-family: var(--sans);
+    font-size: .78rem;
+    letter-spacing: .08em;
     text-decoration: none;
     transition: border-color .15s ease, color .15s ease;
   }
 
-  .home-category-link:hover,
-  .home-category-link:focus-visible {
-    border-bottom-color: rgba(79, 90, 73, .38);
+  .side-categories a:hover {
+    border-color: var(--accent);
     color: var(--accent);
   }
 
-  /* 选中的那一个：深色、稍粗、带下划线（All posts 和分类一样） */
-  .category-strip .home-all-posts.is-active,
-  .category-strip .home-category-link.is-active {
-    border-bottom-color: var(--ink);
-    color: var(--ink);
-    font-weight: 500;
+  .side-comments ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
   }
 
-  .home-category-link.has-tooltip::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    left: 50%;
-    bottom: calc(100% + .42rem);
-    z-index: 10;
-    padding: .22rem .38rem;
-    border: 1px solid rgba(111, 106, 100, .16);
-    border-radius: 0;
-    background: rgba(253, 252, 250, .97);
-    color: var(--muted);
-    box-shadow: 0 2px 8px rgba(29, 28, 26, .06);
-    font-family: var(--sans);
-    font-size: .6rem;
-    font-weight: 400;
-    letter-spacing: .015em;
-    line-height: 1.2;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transform: translate(-50%, .12rem);
-    transition: opacity .12s ease, transform .12s ease;
+  .side-comments li {
+    border-bottom: 1px solid var(--line);
   }
 
-  .home-category-link.has-tooltip:hover::after,
-  .home-category-link.has-tooltip:focus-visible::after {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-
-  .home-post-inner {
+  .side-comments a {
     display: block;
-  }
-
-  /* 摘要下面的标签：灰色小字，点了去分类页筛出同一标签的文章 */
-  .home-post-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .3rem .9rem;
-    margin: .9rem 0 0;
-    font-family: var(--sans);
-    font-size: .76rem;
-    letter-spacing: .02em;
-    line-height: 1.5;
-  }
-
-  .home-post-tags a {
-    color: var(--muted);
+    padding: .6rem 0;
     text-decoration: none;
   }
 
-  .home-post-tags a::before {
-    content: "#";
-    margin-right: .15em;
-    color: var(--accent);
-    opacity: .7;
-  }
-
-  .home-post-tags a:hover,
-  .home-post-tags a:focus-visible {
-    color: var(--accent);
-  }
-
-  /* 有图的文章：右边放一张方形小图；没图的保持原样 */
-  .home-post-inner.has-cover {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 150px;
-    gap: 2.2rem;
-    align-items: start;
-  }
-
-  .home-post-cover {
+  .side-comment-text {
     display: block;
-    width: 150px;
-    height: 150px;
-    margin-top: 2.1rem;
-    overflow: hidden;
-    background: var(--soft);
-  }
-
-  .home-post-cover img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: opacity .2s ease;
-  }
-
-  .home-post-cover:hover img {
-    opacity: .85;
-  }
-
-  @media (max-width: 640px) {
-    .home-post-inner.has-cover {
-      grid-template-columns: minmax(0, 1fr) 80px;
-      gap: 1rem;
-    }
-
-    .home-post-cover {
-      width: 80px;
-      height: 80px;
-      margin-top: 1.9rem;
-    }
-  }
-
-  .home-post-copy {
-    min-width: 0;
-  }
-
-  .home-post-list .home-post-copy h2 {
-    font-size: clamp(1.35rem, 3.2vw, 1.55rem);
-  }
-
-  .home-post-list .home-post-copy p {
-    font-size: .95rem;
+    color: var(--ink);
+    font-size: .84rem;
     line-height: 1.7;
   }
 
-  .read-more {
-    margin-left: .25em;
-    color: var(--accent);
+  .side-comment-meta {
+    display: block;
+    margin-top: .15rem;
+    color: var(--muted);
     font-family: var(--sans);
-    font-size: .78em;
-    text-decoration: none;
-    white-space: nowrap;
+    font-size: .66rem;
+    line-height: 1.5;
   }
 
-  .read-more:hover {
-    text-decoration: underline;
-    text-underline-offset: .2em;
+  .side-comments a:hover .side-comment-text {
+    color: var(--accent);
   }
 
-  /* Current issue spotlight: mirrors the ZINE collection page at a smaller scale. */
-  .home-zine-section { margin-bottom: 2.3rem; }
-  .home-zine-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
-  .home-zine-section-heading > a { color: var(--muted); font-family: var(--sans); font-size: .7rem; text-decoration: none; }
-  .home-zine-section-heading > a:hover { color: var(--accent); text-decoration: underline; text-underline-offset: .2em; }
-  .home-zine-entry { display: grid; grid-template-columns: 192px minmax(0, 1fr); gap: 2.5rem; align-items: start; padding: 1.1rem 0 1.7rem; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  .home-zine-cover-wrap { padding: 0 0 .4rem; }
-  .home-zine-cover-wrap a { display: block; text-decoration: none; }
-  .home-zine-cover-wrap img { display: block; width: 100%; height: auto; border: 1px solid var(--line); box-shadow: 3px 5px 12px rgba(44,42,39,.065); }
-  .home-zine-body { min-width: 0; padding-top: .05rem; }
-  .home-zine-number { margin: 0 0 .72rem; color: var(--accent); font-family: var(--sans); font-size: .67rem; letter-spacing: .1em; font-variant-numeric: tabular-nums; }
-  .home-zine-number span { margin: 0 .45rem; color: #b5b0a8; }
-  .home-zine-body h2 { margin: 0 0 1rem; font-size: clamp(1.4rem,3vw,1.65rem); font-weight: 500; line-height: 1.55; text-wrap: balance; }
-  .home-zine-body h2 a { text-decoration: none; }
-  .home-zine-body h2 a:hover { color: var(--accent); }
-  .home-zine-description { margin: 0 0 1rem; color: var(--body); font-size: .91rem; line-height: 1.9; }
-  .home-zine-meta { margin: 0; color: var(--muted); font-family: var(--sans); font-size: .7rem; line-height: 1.8; }
-  .home-zine-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1.3rem; margin-top: 1.55rem; font-family: var(--sans); font-size: .75rem; }
-  .home-zine-download { display: inline-flex; align-items: center; justify-content: center; gap: .85rem; min-height: 44px; padding: .55rem 1rem; border: 1px solid var(--accent); background: var(--accent); color: #fff; text-decoration: none; }
-  .home-zine-download:hover { background: var(--ink); border-color: var(--ink); color: #fff; }
-  .home-zine-read-online, .home-zine-intro-link { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; color: var(--accent); text-decoration: none; }
-  .home-zine-read-online:hover, .home-zine-intro-link:hover { text-decoration: underline; text-underline-offset: .2em; }
-  .home-zine-intro-link { color: var(--muted); }
-  .home-zine-section a:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
-  @media (max-width: 760px) {
-    .home-zine-entry { grid-template-columns: 160px minmax(0,1fr); gap: 1.45rem; }
+  .side-subscribe p {
+    margin: 0 0 .7rem;
+    color: var(--body);
+    font-size: .8rem;
   }
-  @media (max-width: 580px) {
-    .home-zine-section { margin-bottom: 2.8rem; }
-    .home-zine-entry { grid-template-columns: minmax(0,1fr); gap: 1.2rem; }
-    .home-zine-cover-wrap { width: min(175px,66%); margin: 0 auto; }
-    .home-zine-body h2 { font-size: 1.45rem; }
+
+  .side-subscribe input[type="email"] {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 .45rem;
+    padding: .55rem .7rem;
+    border: 1px solid var(--line);
+    border-radius: 0;
+    background: #fff;
+    color: var(--ink);
+    font-size: .8rem;
+  }
+
+  .side-subscribe button {
+    width: 100%;
+    padding: .55rem;
+    border: 0;
+    border-radius: 0;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--sans);
+    font-size: .76rem;
+    letter-spacing: .16em;
+    cursor: pointer;
+  }
+
+  .side-subscribe .side-subscribe-note {
+    margin: .7rem 0 0;
+    color: var(--muted);
+    font-size: .7rem;
+  }
+
+  .side-subscribe-status {
+    color: var(--accent);
+  }
+
+  @media (max-width: 820px) {
+    .home-layout {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1rem;
+      width: min(100% - 2rem, 640px);
+      padding-top: 2rem;
+    }
+
+    .home-sidebar {
+      padding-top: 1.6rem;
+      border-top: 1px solid var(--line);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .feed-post h2 {
+      font-size: 1.3rem;
+    }
+
+    .feed-row {
+      grid-template-columns: 96px minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    .feed-copy p {
+      font-size: .86rem;
+      line-height: 1.8;
+    }
   }
 </style>

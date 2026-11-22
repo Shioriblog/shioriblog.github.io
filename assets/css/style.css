@@ -650,3 +650,28 @@ body.post-category-utakata .article-content h3.diary-entry-date::after {
 .article-content .conversation-log.diary-conversation {
   margin: 1.4rem 0 1.6rem;
 }
+
+
+/* ---------- 2026.11 新版页头：导航居中在最上面，下面是居中的博客名 ---------- */
+.site-header { width: 100%; margin: 0; padding: 0; display: block; border-bottom: 0; }
+.site-header nav { padding: 1.15rem 1rem; border-bottom: 1px solid var(--line); }
+.site-header nav ul { justify-content: center; align-items: center; gap: 2.1rem; }
+.site-header nav a { font-size: .74rem; letter-spacing: .14em; }
+.site-header .brand { flex-direction: column; gap: .65rem; width: max-content; max-width: calc(100% - 2rem); margin: 0 auto; padding: 2.4rem 0 0; text-align: center; }
+.site-header .brand-icon { width: 40px; height: 40px; flex-basis: auto; }
+.site-header .brand-name { margin-right: -.2em; font-size: 1.3rem; letter-spacing: .2em; }
+.site-header .brand-subtitle { display: none; }
+/* 首页：博客名大一些，带副标题 */
+.home-page .site-header .brand { gap: .9rem; padding: 3.4rem 0 .6rem; }
+.home-page .site-header .brand-icon { width: 54px; height: 54px; }
+.home-page .site-header .brand-name { font-size: 2.2rem; }
+.home-page .site-header .brand-subtitle { display: block; margin: .55rem -.2em 0 0; font-size: .76rem; letter-spacing: .2em; }
+@media (max-width: 640px) {
+  .site-header { width: 100%; padding-top: 0; }
+  .site-header nav { margin-top: 0; padding: .9rem 1rem; }
+  .site-header nav ul { justify-content: center; gap: .55rem 1.15rem; }
+  .site-header nav a { letter-spacing: .08em; }
+  .site-header .brand { padding-top: 1.8rem; }
+  .home-page .site-header .brand { padding-top: 2.4rem; }
+  .home-page .site-header .brand-name { font-size: 1.8rem; }
+}

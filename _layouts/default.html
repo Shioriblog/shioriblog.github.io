@@ -36,6 +36,7 @@
     {% endif %}
   </head>
   {% assign body_classes = '' %}
+  {% if page.nav == 'home' %}{% assign body_classes = body_classes | append: ' home-page' %}{% endif %}
   {% if page.layout == 'post' %}
     {% assign body_classes = body_classes | append: ' post-page' %}
     {% if page.categories contains '言葉と歩く日記' or page.categories contains '食べたり、歩いたり' %}
