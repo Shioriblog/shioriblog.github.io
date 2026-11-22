@@ -12,68 +12,30 @@ nav: travel
     关于旅行的随笔，见：<a href="{{ '/categories/words/' | relative_url }}">言葉と歩く日記 <span aria-hidden="true">→</span></a>
   </p>
 
-  <section class="travel-footprints" aria-labelledby="travel-footprints-title">
-    <p class="travel-footprints-title" id="travel-footprints-title">FOOTPRINTS</p>
-    {% for log_year in site.data.travel_log %}
-      <div class="footprints-year">
-        <span class="footprints-year-label">{{ log_year.year }}</span>
-        <ul>
-          {% for trip in log_year.trips %}<li><span class="footprints-month">{{ trip.month }}</span>{% for place in trip.places %}{% if place.url %}<a href="{{ place.url | relative_url }}">{{ place.name }}</a>{% else %}<span class="footprints-place">{{ place.name }}</span>{% endif %}{% unless forloop.last %} · {% endunless %}{% endfor %}</li>{% endfor %}
-        </ul>
-      </div>
-    {% endfor %}
-  </section>
-
   <div class="travel-posts">
     {% comment %}
-      按旅行日期排，新的在前。同一趟旅行的几篇（front matter 写同一个 trip:）排在一起，
-      组内按旅行顺序，只在第一篇显示日期，用细线连起来。
-      日期显示旅行的年月；文章写在别的月份时，下面加一行「月.日 记」。
+      写了游记的城市（食べたり、歩いたり 分类的文章）和 _data/travel_log.yml 里没写游记的城市合在一起，
+      按旅行日期排，新的在前。同一趟旅行（trip 相同）的城市排在一起，组内按旅行顺序。
     {% endcomment %}
-    {% assign travel_posts = site.categories['食べたり、歩いたり'] | sort: 'travel_date' | reverse %}
-    {% assign travel_years = travel_posts | group_by_exp: 'post', "post.travel_date | date: '%Y'" %}
+    {% assign travel_rows = site.categories['食べたり、歩いたり'] | concat: site.data.travel_log | sort: 'travel_date' | reverse %}
+    {% assign travel_years = travel_rows | group_by_exp: 'row', "row.travel_date | date: '%Y'" %}
 
     {% for year in travel_years %}
-      <div class="travel-year"><span>{{ year.name }}</span></div>
-      <section class="travel-timeline" aria-label="{{ year.name }}年游记">
+      <h2 class="travel-year"><span>{{ year.name }}</span></h2>
+      <div class="city-list">
         {% assign seen_trips = '|' %}
         {% for item in year.items %}
           {% if item.trip %}
             {% capture trip_key %}|{{ item.trip }}|{% endcapture %}
             {% if seen_trips contains trip_key %}{% continue %}{% endif %}
             {% assign seen_trips = seen_trips | append: item.trip | append: '|' %}
-            {% assign trip_posts = year.items | where: 'trip', item.trip | sort: 'travel_date' %}
+            {% assign trip_rows = year.items | where: 'trip', item.trip | sort: 'travel_date' %}
+            {% for row in trip_rows %}{% include travel-row.html row=row %}{% endfor %}
           {% else %}
-            {% assign trip_posts = year.items | where: 'url', item.url %}
+            {% include travel-row.html row=item %}
           {% endif %}
-
-          <div class="travel-trip{% if trip_posts.size > 1 %} is-multi{% endif %}">
-            {% for post in trip_posts %}
-              <article class="travel-entry">
-                {% if forloop.first %}
-                  {% assign travel_month = post.travel_date | date: '%Y.%m' %}
-                  {% assign written_month = post.date | date: '%Y.%m' %}
-                  <time datetime="{{ post.travel_date | date: '%Y-%m' }}">
-                    <span>{{ travel_month }}</span>
-                    {% if travel_month != written_month %}<small>{{ post.date | date: '%m.%d' }} 记</small>{% endif %}
-                  </time>
-                {% else %}
-                  <span class="travel-trip-line" aria-hidden="true"></span>
-                {% endif %}
-                <a class="travel-entry-image" href="{{ post.url | relative_url }}" aria-label="阅读：{{ post.title }}">
-                  {% assign travel_thumb = post.travel_image | replace: '/assets/images/posts/', '/assets/images/thumbs/' %}
-                  <img src="{{ travel_thumb | relative_url }}" alt="" loading="lazy" decoding="async" width="480" height="320"{% if travel_thumb != post.travel_image %} onerror="this.onerror=null;this.src='{{ post.travel_image | relative_url }}'"{% endif %}>
-                </a>
-                <div class="travel-entry-body">
-                  {% if post.travel_place %}<p class="travel-entry-place">{{ post.travel_place }}</p>{% endif %}
-                  <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-                  <p class="travel-entry-excerpt">{% if post.travel_excerpt %}{{ post.travel_excerpt }}{% else %}{{ post.excerpt | strip_html | normalize_whitespace | truncate: 90 }}{% endif %}</p>
-                </div>
-              </article>
-            {% endfor %}
-          </div>
         {% endfor %}
-      </section>
+      </div>
     {% else %}
       <p class="empty-state">游记会从这里慢慢积累。</p>
     {% endfor %}
@@ -81,146 +43,98 @@ nav: travel
 </main>
 
 <style>
-  .travel-footprints {
-    margin: 0 0 3.4rem;
-    padding: 1.3rem 0 1.15rem;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
+  .travel-page .travel-year {
+    margin: 0 0 .3rem;
+    color: var(--ink);
+    font-family: "Source Serif 4", var(--serif);
+    font-size: 1.7rem;
+    font-weight: 400;
+    letter-spacing: .02em;
+    line-height: 1.3;
   }
 
-  .travel-footprints-title {
-    margin: 0 0 .9rem;
-    color: var(--accent);
-    font-family: var(--sans);
-    font-size: .61rem;
-    font-weight: 500;
-    letter-spacing: .17em;
+  .travel-page .travel-year::after {
+    align-self: center;
   }
 
-  .footprints-year {
+  .city-list {
+    margin: 0 0 3rem;
+  }
+
+  .city-row {
     display: grid;
-    grid-template-columns: 3.2rem minmax(0, 1fr);
-    gap: .6rem;
-    align-items: baseline;
-    margin: .42rem 0;
-  }
-
-  .footprints-year-label {
+    grid-template-columns: 4.5rem 120px minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: center;
+    padding: .75rem 0;
+    border-bottom: 1px solid var(--line);
     color: var(--ink);
-    font-family: var(--sans);
-    font-size: .7rem;
-    font-weight: 500;
-    letter-spacing: .08em;
+    text-decoration: none;
   }
 
-  .footprints-year ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .2rem 1.6rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .footprints-year li {
-    color: var(--body);
-    font-family: var(--serif);
-    font-size: .84rem;
-    line-height: 1.6;
-    white-space: nowrap;
-  }
-
-  .footprints-year li a {
-    color: var(--ink);
-    text-decoration: underline;
-    text-decoration-color: #cfc9c0;
-    text-decoration-thickness: 1px;
-    text-underline-offset: .22em;
-    transition: color .15s ease, text-decoration-color .15s ease;
-  }
-
-  .footprints-year li a:hover {
-    color: var(--accent);
-    text-decoration-color: var(--accent);
-  }
-
-  /* 没有写游记的地方：颜色淡一点 */
-  .footprints-place {
+  .city-row time {
     color: var(--muted);
+    font-family: "Source Serif 4", var(--serif);
+    font-size: .95rem;
+    letter-spacing: .02em;
   }
 
-  .footprints-month {
-    margin-right: .45rem;
-    color: var(--muted);
-    font-family: var(--sans);
-    font-size: .62rem;
-    letter-spacing: .03em;
+  .city-row img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
   }
 
-  .travel-posts .travel-year:first-child {
-    margin-top: 0;
-  }
-
-  /* 日期：旅行年月，下面一行小字是写文章的日子 */
-  .travel-entry > time {
+  .city-text {
     display: flex;
     flex-direction: column;
-    gap: .1rem;
+    gap: .15rem;
+    min-width: 0;
   }
 
-  .travel-entry > time small {
+  .city-name {
+    font-family: "Source Serif 4", var(--serif);
+    font-size: 1.4rem;
+    letter-spacing: .01em;
+    line-height: 1.35;
+    transition: color .15s ease;
+  }
+
+  .city-go {
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: .66rem;
+    letter-spacing: .04em;
+  }
+
+  a.city-row:hover .city-name {
+    color: var(--accent);
+  }
+
+  /* 没写游记的城市：没有图，灰色，行矮一点 */
+  .city-row.no-post {
+    padding: .55rem 0;
+  }
+
+  .city-row.no-post .city-text {
+    grid-column: 3;
+  }
+
+  .city-row.no-post .city-name {
     color: var(--muted);
-    font-size: .62rem;
-    opacity: .85;
+    font-size: 1.12rem;
   }
 
-  /* 同一趟旅行：细线把几篇连起来 */
-  .travel-trip.is-multi .travel-entry:not(:last-child) {
-    border-bottom-style: dashed;
-  }
+  @media (max-width: 640px) {
+    .city-row {
+      grid-template-columns: 3.6rem 96px minmax(0, 1fr);
+      gap: .8rem;
+    }
 
-  .travel-trip.is-multi .travel-entry:first-child > time {
-    align-self: stretch;
-    justify-content: center;
-  }
-
-  .travel-trip.is-multi .travel-entry:first-child > time::after {
-    content: "";
-    display: block;
-    flex: 1;
-    width: 1px;
-    margin: .4rem 0 -1rem 1.1rem;
-    background: #cfc9c0;
-  }
-
-  .travel-trip-line {
-    position: relative;
-    align-self: stretch;
-  }
-
-  .travel-trip-line::before {
-    content: "";
-    position: absolute;
-    left: 1.1rem;
-    top: -1rem;
-    bottom: 50%;
-    width: 1px;
-    background: #cfc9c0;
-  }
-
-  .travel-trip-line::after {
-    content: "";
-    position: absolute;
-    left: calc(1.1rem - 3px);
-    top: 50%;
-    width: 7px;
-    height: 7px;
-    margin-top: -3px;
-    border-radius: 50%;
-    background: #cfc9c0;
-  }
-
-  .travel-entry:not(:last-child) > .travel-trip-line::before {
-    bottom: -1rem;
+    .city-name {
+      font-size: 1.1rem;
+    }
   }
 </style>

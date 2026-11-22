@@ -1,0 +1,17 @@
+{%- assign row = include.row -%}
+{%- if row.url -%}
+<a class="city-row" href="{{ row.url | relative_url }}">
+  <time datetime="{{ row.travel_date | date: '%Y-%m' }}">{{ row.travel_date | date: '%b' }}</time>
+  {% assign travel_thumb = row.travel_image | replace: '/assets/images/posts/', '/assets/images/thumbs/' %}
+  <img src="{{ travel_thumb | relative_url }}" alt="" loading="lazy" decoding="async" width="480" height="320"{% if travel_thumb != row.travel_image %} onerror="this.onerror=null;this.src='{{ row.travel_image | relative_url }}'"{% endif %}>
+  <span class="city-text">
+    <span class="city-name">{{ row.travel_city | default: row.travel_place }}</span>
+    <span class="city-go">读游记 <span aria-hidden="true">→</span></span>
+  </span>
+</a>
+{%- else -%}
+<div class="city-row no-post">
+  <time datetime="{{ row.travel_date | date: '%Y-%m' }}">{{ row.travel_date | date: '%b' }}</time>
+  <span class="city-text"><span class="city-name">{{ row.travel_city }}</span></span>
+</div>
+{%- endif -%}

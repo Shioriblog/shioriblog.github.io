@@ -1,48 +1,7 @@
-# 旅行页顶部的「FOOTPRINTS」足迹总览。
-# 新的年份写在最上面；同一年里，新的月份写在前面。
-# 写了游记的地方加上 url（文章网址），名字就会变成链接；没写游记的只写 name。
-- year: 2026
-  trips:
-    - month: Jun
-      places:
-        - { name: Shanxi, url: /2026/06/15/在大同吃吃喝喝-2026/ }
-    - month: Mar
-      places:
-        - { name: Vancouver, url: /2026/03/18/在温哥华吃吃喝喝/ }
-    - month: Feb
-      places:
-        - { name: Tainan, url: /2026/02/07/在台南吃吃喝喝/ }
-        - { name: Taipei }
-- year: 2025
-  trips:
-    - month: Jul
-      places:
-        - { name: Hong Kong, url: /2025/07/30/在香港吃吃喝喝-2025/ }
-        - { name: Macau }
-    - month: Jul
-      places:
-        - { name: Chicago }
-    - month: Apr
-      places:
-        - { name: Berlin, url: /2025/04/28/在柏林吃吃喝喝-2025/ }
-        - { name: Prague, url: /2025/04/29/在布拉格吃吃喝喝-2025/ }
-    - month: Mar
-      places:
-        - { name: "Columbus, Ohio" }
-- year: 2024
-  trips:
-    - month: Jun
-      places:
-        - { name: Taipei, url: /2024/12/02/2024-台北-6日/ }
-        - { name: Beijing, url: /2024/12/03/2024-北京-10日/ }
-    - month: Apr
-      places:
-        - { name: Paris, url: /2024/04/17/2024-巴黎-7-日游/ }
-    - month: Mar
-      places:
-        - { name: Seattle, url: /2024/03/25/2024-西雅图-5日/ }
-- year: 2023
-  trips:
-    - month: Mar
-      places:
-        - { name: Boston, url: /2023/03/19/2023-波士顿-5日/ }
+# 旅行页上「去过但没写游记」的城市（写了游记的城市会自动出现，不用写在这里）。
+# travel_date 一定要加引号；同一年里按日期排，日期越晚越靠上。
+# 和某篇游记是同一趟旅行的，写上和那篇一样的 trip，就会排在那篇后面。
+- { travel_date: '2026-02-10', travel_city: Taipei, trip: 2026-台湾 }
+- { travel_date: '2025-07-31', travel_city: Macau, trip: 2025-港澳 }
+- { travel_date: '2025-07-01', travel_city: Chicago }
+- { travel_date: '2025-03-01', travel_city: Columbus }

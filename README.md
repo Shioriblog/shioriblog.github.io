@@ -24,15 +24,15 @@
 `食べたり、歩いたり` 的文章需要多写几项，旅行页面会用到：
 
 ```yaml
-travel_date: '2026-09-04'      # 旅行日期，旅行页按它排序
-travel_place: 台南
-travel_image: /assets/images/posts/2026/09/封面.jpg
-travel_excerpt: 一两句话简介。
+travel_date: '2026-09-04'      # 旅行日期（一定要加引号），旅行页按它排序，显示它的月份
+travel_city: Tainan            # 旅行页上显示的英文地名
+travel_image: /assets/images/posts/2026/09/封面.jpg   # 旅行页上的小图
 ```
 
-- `travel_date` 写旅行开始的日子，旅行页显示它的年月；文章如果是隔了一段时间才写的，下面会多一行「月.日 记」（取 `date`）。
-- 同一趟旅行写了几篇的，每篇都加一行 `trip:`，写同一个名字（比如 `trip: 2025-欧洲`），旅行页会把它们按旅行顺序排在一起、用细线连起来。
-- 页面顶部的「FOOTPRINTS」足迹总览在 `_data/travel_log.yml`，去了新地方就在最上面加一段（没写游记的旅行也可以写进去）；写了游记的地方加上文章网址 `url`，名字就会变成链接。
+- 旅行页按年份分组，每个城市一行：月份、小图、英文地名和「读游记 →」。
+- 一趟旅行去了几个城市、写了几篇的，每篇都加一行 `trip:`，写同一个名字（比如 `trip: 2025-欧洲`），这几个城市会按旅行顺序排在一起。
+- 去过但没写游记的城市写在 `_data/travel_log.yml`（只显示月份和灰色的地名，没有图）。
+- 文章页上显示的日期是 `date`（发布日期），不是旅行日期。
 
 旅行页用的小图（`assets/images/thumbs/`）会在推送后由 GitHub Actions 的「生成缩略图」自动生成，也可以在本地运行 `python3 tools/make_travel_thumbs.py`。
 
