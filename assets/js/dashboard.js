@@ -431,6 +431,23 @@
     const shown = rows.filter((row, index) => row.key === 'direct' || (index < 6 && row.visits >= 3))
     const rest = rows.filter((row) => !shown.includes(row))
 
+    // 每个来源具体是从哪一页点进来的（对方网站没告诉具体页面时，路径只是 /，就不列）
+    const pagesByGroup = new Map()
+    ;(data.referrerPages || []).forEach((item) => {
+      const path = String(item.path || '/')
+      if (!item.host || path === '/' || path === '') return
+      const key = sourceGroup(item.host).key
+      const list = pagesByGroup.get(key) || []
+      list.push(item)
+      pagesByGroup.set(key, list)
+    })
+    const pageLabel = (item) => {
+      let path = String(item.path)
+      try { path = decodeURI(path) } catch (_) {}
+      const text = `${normalizeHost(item.host)}${path}`
+      return Array.from(text).length > 48 ? `${Array.from(text).slice(0, 47).join('')}…` : text
+    }
+
     setChildren(el.sources, shown.map((row) => {
       let note = row.note ? h('small', {}, ` · ${row.note}`) : null
       const targets = topTarget.get(row.key)
@@ -438,7 +455,14 @@
         const [path, count] = [...targets.entries()].sort((a, b) => b[1] - a[1])[0]
         if (count >= 3 && count >= row.visits * 0.3) note = h('small', { className: 'is-accent' }, ` · 其中 ${fmt(count)} 次去读了《${titleOf(path)}》`)
       }
-      return h('li', {}, h('span', {}, row.label, note), h('b', {}, fmt(row.visits)))
+      const pages = (pagesByGroup.get(row.key) || []).slice(0, 4)
+      const pageList = pages.length
+        ? h('span', { className: 'dash-ref-pages' }, pages.map((item) => h('span', {},
+            h('a', { href: `${item.scheme === 'http' ? 'http' : 'https'}://${item.host}${item.path}`, target: '_blank', rel: 'noopener noreferrer nofollow' }, pageLabel(item)),
+            item.visits ? ` · ${fmt(item.visits)}` : ''
+          )))
+        : null
+      return h('li', {}, h('span', {}, row.label, note, pageList), h('b', {}, fmt(row.visits)))
     }))
 
     el.sourcesMore.hidden = !rest.length

@@ -291,6 +291,11 @@ async function buildDashboard(env, days) {
             sum { visits }
             dimensions { requestPath refererHost }
           }
+          referrerPages: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 300, orderBy: [count_DESC]) {
+            count
+            sum { visits }
+            dimensions { refererHost refererPath refererScheme }
+          }
           countries: rumPageloadEventsAdaptiveGroups(filter: ${currentFilter}, limit: 40, orderBy: [count_DESC]) {
             count
             avg { sampleInterval }
@@ -326,6 +331,18 @@ async function buildDashboard(env, days) {
     const path = normalizeRequestPath(row.dimensions?.requestPath || '')
     const referrer = row.dimensions?.refererHost || 'Direct'
     return path ? `${path}\u0000${referrer}` : ''
+  }, (row) => ({
+    views: estimate(row),
+    visits: Math.round(row.sum?.visits || 0)
+  }))
+
+  // 从对方网站的哪一页点进来的（浏览器常常只给网站名、不给具体页面，这时路径是 /）
+  const referrerPageMap = mergeRows(account.referrerPages, (row) => {
+    const host = String(row.dimensions?.refererHost || '').toLowerCase()
+    if (!host || host === SITE_HOST || host === `www.${SITE_HOST}`) return ''
+    const path = row.dimensions?.refererPath || '/'
+    const scheme = row.dimensions?.refererScheme === 'http' ? 'http' : 'https'
+    return `${scheme}\u0000${host}\u0000${path}`
   }, (row) => ({
     views: estimate(row),
     visits: Math.round(row.sum?.visits || 0)
@@ -369,6 +386,12 @@ async function buildDashboard(env, days) {
       .map(([key, value]) => {
         const [path, referrer] = key.split('\u0000')
         return { path, referrer, ...value }
+      })
+      .sort((a, b) => (b.visits - a.visits) || (b.views - a.views)),
+    referrerPages: Array.from(referrerPageMap.entries())
+      .map(([key, value]) => {
+        const [scheme, host, path] = key.split('\u0000')
+        return { scheme, host, path, ...value }
       })
       .sort((a, b) => (b.visits - a.visits) || (b.views - a.views)),
     countries: mergeNumeric(account.countries, (row) => row.dimensions?.countryName || 'Unknown', (row) => estimate(row))

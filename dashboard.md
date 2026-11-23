@@ -48,6 +48,7 @@ subscription: false
     <div class="dash-sources-bar" id="dash-sources-bar" aria-hidden="true"></div>
     <ol class="dash-rows" id="dash-sources"></ol>
     <p class="dash-small" id="dash-sources-more" hidden></p>
+    <p class="dash-small">来源下面的灰色小字是对方网站上具体的那一页。很多网站只告诉「从哪个网站来」、不告诉是哪一页，这时就不显示。</p>
   </section>
   <section class="dash-section" aria-labelledby="dash-h-likes">
     <div class="dash-heading"><span>ii.</span><h2 id="dash-h-likes">收到的心</h2></div>
@@ -248,6 +249,10 @@ subscription: false
   .dash-rows li > span:first-child { min-width: 0; overflow-wrap: anywhere; }
   .dash-rows small { color: var(--muted); font-size: .8rem; }
   .dash-rows small.is-accent { color: var(--accent); }
+  .dash-ref-pages { display: block; margin-top: .3rem; }
+  .dash-ref-pages > span { display: block; color: var(--muted); font-size: .74rem; line-height: 1.7; }
+  .dash-ref-pages a { color: var(--muted); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: .18em; }
+  .dash-ref-pages a:hover { color: var(--accent); }
   .dash-rows b { color: var(--ink); font-family: "Source Serif 4", var(--serif); font-size: 1.05rem; font-weight: 400; font-variant-numeric: tabular-nums; }
   .dash-rows.is-compact li { padding: .55rem 0; font-family: var(--serif); font-size: .95rem; }
   .dash-rows.is-compact b { color: var(--muted); }
