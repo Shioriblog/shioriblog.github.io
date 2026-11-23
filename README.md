@@ -96,6 +96,12 @@ npx wrangler secret put CF_ACCOUNT_ID
 
 阅读统计页在 `/dashboard/`，不会被搜索引擎收录，但没有密码，知道网址的人都能打开。
 
+阅读手记最上面的六个数字：
+- **总浏览**：开站（2026-09-14）以来每天的浏览数，Worker 算好后存在 Durable Object 里（`daily:日期`），再加上今天到现在的。存下的数不会因为 Cloudflare 不再保留旧数据而变少。
+- **收到的心、ZINE 下载**的「这一周 +几」：Worker 每天零点左右记一次快照（`snap:日期`），和起点那天的快照比。刚开始记录的头几天，会写成「11 月 23 日起 +几」。
+- **新的订阅**：需要 Brevo 的 API 密钥（只读人数，不读邮箱）：`npx wrangler secret put BREVO_API_KEY`。如果只想数某一个列表里的人，再在 Cloudflare 的 Worker 设置里加一个变量 `BREVO_LIST_ID`。没设置时这张卡显示「还没有连接 Brevo」。
+- ZINE 下载数从 GitHub Releases 读，每小时一次；如果经常读不到（GitHub 对没登录的请求有次数限制），可以加一个只读的 `GITHUB_TOKEN`。
+
 Worker 每 10 分钟（`wrangler.jsonc` 里的 cron）把 24 小时、7 天、30 天三档统计算好存起来，统计页直接读这份存档，所以打开很快；数据最多晚 10 分钟左右。Cloudflare 的统计接口临时出错时，统计页会继续显示上一份存档。
 
 统计页顶部有「这台设备不计入统计」开关，勾选后这个浏览器访问博客不会被 Cloudflare 统计。每台设备、每个浏览器要分别勾选，清除浏览器数据后需要重新勾选。

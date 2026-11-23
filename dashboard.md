@@ -25,89 +25,32 @@ subscription: false
 
   <section class="dash-opening" aria-label="概要">
     <p class="dash-lede" id="dash-lede" aria-live="polite">正在读取统计……</p>
-    <div class="dash-metrics">
-      <div><span class="dash-label">浏览</span><strong id="dash-views">—</strong><small id="dash-views-note"></small></div>
+    {% assign latest_zine = site.data.zines | first %}
+    <div class="dash-cards">
+      <div><span class="dash-label" id="dash-views-label">这一周的浏览</span><strong id="dash-views">—</strong><small id="dash-views-note"></small></div>
+      <div><span class="dash-label">总浏览</span><strong id="dash-total">—</strong><small id="dash-total-note">2026 年 9 月 14 日开站以来</small></div>
+      <div><span class="dash-label">收到的心</span><strong><span class="dash-heart" aria-hidden="true">♥</span> <span id="dash-hearts">—</span></strong><small id="dash-hearts-note"></small></div>
+      <div><span class="dash-label">新的订阅</span><strong id="dash-subs">—</strong><small id="dash-subs-note"></small></div>
+      <div class="dash-zine-card"{% if latest_zine.release_asset_id %} data-zine-count data-release-asset-id="{{ latest_zine.release_asset_id | escape }}"{% endif %}><span class="dash-label">ZINE 下载</span><strong>—</strong><small id="dash-zine-note">{% if latest_zine %}ISSUE {{ latest_zine.issue | escape }}{% endif %}</small></div>
       <div><span class="dash-label">访问</span><strong id="dash-visits">—</strong><small id="dash-visits-note"></small></div>
-      <div><span class="dash-label">每次访问页数</span><strong id="dash-ppv">—</strong><small id="dash-ppv-note"></small></div>
     </div>
   </section>
 
-  <section class="dash-section" aria-labelledby="dash-h-echo">
-    <div class="dash-heading"><span>i.</span><h2 id="dash-h-echo">回声</h2></div>
-    <div class="dash-echo">
-      <div class="dash-comments">
-        <div class="dash-subhead">
-          <span class="dash-label">最新的留言</span>
-          <label class="dash-check"><input id="dash-comments-reader-only" type="checkbox" checked>只看读者留言</label>
-        </div>
-        <ol class="dash-comment-list" id="dash-comments" aria-live="polite"><li class="dash-empty">正在读取留言…</li></ol>
-        <p class="dash-small" id="dash-comments-note">不随上方时段切换</p>
-      </div>
 
-      {% if site.data.zines.size > 0 %}
-      {% assign latest_zine = site.data.zines | first %}
-      <div class="dash-zine">
-        <span class="dash-label">ZINE · ISSUE {{ latest_zine.issue | escape }}</span>
-        <a class="dash-zine-cover" href="{{ '/zines/' | relative_url }}">
-          <img src="{{ latest_zine.cover | relative_url }}" alt="独居日记 ZINE Issue {{ latest_zine.issue | escape }}《{{ latest_zine.title | escape }}》封面"{% if latest_zine.cover_width %} width="{{ latest_zine.cover_width }}" height="{{ latest_zine.cover_height }}"{% endif %}>
-        </a>
-        <p class="dash-zine-title">{{ latest_zine.title | escape }}</p>
-        <p class="dash-zine-count" data-zine-count{% if latest_zine.release_asset_id %} data-release-asset-id="{{ latest_zine.release_asset_id | escape }}"{% endif %}>
-          <strong>{% if latest_zine.release_asset_id %}—{% else %}未关联下载{% endif %}</strong>{% if latest_zine.release_asset_id %}<span>次下载</span>{% endif %}
-        </p>
-        <p class="dash-small">{% if latest_zine.date_label %}{{ latest_zine.date_label | escape }} 发布以来累计 · {% endif %}重复下载会重复计数</p>
-        {% if site.data.zines.size > 1 %}
-        <ol class="dash-zine-more">
-          {% for zine in site.data.zines offset: 1 %}
-          <li data-zine-count{% if zine.release_asset_id %} data-release-asset-id="{{ zine.release_asset_id | escape }}"{% endif %}>
-            <span>Issue {{ zine.issue | escape }} · {{ zine.title | escape }}</span>
-            <strong>{% if zine.release_asset_id %}—{% else %}未关联{% endif %}</strong>
-          </li>
-          {% endfor %}
-        </ol>
-        {% endif %}
-      </div>
-      {% endif %}
-    </div>
-  </section>
 
-  <section class="dash-section" aria-labelledby="dash-h-days">
-    <div class="dash-heading"><span>ii.</span><h2 id="dash-h-days">每一天</h2></div>
-    <div class="dash-scroll">
-      <ol class="dash-days" id="dash-days"></ol>
-    </div>
-    <p class="dash-small">按芝加哥日期汇总；第一天和最后一天可能只覆盖部分时段。柱子太窄放不下数字时，把鼠标停在柱子上可以看到当天的浏览数。</p>
-  </section>
 
-  <section class="dash-section" aria-labelledby="dash-h-posts">
-    <div class="dash-heading"><span>iii.</span><h2 id="dash-h-posts" data-range-title="被读的文章">这一周被读的文章</h2></div>
-    <div class="dash-scroll">
-      <table class="dash-posts">
-        <caption class="dash-sr-only">浏览与访问为所选时段，心为累计</caption>
-        <thead><tr><th scope="col">文章</th><th scope="col">浏览</th><th scope="col">访问</th><th scope="col">累计心</th></tr></thead>
-        <tbody id="dash-posts"></tbody>
-      </table>
-    </div>
-    <p class="dash-note" id="dash-old-posts" hidden></p>
-  </section>
+
+
 
   <section class="dash-section" aria-labelledby="dash-h-sources">
-    <div class="dash-heading"><span>iv.</span><h2 id="dash-h-sources">从哪里来</h2></div>
+    <div class="dash-heading"><span>i.</span><h2 id="dash-h-sources">从哪里来</h2></div>
     <p class="dash-note" id="dash-sources-lede"></p>
     <div class="dash-sources-bar" id="dash-sources-bar" aria-hidden="true"></div>
     <ol class="dash-rows" id="dash-sources"></ol>
     <p class="dash-small" id="dash-sources-more" hidden></p>
   </section>
-
-  <section class="dash-section" aria-labelledby="dash-h-countries">
-    <div class="dash-heading"><span>v.</span><h2 id="dash-h-countries">读者在哪里</h2></div>
-    <p class="dash-note" id="dash-countries-lede"></p>
-    <ol class="dash-countries" id="dash-countries"></ol>
-    <p class="dash-small" id="dash-countries-more" hidden></p>
-  </section>
-
   <section class="dash-section" aria-labelledby="dash-h-likes">
-    <div class="dash-heading"><span>vi.</span><h2 id="dash-h-likes">收到的心</h2></div>
+    <div class="dash-heading"><span>ii.</span><h2 id="dash-h-likes">收到的心</h2></div>
     <div class="dash-likes">
       <div>
         <span class="dash-label"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg>全站累计的心</span>
@@ -122,7 +65,44 @@ subscription: false
       <p class="dash-note" id="dash-likes-note"></p>
     </div>
   </section>
+  <section class="dash-section" aria-labelledby="dash-h-posts">
+    <div class="dash-heading"><span>iii.</span><h2 id="dash-h-posts" data-range-title="被读的文章">这一周被读的文章</h2></div>
+    <div class="dash-scroll">
+      <table class="dash-posts">
+        <caption class="dash-sr-only">浏览与访问为所选时段，心为累计</caption>
+        <thead><tr><th scope="col">文章</th><th scope="col">浏览</th><th scope="col">访问</th><th scope="col">累计心</th></tr></thead>
+        <tbody id="dash-posts"></tbody>
+      </table>
+    </div>
+    <p class="dash-note" id="dash-old-posts" hidden></p>
+  </section>
+  <section class="dash-section" aria-labelledby="dash-h-days">
+    <div class="dash-heading"><span>iv.</span><h2 id="dash-h-days">每一天</h2></div>
+    <div class="dash-scroll">
+      <ol class="dash-days" id="dash-days"></ol>
+    </div>
+    <p class="dash-small">按芝加哥日期汇总；第一天和最后一天可能只覆盖部分时段。柱子太窄放不下数字时，把鼠标停在柱子上可以看到当天的浏览数。</p>
+  </section>
+  <section class="dash-section" aria-labelledby="dash-h-countries">
+    <div class="dash-heading"><span>v.</span><h2 id="dash-h-countries">读者在哪里</h2></div>
+    <p class="dash-note" id="dash-countries-lede"></p>
+    <ol class="dash-countries" id="dash-countries"></ol>
+    <p class="dash-small" id="dash-countries-more" hidden></p>
+  </section>
+  <section class="dash-section" aria-labelledby="dash-h-echo">
+    <div class="dash-heading"><span>vi.</span><h2 id="dash-h-echo">留言</h2></div>
+    <div class="dash-echo">
+      <div class="dash-comments">
+        <div class="dash-subhead">
+          <span class="dash-label">最新的留言</span>
+          <label class="dash-check"><input id="dash-comments-reader-only" type="checkbox" checked>只看读者留言</label>
+        </div>
+        <ol class="dash-comment-list" id="dash-comments" aria-live="polite"><li class="dash-empty">正在读取留言…</li></ol>
+        <p class="dash-small" id="dash-comments-note">不随上方时段切换</p>
+      </div>
 
+    </div>
+  </section>
   <footer class="dash-footer">
     <p>浏览是页面被打开的次数；访问是从站外进来的次数，不等于读者人数。</p>
     <p id="dash-updated">数据来自 Cloudflare Web Analytics，每 10 分钟刷新一次。</p>
@@ -191,11 +171,16 @@ subscription: false
   .dash-opening { padding: 3rem 0 3.4rem; border-bottom: 1px solid var(--line); }
   .dash-lede { margin: 0; color: var(--ink); font-size: clamp(1.15rem, 3.2vw, 1.38rem); line-height: 2; }
   .dash-lede b { font-family: "Source Serif 4", var(--serif); font-weight: 600; border-bottom: 2px solid var(--accent); }
-  .dash-metrics { display: flex; flex-wrap: wrap; gap: 1.5rem 2rem; margin-top: 2.2rem; font-family: var(--sans); }
-  .dash-metrics > div { flex: 1 1 150px; }
-  .dash-metrics strong { display: block; margin-top: .2rem; color: var(--ink); font-family: "Source Serif 4", var(--serif); font-size: 2.1rem; font-weight: 400; line-height: 1.25; font-variant-numeric: tabular-nums; }
-  .dash-metrics small { display: block; min-height: 1.4em; color: var(--muted); font-size: .8rem; }
-  .dash-metrics small.is-up { color: var(--accent); }
+  .dash-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 2.2rem; border-top: 1px solid var(--line); font-family: var(--sans); }
+  .dash-cards > div { min-width: 0; padding: 1.2rem 1rem 1.3rem 0; border-bottom: 1px solid var(--line); }
+  .dash-cards > div:not(:nth-child(3n)) { border-right: 1px solid var(--line); }
+  .dash-cards > div:not(:nth-child(3n+1)) { padding-left: 1.2rem; }
+  .dash-cards .dash-label { display: block; margin-bottom: .5rem; }
+  .dash-cards strong { display: block; color: var(--ink); font-family: "Source Serif 4", var(--serif); font-size: 2.3rem; font-weight: 400; line-height: 1.15; font-variant-numeric: tabular-nums; }
+  .dash-cards small { display: block; min-height: 1.4em; margin-top: .35rem; color: var(--muted); font-size: .72rem; line-height: 1.5; }
+  .dash-cards small.is-up { color: var(--accent); }
+  .dash-heart { color: #b5523b; font-size: .8em; }
+  .dash-zine-card.is-unavailable strong { color: var(--muted); font-size: 1rem; line-height: 2.6; }
   .dash-label { display: inline-flex; align-items: center; gap: .45rem; color: var(--muted); font-family: var(--sans); font-size: .75rem; letter-spacing: .12em; }
   .dash-label svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
@@ -222,17 +207,6 @@ subscription: false
   .dash-comment-meta a { color: var(--muted); }
   .dash-comment-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: var(--body); font-size: 1rem; line-height: 1.9; text-decoration: none; }
   .dash-comment-text:hover { color: var(--accent); }
-  .dash-zine { flex: 1 1 200px; min-width: 0; max-width: 280px; }
-  .dash-zine-cover { display: block; margin-top: 1rem; }
-  .dash-zine-cover img { display: block; width: 100%; max-width: 190px; height: auto; box-shadow: 6px 8px 0 var(--soft); }
-  .dash-zine-title { margin: 1.3rem 0 .6rem; color: var(--ink); font-size: 1.1rem; line-height: 1.6; }
-  .dash-zine-count { display: flex; align-items: baseline; gap: .55rem; margin: 0; }
-  .dash-zine-count strong { color: var(--ink); font-family: "Source Serif 4", var(--serif); font-size: 2.6rem; font-weight: 400; line-height: 1.1; font-variant-numeric: tabular-nums; }
-  .dash-zine-count span { color: var(--muted); font-family: var(--sans); font-size: .85rem; }
-  .dash-zine-count.is-unavailable strong { font-size: 1rem; color: var(--muted); }
-  .dash-zine-more { margin: 1rem 0 0; padding: 0; list-style: none; font-family: var(--sans); font-size: .8rem; }
-  .dash-zine-more li { display: flex; justify-content: space-between; gap: 1rem; padding: .4rem 0; border-top: 1px solid var(--line); }
-  .dash-zine-more strong { font-weight: 400; color: var(--ink); }
 
   .dash-days { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(58px, 1fr); gap: .5rem; min-width: 100%; margin: 0; padding: 0; list-style: none; font-family: var(--sans); }
   .dash-days li { display: flex; flex-direction: column; align-items: center; gap: .45rem; min-width: 0; }
@@ -294,7 +268,10 @@ subscription: false
   @media (max-width: 640px) {
     .dash-header { padding-top: 2.2rem; }
     .dash-section { padding: 2.6rem 0; }
-    .dash-zine { max-width: none; }
+    .dash-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .dash-cards > div { padding: 1rem .8rem 1rem 0 !important; border-right: 0 !important; }
+    .dash-cards > div:nth-child(2n) { padding-left: .9rem !important; border-left: 1px solid var(--line); }
+    .dash-cards strong { font-size: 1.9rem; }
     .dash-posts { min-width: 0; }
     .dash-posts td { width: 2.6rem; padding-left: .5rem; font-size: .95rem; }
     .dash-posts th { font-size: .7rem; letter-spacing: 0; }

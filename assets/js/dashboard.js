@@ -109,12 +109,19 @@
     setup: $('dash-setup'),
     error: $('dash-error'),
     lede: $('dash-lede'),
+    viewsLabel: $('dash-views-label'),
     views: $('dash-views'),
     viewsNote: $('dash-views-note'),
     visits: $('dash-visits'),
     visitsNote: $('dash-visits-note'),
-    ppv: $('dash-ppv'),
-    ppvNote: $('dash-ppv-note'),
+    total: $('dash-total'),
+    totalNote: $('dash-total-note'),
+    hearts: $('dash-hearts'),
+    heartsNote: $('dash-hearts-note'),
+    subs: $('dash-subs'),
+    subsNote: $('dash-subs-note'),
+    zineCard: document.querySelector('.dash-zine-card'),
+    zineNote: $('dash-zine-note'),
     days: $('dash-days'),
     postsTitle: $('dash-h-posts'),
     posts: $('dash-posts'),
@@ -174,13 +181,11 @@
     }
     el.kicker.textContent = days === 7 && range.endDate ? `Reading notes · No. ${isoWeek(range.endDate)}` : 'Reading notes'
 
+    if (el.viewsLabel) el.viewsLabel.textContent = `${words.period}的浏览`
     el.views.textContent = fmt(views)
     el.visits.textContent = fmt(visits)
-    el.ppv.textContent = ppv == null ? '—' : ppv.toFixed(2)
     changeNote(el.viewsNote, views, Number(prev.views || 0), words)
     changeNote(el.visitsNote, visits, Number(prev.visits || 0), words)
-    el.ppvNote.classList.remove('is-up')
-    el.ppvNote.textContent = prevPpv ? `${words.prevShort} ${prevPpv.toFixed(2)}` : `${words.prevShort}暂无数据`
 
     if (!views) {
       setChildren(el.lede, `${words.period}，还没有人来读。`)
@@ -205,6 +210,65 @@
       parts.push(`读得最多的，是${date ? ` ${zhDate(date)}写的` : ''}《${titleOf(top.path)}》。`)
     }
     setChildren(el.lede, parts)
+  }
+
+  // ---------- cards: total views, hearts, subscribers, ZINE ----------
+
+  // 「这一周 +6」；起点快照晚于这段时间的开头时，写成「11 月 23 日起 +6」
+  const changeText = (days, change, since) => {
+    const value = `${change > 0 ? '+' : ''}${fmt(change)}`
+    if (since) return `${zhDate(keyToUtc(since))}起 ${value}`
+    return `${WORDS[days].period} ${value}`
+  }
+
+  const renderTotals = (data, days) => {
+    const totals = data.totals || {}
+    const words = WORDS[days]
+
+    const allTime = totals.views
+    if (allTime && Number.isFinite(allTime.allTime)) {
+      el.total.textContent = fmt(allTime.allTime)
+      el.totalNote.textContent = allTime.complete ? '2026 年 9 月 14 日开站以来' : '开站以来 · 旧数据还在补齐中'
+    } else {
+      el.total.textContent = '—'
+    }
+
+    const likes = totals.likes
+    if (likes && Number.isFinite(likes.total)) {
+      el.hearts.textContent = fmt(likes.total)
+      el.heartsNote.classList.toggle('is-up', likes.change > 0)
+      el.heartsNote.textContent = Number.isFinite(likes.change) ? changeText(days, likes.change, likes.since) : '全站累计'
+    } else if (data.likesAvailable !== false) {
+      el.hearts.textContent = fmt(Object.values(data.likes || {}).reduce((sum, value) => sum + (Number(value) || 0), 0))
+      el.heartsNote.textContent = '全站累计'
+    } else {
+      el.hearts.textContent = '—'
+      el.heartsNote.textContent = '暂时无法读取'
+    }
+
+    const subs = totals.subscribers
+    el.subsNote.classList.remove('is-up')
+    if (subs?.available) {
+      el.subs.textContent = fmt(subs.new)
+      el.subsNote.textContent = `${words.period} · 现在共 ${fmt(subs.total)} 人订阅`
+      if (subs.new > 0) el.subsNote.classList.add('is-up')
+    } else {
+      el.subs.textContent = '—'
+      el.subsNote.textContent = subs?.error ? '暂时无法读取' : '还没有连接 Brevo'
+    }
+
+    // ZINE：累计数由下面的 GitHub 读取填上；这里只补「这一周 +几」
+    const assetId = el.zineCard?.dataset.releaseAssetId
+    const zine = assetId ? totals.zine?.assets?.[assetId] : null
+    if (el.zineNote) {
+      const issue = el.zineNote.dataset.issue || el.zineNote.textContent
+      el.zineNote.dataset.issue = issue
+      el.zineNote.classList.toggle('is-up', zine?.change > 0)
+      el.zineNote.textContent = zine && Number.isFinite(zine.change) ? `${issue} · ${changeText(days, zine.change, zine.since)}` : issue
+      if (zine && Number.isFinite(zine.count) && el.zineCard.dataset.loaded !== 'true') {
+        el.zineCard.querySelector('strong').textContent = fmt(zine.count)
+      }
+    }
   }
 
   // ---------- each day ----------
@@ -485,6 +549,7 @@
     const likesAvailable = data.likesAvailable !== false
     const postRows = postRowsFrom(data.pages, data.likes)
     renderOpening(data, days, postRows)
+    renderTotals(data, days)
     renderDays(data.series)
     renderPosts(postRows, data, days, likesAvailable)
     renderSources(data)
@@ -500,8 +565,8 @@
     el.error.textContent = `统计暂时无法读取：${message}`
     el.error.hidden = false
     setChildren(el.lede, '统计暂时无法读取。')
-    ;[el.views, el.visits, el.ppv].forEach((node) => { node.textContent = '—' })
-    ;[el.viewsNote, el.visitsNote, el.ppvNote].forEach((node) => { node.textContent = '' })
+    ;[el.views, el.visits, el.total, el.hearts, el.subs].forEach((node) => { if (node) node.textContent = '—' })
+    ;[el.viewsNote, el.visitsNote, el.heartsNote, el.subsNote].forEach((node) => { if (node) node.textContent = '' })
     setChildren(el.days)
     setChildren(el.posts)
     setChildren(el.sources)
@@ -625,7 +690,7 @@
     const assetId = node.dataset.releaseAssetId
     const target = node.querySelector('strong')
     if (!/^\d+$/.test(assetId || '') || !target) return
-    const big = node.classList.contains('dash-zine-count')
+    const big = node.classList.contains('dash-zine-count') || node.classList.contains('dash-zine-card')
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 10000)
     node.setAttribute('aria-busy', 'true')
@@ -638,7 +703,9 @@
       const asset = await response.json()
       if (!Number.isSafeInteger(asset.download_count) || asset.download_count < 0) throw new Error('Invalid download count')
       target.textContent = big ? fmt(asset.download_count) : `${fmt(asset.download_count)} 次`
+      node.dataset.loaded = 'true'
     } catch (_) {
+      if (node.dataset.loaded === 'true' || /\d/.test(target.textContent)) return
       target.textContent = '暂时无法读取'
       node.classList.add('is-unavailable')
       const unit = node.querySelector('span:last-child')

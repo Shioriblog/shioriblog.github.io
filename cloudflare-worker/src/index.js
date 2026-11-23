@@ -8,10 +8,15 @@ const DASHBOARD_RANGES = [1, 7, 30]
 // Likes given before this log existed have no time attached, so the
 // "recently liked" list only starts filling from the day it was deployed.
 const RECENT_LIKES_KEY = 'recent-likes'
-const RECENT_LIKES_LIMIT = 30
+const RECENT_LIKES_LIMIT = 300
 // A cron trigger (wrangler.jsonc) refreshes every range every 10 minutes,
 // so the dashboard normally reads a ready-made copy instead of waiting on GraphQL.
 const DASHBOARD_FRESH_MS = 15 * 60 * 1000
+// 总浏览从开站那天算起。每天的浏览数算好后存进 Durable Object（daily:日期），
+// 这样就算 Cloudflare 以后不再保留很早的数据，总数也不会变少。
+const SITE_START = '2026-09-14'
+const GITHUB_REPO = 'Shioriblog/shioriblog.github.io'
+const ZINE_REFRESH_MS = 60 * 60 * 1000
 
 export default {
   async fetch(request, env, ctx) {
@@ -58,6 +63,31 @@ export class LikeStore {
         return internalJson({ ok: true })
       }
       return internalJson({ error: 'Method not allowed' }, 405)
+    }
+
+    // 统计用的小存储：每天的浏览数（daily:）、每天的快照（snap:）、ZINE 下载数（zine）
+    if (url.pathname === '/__kvlist' && request.method === 'GET') {
+      const prefix = `kv:${url.searchParams.get('prefix') || ''}`
+      const entries = await this.ctx.storage.list({ prefix })
+      const values = {}
+      for (const [key, value] of entries) values[key.slice(3)] = value
+      return internalJson({ values })
+    }
+    if (url.pathname === '/__kvput' && request.method === 'POST') {
+      const body = await safeJson(request)
+      const values = body?.values
+      if (!values || typeof values !== 'object') return internalJson({ error: 'Invalid values' }, 400)
+      const entries = {}
+      for (const [key, value] of Object.entries(values)) {
+        if (typeof key === 'string' && key.length <= 80) entries[`kv:${key}`] = value
+      }
+      const keys = Object.keys(entries)
+      for (let i = 0; i < keys.length; i += 100) {
+        const chunk = {}
+        keys.slice(i, i + 100).forEach((key) => { chunk[key] = entries[key] })
+        await this.ctx.storage.put(chunk)
+      }
+      return internalJson({ ok: true, saved: keys.length })
     }
 
     if (url.pathname === '/__summary' && request.method === 'GET') {
@@ -154,6 +184,11 @@ async function handleDashboard(request, env, url, ctx) {
 
 async function refreshDashboardCache(env) {
   if (!env.CF_API_TOKEN || !env.CF_ACCOUNT_ID) return
+  try {
+    await updateMetrics(env)
+  } catch (error) {
+    console.error('Metrics update failed', error)
+  }
   for (const days of DASHBOARD_RANGES) {
     try {
       await writeDashboardCache(env, days, JSON.stringify(await buildDashboard(env, days)))
@@ -213,6 +248,8 @@ async function buildDashboard(env, days) {
   const previousStart = new Date(previousEnd.getTime() - days * 24 * 60 * 60 * 1000)
   const currentFilter = rumFilter(start, end)
   const previousFilter = rumFilter(previousStart, previousEnd)
+  const todayKey = localDateKey(end)
+  const todayFilter = rumFilter(zonedMidnight(todayKey), end)
 
   const query = `
     query BlogDashboard {
@@ -222,6 +259,9 @@ async function buildDashboard(env, days) {
             count
             avg { sampleInterval }
             sum { visits }
+          }
+          today: rumPageloadEventsAdaptiveGroups(filter: ${todayFilter}, limit: 1) {
+            count
           }
           previousTotal: rumPageloadEventsAdaptiveGroups(filter: ${previousFilter}, limit: 1) {
             count
@@ -292,10 +332,12 @@ async function buildDashboard(env, days) {
   }))
 
   const likes = await getLikeSummary(env)
+  const totals = await buildTotals(env, { start, end, days, todayKey, todayViews: estimate(account.today?.[0]), likes })
 
   return {
     views,
     visits,
+    totals,
     likes: likes?.likes || {},
     recentLikes: likes?.recent || [],
     likesAvailable: likes !== null,
@@ -332,6 +374,213 @@ async function buildDashboard(env, days) {
     countries: mergeNumeric(account.countries, (row) => row.dimensions?.countryName || 'Unknown', (row) => estimate(row))
       .map(([label, value]) => ({ label, views: value }))
   }
+}
+
+// ---------- 总浏览、心、ZINE 下载、订阅 ----------
+
+async function kvList(env, prefix) {
+  const stub = dashboardCacheStub(env)
+  if (!stub) return {}
+  const response = await stub.fetch(`https://likes.internal/__kvlist?prefix=${encodeURIComponent(prefix)}`)
+  if (!response.ok) throw new Error(`Metrics store returned ${response.status}`)
+  const data = await response.json()
+  return data.values || {}
+}
+
+async function kvPut(env, values) {
+  const stub = dashboardCacheStub(env)
+  if (!stub || !Object.keys(values).length) return
+  await stub.fetch('https://likes.internal/__kvput', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ values })
+  })
+}
+
+// 每 10 分钟跑一次：补齐每天的浏览数、更新 ZINE 下载数、每天记一次快照
+async function updateMetrics(env) {
+  await archiveDailyViews(env).catch((error) => console.error('Daily archive failed', error))
+  await refreshZineDownloads(env).catch((error) => console.error('ZINE downloads failed', error))
+  await takeDailySnapshot(env).catch((error) => console.error('Snapshot failed', error))
+}
+
+async function archiveDailyViews(env) {
+  const today = localDateKey(new Date())
+  const stored = await kvList(env, 'daily:')
+  const missing = []
+  for (let day = SITE_START; day < today; day = nextDateKey(day)) {
+    if (!(`daily:${day}` in stored)) missing.push(day)
+  }
+  // 一次最多补 6 段、每段最多 7 天，剩下的下一次再补
+  const chunks = []
+  for (const day of missing) {
+    const last = chunks[chunks.length - 1]
+    if (last && last.length < 7 && nextDateKey(last[last.length - 1]) === day) last.push(day)
+    else chunks.push([day])
+  }
+  for (const chunk of chunks.slice(0, 6)) {
+    const from = zonedMidnight(chunk[0])
+    const to = zonedMidnight(nextDateKey(chunk[chunk.length - 1]))
+    const payload = await runGraphQL(env, `
+      query DailyViews {
+        viewer {
+          accounts(filter: { accountTag: ${JSON.stringify(env.CF_ACCOUNT_ID)} }) {
+            hours: rumPageloadEventsAdaptiveGroups(filter: ${rumFilter(from, to)}, limit: 1000, orderBy: [datetimeHour_ASC]) {
+              count
+              dimensions { datetimeHour }
+            }
+          }
+        }
+      }
+    `)
+    const rows = payload.data?.viewer?.accounts?.[0]?.hours || []
+    const totals = new Map(mergeNumeric(rows, (row) => localDateKey(row.dimensions?.datetimeHour), (row) => estimate(row)))
+    const values = {}
+    chunk.forEach((day) => { values[`daily:${day}`] = totals.get(day) || 0 })
+    await kvPut(env, values)
+  }
+}
+
+async function refreshZineDownloads(env) {
+  const stored = (await kvList(env, 'zine'))?.zine
+  if (stored && Date.now() - Number(stored.at || 0) < ZINE_REFRESH_MS) return
+  const headers = { Accept: 'application/vnd.github+json', 'User-Agent': 'shiori-stats' }
+  if (env.GITHUB_TOKEN) headers.Authorization = `Bearer ${env.GITHUB_TOKEN}`
+  const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/releases?per_page=30`, { headers })
+  if (!response.ok) throw new Error(`GitHub returned ${response.status}`)
+  const releases = await response.json()
+  const assets = {}
+  for (const release of releases || []) {
+    for (const asset of release.assets || []) {
+      if (Number.isSafeInteger(asset.download_count)) assets[String(asset.id)] = asset.download_count
+    }
+  }
+  await kvPut(env, { zine: { at: Date.now(), assets } })
+}
+
+// 每天第一次运行时，记下当时的心、ZINE 下载数、订阅人数，用来算「这一周 +几」
+async function takeDailySnapshot(env) {
+  const today = localDateKey(new Date())
+  const existing = await kvList(env, `snap:${today}`)
+  if (existing[`snap:${today}`]) return
+  const likes = await getLikeSummary(env)
+  const zine = (await kvList(env, 'zine'))?.zine
+  let subscribers = null
+  if (env.BREVO_API_KEY) subscribers = await brevoContactCount(env).catch(() => null)
+  await kvPut(env, {
+    [`snap:${today}`]: {
+      at: Date.now(),
+      likes: likes ? sumValues(likes.likes) : null,
+      zine: zine?.assets || null,
+      subscribers
+    }
+  })
+}
+
+async function brevoContactCount(env, createdSince) {
+  const url = new URL('https://api.brevo.com/v3/contacts')
+  url.searchParams.set('limit', '1')
+  if (createdSince) url.searchParams.set('createdSince', createdSince.toISOString())
+  if (env.BREVO_LIST_ID) url.searchParams.set('listIds', String(env.BREVO_LIST_ID))
+  const response = await fetch(url, { headers: { 'api-key': env.BREVO_API_KEY, Accept: 'application/json' } })
+  if (!response.ok) throw new Error(`Brevo returned ${response.status}`)
+  const data = await response.json()
+  return Number(data.count) || 0
+}
+
+async function buildTotals(env, { start, end, days, todayKey, todayViews, likes }) {
+  const result = {}
+  let daily = {}
+  let snaps = {}
+  let zine = null
+  try {
+    ;[daily, snaps, zine] = await Promise.all([kvList(env, 'daily:'), kvList(env, 'snap:'), kvList(env, 'zine').then((values) => values.zine || null)])
+  } catch (error) {
+    console.error('Metrics store read failed', error)
+  }
+
+  // 总浏览 = 开站以来每天存下的数 + 今天到现在
+  let archived = 0
+  let archivedDays = 0
+  let expectedDays = 0
+  for (let day = SITE_START; day < todayKey; day = nextDateKey(day)) {
+    expectedDays += 1
+    if (`daily:${day}` in daily) {
+      archived += Number(daily[`daily:${day}`]) || 0
+      archivedDays += 1
+    }
+  }
+  result.views = { allTime: archived + (todayViews || 0), since: SITE_START, complete: archivedDays === expectedDays }
+
+  // 「这一周 +几」用的起点快照：起始那天或之后最早的一份。快照是每天零点左右记的，
+  // 和「最近 24 小时」对不齐，所以 24 小时那一档用快照时总是写明从哪天起算
+  const startKey = localDateKey(start)
+  const snapKeys = Object.keys(snaps).map((key) => key.slice(5)).filter((key) => key >= startKey).sort()
+  const baseKey = snapKeys[0] || null
+  const base = baseKey ? snaps[`snap:${baseKey}`] : null
+  const since = baseKey && (baseKey !== startKey || days === 1) ? baseKey : null
+
+  // 心：最近的心有时间记录，范围被记录完整覆盖时直接数；否则用快照
+  if (likes) {
+    const total = sumValues(likes.likes)
+    const recent = likes.recent || []
+    const startMs = start.getTime()
+    // 记录早先最多只留 30 条，所以少于 30 条、或者记录里有比起点更早的心，才算覆盖完整
+    const covered = recent.length < 30 || recent.some((item) => Number(item.at) < startMs)
+    const loggedSince = Date.parse('2026-10-21T00:00:00-05:00')
+    let change = null
+    let changeSince = null
+    if (covered && startMs >= loggedSince) {
+      change = recent.filter((item) => Number(item.at) >= startMs).length
+    } else if (base && Number.isFinite(base.likes)) {
+      change = total - base.likes
+      changeSince = since
+    }
+    result.likes = { total, change, since: changeSince }
+  }
+
+  // ZINE 下载：每个文件的累计数，以及和起点快照相比多了几次
+  if (zine?.assets) {
+    const assets = {}
+    Object.entries(zine.assets).forEach(([id, count]) => {
+      const before = base?.zine?.[id]
+      assets[id] = { count, change: Number.isFinite(before) ? count - before : null, since }
+    })
+    result.zine = { at: zine.at, assets }
+  }
+
+  // 订阅：Brevo 的联系人总数，以及这段时间新加的人数（只有人数，不读邮箱）
+  if (env.BREVO_API_KEY) {
+    try {
+      const [total, added] = await Promise.all([brevoContactCount(env), brevoContactCount(env, start)])
+      result.subscribers = { available: true, total, new: added }
+    } catch (error) {
+      result.subscribers = { available: false, error: error.message }
+    }
+  } else {
+    result.subscribers = { available: false }
+  }
+  return result
+}
+
+function sumValues(map) {
+  return Object.values(map || {}).reduce((sum, value) => sum + (Number(value) || 0), 0)
+}
+
+function nextDateKey(key) {
+  const date = new Date(`${key}T12:00:00Z`)
+  date.setUTCDate(date.getUTCDate() + 1)
+  return date.toISOString().slice(0, 10)
+}
+
+// 芝加哥时间某一天的零点（UTC 时间）
+function zonedMidnight(key) {
+  const [year, month, day] = key.split('-').map(Number)
+  for (const offset of [5, 6, 4, 7]) {
+    const candidate = new Date(Date.UTC(year, month - 1, day, offset))
+    if (localDateKey(candidate) === key && localDateKey(new Date(candidate.getTime() - 1)) !== key) return candidate
+  }
+  return new Date(Date.UTC(year, month - 1, day, 6))
 }
 
 async function handleLikeRequest(request, env, url) {
