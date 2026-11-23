@@ -110,4 +110,5 @@ Worker 每 10 分钟（`wrangler.jsonc` 里的 cron）把 24 小时、7 天、30
 
 - `about.md` 关于、`friends.md` 友链、`privacy.md` 隐私说明
 - 页脚在 `_includes/footer.html`：左边是运行天数、文章数和字数（字数来自构建时生成的 `/assets/site-stats.json`），右边是邮件订阅。页面 front matter 写 `footer_subscribe: false` 可以只隐藏页脚的订阅框（关于页就是这样）。页脚订阅框出现在屏幕上时，左下角的「订阅更新」按钮会自动隐藏。
-- `newsletter.xml` 是全站唯一对外的 RSS（最近 10 篇的摘要），页脚、订阅弹窗和关于页都链接到它；`feed.xml` 由插件自动生成（全文），网站上不再链接，但保留给已经订阅它的读者
+- `newsletter.xml` 是全站唯一对外的 RSS（最近 10 篇的摘要），页脚、订阅弹窗和关于页都链接到它；`feed.xml` 由插件自动生成（只给摘要，`_config.yml` 的 `feed.excerpt_only`），网站上不再链接，但保留给已经订阅它的读者
+- `robots.txt`：搜索引擎照常收录；列出的 AI 训练爬虫不允许抓取（只对守规矩的爬虫有效）。新出现的 AI 爬虫可以加进那一组

@@ -19,6 +19,7 @@ plugins:
 
 feed:
   path: feed.xml
+  excerpt_only: true   # feed.xml 只给摘要，不输出全文，避免文章被整篇采集
 
 twikoo_env_id: "https://shiori-twikoo.netlify.app/.netlify/functions/twikoo"
 cloudflare_beacon_token: "17f59f664edc4eee966afed69fcf5598"
