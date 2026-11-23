@@ -385,7 +385,38 @@
     return { key: host, label: host }
   }
 
-  const renderSources = (data) => {
+  // 「今天」：每一次从外面进来的访问，按时间排，新的在上面
+  const pageNames = { '/': '主页', '/travel': '旅行', '/zines': 'ZINE', '/about': '关于', '/friends': '友链', '/archive': '归档', '/categories': '分类', '/dashboard': '阅读手记', '/search': '搜索' }
+  const visitTime = (item) => {
+    const p = dateParts(item.at)
+    if (item.precision === 'hour') return `${p.hour} 点`
+    if (item.precision === '15min') return `${p.hour}:${p.minute} 前后`
+    return `${p.hour}:${p.minute}`
+  }
+  const renderTimeline = (items) => {
+    if (!items.length) {
+      setChildren(el.sources, emptyItem('今天还没有人从外面进来'))
+      return
+    }
+    setChildren(el.sources, items.map((item) => {
+      const path = normalizePath(item.path)
+      const target = posts.has(path)
+        ? h('a', { href: postHref(path) }, `《${titleOf(path)}》`)
+        : h('a', { href: postHref(path) }, pageNames[path] || path)
+      const from = item.from === 'direct' ? '直接打开' : `从${sourceGroup(item.from).label}来`
+      return h('li', { className: 'dash-visit' },
+        h('span', {},
+          h('time', { className: 'dash-visit-time', datetime: item.at }, visitTime(item)),
+          h('span', { className: item.from === 'direct' ? 'dash-visit-from' : 'dash-visit-from is-external' }, from),
+          ' → ', target,
+          item.country ? h('small', {}, ` · ${regionName(item.country)}`) : null
+        ),
+        item.visits > 1 ? h('b', {}, `${fmt(item.visits)} 次`) : null
+      )
+    }))
+  }
+
+  const renderSources = (data, days) => {
     const groups = new Map()
     ;(data.referrers || []).forEach((item) => {
       const host = normalizeHost(item.label)
@@ -427,6 +458,12 @@
     const externalRows = rows.filter((row) => row.key !== 'direct')
     const biggest = externalRows[0]?.visits || 0
     setChildren(el.sourcesBar, [direct, biggest, external - biggest].map((value) => Object.assign(h('i'), { style: `flex:${value} 1 0` })))
+
+    if (days === 1 && Array.isArray(data.timeline)) {
+      renderTimeline(data.timeline)
+      el.sourcesMore.hidden = true
+      return
+    }
 
     const shown = rows.filter((row, index) => row.key === 'direct' || (index < 6 && row.visits >= 3))
     const rest = rows.filter((row) => !shown.includes(row))
@@ -585,7 +622,7 @@
     renderTotals(data, days)
     renderDays(data.series)
     renderPosts(postRows, data, days, likesAvailable)
-    renderSources(data)
+    renderSources(data, days)
     renderCountries(data, days)
     renderLikes(data.likes, likesAvailable)
     renderRecentLikes(data.recentLikes, likesAvailable)

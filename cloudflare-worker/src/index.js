@@ -352,6 +352,12 @@ async function buildDashboard(env, days) {
     visits: Math.round(row.sum?.visits || 0)
   }))
 
+  // 「今天」那一档：每一次从外面进来的访问，按时间排（几点几分、从哪里来、进了哪一页、哪个国家）
+  const timeline = days === 1 ? await fetchVisitTimeline(env, start, end).catch((error) => {
+    console.error('Visit timeline failed', error)
+    return null
+  }) : null
+
   const likes = await getLikeSummary(env)
   const totals = await buildTotals(env, { start, end, days, todayKey, todayViews: estimate(account.today?.[0]), likes })
 
@@ -359,6 +365,7 @@ async function buildDashboard(env, days) {
     views,
     visits,
     totals,
+    timeline,
     likes: likes?.likes || {},
     recentLikes: likes?.recent || [],
     likesAvailable: likes !== null,
@@ -401,6 +408,51 @@ async function buildDashboard(env, days) {
     countries: mergeNumeric(account.countries, (row) => row.dimensions?.countryName || 'Unknown', (row) => estimate(row))
       .map(([label, value]) => ({ label, views: value }))
   }
+}
+
+// ---------- 今天的访问，按时间 ----------
+
+async function fetchVisitTimeline(env, start, end) {
+  // 先按分钟分组；如果这个字段用不了，退一步按 15 分钟、再退到按小时
+  for (const field of ['datetimeMinute', 'datetimeFifteenMinutes', 'datetimeHour']) {
+    let payload
+    try {
+      payload = await runGraphQL(env, `
+        query VisitTimeline {
+          viewer {
+            accounts(filter: { accountTag: ${JSON.stringify(env.CF_ACCOUNT_ID)} }) {
+              rows: rumPageloadEventsAdaptiveGroups(filter: ${rumFilter(start, end)}, limit: 500, orderBy: [${field}_DESC]) {
+                count
+                sum { visits }
+                dimensions { ${field} refererHost requestPath countryName }
+              }
+            }
+          }
+        }
+      `)
+    } catch (error) {
+      continue
+    }
+    const rows = payload.data?.viewer?.accounts?.[0]?.rows || []
+    const items = rows
+      .filter((row) => Number(row.sum?.visits || 0) > 0)
+      .map((row) => {
+        const host = String(row.dimensions?.refererHost || '').toLowerCase()
+        return {
+          at: row.dimensions?.[field],
+          precision: field === 'datetimeMinute' ? 'minute' : field === 'datetimeFifteenMinutes' ? '15min' : 'hour',
+          from: !host || host === SITE_HOST || host === `www.${SITE_HOST}` ? 'direct' : host,
+          path: normalizeRequestPath(row.dimensions?.requestPath || '/'),
+          country: row.dimensions?.countryName || '',
+          visits: Math.round(row.sum?.visits || 0)
+        }
+      })
+      .filter((item) => item.at)
+      .sort((a, b) => String(b.at).localeCompare(String(a.at)))
+      .slice(0, 100)
+    return items
+  }
+  return null
 }
 
 // ---------- 总浏览、心、ZINE 下载、订阅 ----------

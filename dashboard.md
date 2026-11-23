@@ -249,6 +249,9 @@ subscription: false
   .dash-rows li > span:first-child { min-width: 0; overflow-wrap: anywhere; }
   .dash-rows small { color: var(--muted); font-size: .8rem; }
   .dash-rows small.is-accent { color: var(--accent); }
+  .dash-visit-time { display: inline-block; min-width: 3.4rem; color: var(--muted); font-family: "Source Serif 4", var(--serif); font-variant-numeric: tabular-nums; }
+  .dash-visit-from.is-external { color: var(--accent); }
+  .dash-visit a { color: var(--ink); }
   .dash-ref-pages { display: block; margin-top: .3rem; }
   .dash-ref-pages > span { display: block; color: var(--muted); font-size: .74rem; line-height: 1.7; }
   .dash-ref-pages a { color: var(--muted); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: .18em; }
