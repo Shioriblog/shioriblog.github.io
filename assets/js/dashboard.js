@@ -259,14 +259,21 @@
 
     // ZINE：累计数由下面的 GitHub 读取填上；这里只补「这一周 +几」
     const assetId = el.zineCard?.dataset.releaseAssetId
+    if (el.zineCard) el.zineCard.dataset.rendered = 'true'
     const zine = assetId ? totals.zine?.assets?.[assetId] : null
     if (el.zineNote) {
       const issue = el.zineNote.dataset.issue || el.zineNote.textContent
       el.zineNote.dataset.issue = issue
       el.zineNote.classList.toggle('is-up', zine?.change > 0)
       el.zineNote.textContent = zine && Number.isFinite(zine.change) ? `${issue} · ${changeText(days, zine.change, zine.since)}` : issue
+      // 统计程序每小时从 GitHub 记一次下载数；浏览器直接读 GitHub 失败时（比如次数限制），就用这个数
       if (zine && Number.isFinite(zine.count) && el.zineCard.dataset.loaded !== 'true') {
         el.zineCard.querySelector('strong').textContent = fmt(zine.count)
+        el.zineCard.classList.remove('is-unavailable')
+        el.zineCard.dataset.fromWorker = 'true'
+      } else if (el.zineCard?.dataset.failed === 'true' && el.zineCard.dataset.fromWorker !== 'true') {
+        el.zineCard.querySelector('strong').textContent = '暂时无法读取'
+        el.zineCard.classList.add('is-unavailable')
       }
     }
   }
@@ -705,7 +712,16 @@
       target.textContent = big ? fmt(asset.download_count) : `${fmt(asset.download_count)} 次`
       node.dataset.loaded = 'true'
     } catch (_) {
-      if (node.dataset.loaded === 'true' || /\d/.test(target.textContent)) return
+      node.dataset.failed = 'true'
+      // 阅读手记上方的卡片：等统计程序的数据来补，不先写「无法读取」
+      if (node.classList.contains('dash-zine-card')) {
+        if (node.dataset.fromWorker !== 'true' && node.dataset.rendered === 'true') {
+          target.textContent = '暂时无法读取'
+          node.classList.add('is-unavailable')
+        }
+        return
+      }
+      if (/\d/.test(target.textContent)) return
       target.textContent = '暂时无法读取'
       node.classList.add('is-unavailable')
       const unit = node.querySelector('span:last-child')
