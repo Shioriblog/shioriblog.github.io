@@ -551,10 +551,10 @@
       if (!path || !Number.isFinite(at)) continue
       const row = rows.get(path)
       if (row) row.count += 1
-      else rows.set(path, { path, at, count: 1 })
+      else rows.set(path, { path, at, count: 1, country: item.country, from: item.from })
     }
     const list = [...rows.values()].sort((a, b) => b.at - a.at).slice(0, 5)
-    el.recentLikesNote.textContent = '从 2026 年 10 月 21 日开始记录，更早的心没有时间 · 不随上方时段切换'
+    el.recentLikesNote.textContent = '从 2026 年 10 月 21 日开始记录时间，2026 年 11 月 23 日开始记录地区和来源（最新一颗心的）· 不随上方时段切换'
     if (!list.length) {
       setChildren(el.recentLikes, emptyItem('下一颗心会出现在这里'))
       return
@@ -565,6 +565,8 @@
         h('span', {}, postLink(row.path)),
         h('small', { className: Date.now() - row.at < 86400000 ? 'is-accent' : null },
           h('time', { datetime: when.toISOString(), title: zhDateTime(when) }, relativeTime(when)),
+          row.country ? ` · ${regionName(row.country)}` : '',
+          row.from ? ` · ${row.from === 'direct' ? '直接打开' : `从${sourceGroup(row.from).label}来`}` : '',
           row.count > 1 ? ` · ${row.count} 颗` : ''
         )
       )

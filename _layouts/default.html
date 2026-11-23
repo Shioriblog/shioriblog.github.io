@@ -34,6 +34,14 @@
         <meta name="twitter:card" content="summary_large_image">
       {% endif %}
     {% endif %}
+    <script>
+      // 记下这次是从哪个网站进来的（只记网站名），点赞时一起发给统计程序。只存在这个浏览器标签页里，关掉就没了。
+      try {
+        var shioriRef = document.referrer ? new URL(document.referrer).hostname.toLowerCase().replace(/^www\./, '') : ''
+        if (shioriRef && shioriRef !== location.hostname.replace(/^www\./, '')) sessionStorage.setItem('shioriblog-entry-from', shioriRef)
+        else if (!shioriRef && !sessionStorage.getItem('shioriblog-entry-from')) sessionStorage.setItem('shioriblog-entry-from', 'direct')
+      } catch (_) {}
+    </script>
   </head>
   {% assign body_classes = '' %}
   {% if page.nav == 'home' %}{% assign body_classes = body_classes | append: ' home-page' %}{% endif %}

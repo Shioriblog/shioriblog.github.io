@@ -96,7 +96,7 @@ export class LikeStore {
       for (const [key, value] of entries) {
         likes[key.slice('count:'.length)] = Number(value) || 0
       }
-      const recent = (await this.getRecent()).map(({ post, at }) => ({ post, at }))
+      const recent = (await this.getRecent()).map(({ post, at, country, from }) => ({ post, at, country, from }))
       return internalJson({ likes, recent })
     }
 
@@ -127,7 +127,11 @@ export class LikeStore {
         const at = Date.now()
         count += 1
         await this.ctx.storage.put(key, at)
-        recent.unshift({ post: postId, visitor, at })
+        // 只记大概的国家/地区和来源网站名，不记 IP
+        const entry = { post: postId, visitor, at }
+        if (normalizeCountry(body?.country)) entry.country = normalizeCountry(body.country)
+        if (normalizeFrom(body?.from)) entry.from = normalizeFrom(body.from)
+        recent.unshift(entry)
       }
       // The visitor id never leaves the Durable Object; it is kept only so an
       // un-like can take the matching entry back out of the list.
@@ -625,7 +629,11 @@ async function handleLikeRequest(request, env, url) {
   const init = { method: request.method, headers: { 'Content-Type': 'application/json' } }
   if (request.method === 'POST') {
     const body = await safeJson(request)
-    init.body = JSON.stringify({ visitor: normalizeVisitor(body?.visitor) })
+    init.body = JSON.stringify({
+      visitor: normalizeVisitor(body?.visitor),
+      from: normalizeFrom(body?.from),
+      country: normalizeCountry(request.cf?.country)
+    })
   }
 
   try {
@@ -723,6 +731,17 @@ function normalizeVisitor(value) {
   if (typeof value !== 'string') return ''
   const cleaned = value.trim()
   return /^[A-Za-z0-9_-]{16,80}$/.test(cleaned) ? cleaned : ''
+}
+
+function normalizeCountry(value) {
+  const code = typeof value === 'string' ? value.trim().toUpperCase() : ''
+  return /^[A-Z]{2}$/.test(code) && code !== 'XX' && code !== 'T1' ? code : ''
+}
+
+function normalizeFrom(value) {
+  const host = typeof value === 'string' ? value.trim().toLowerCase().replace(/^www\./, '') : ''
+  if (host === 'direct') return 'direct'
+  return /^[a-z0-9.-]{1,100}$/.test(host) && host.includes('.') ? host : ''
 }
 
 async function safeJson(request) {

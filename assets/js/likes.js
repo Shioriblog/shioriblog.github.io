@@ -178,7 +178,7 @@
           Accept: 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ visitor })
+        body: JSON.stringify({ visitor, from: (() => { try { return sessionStorage.getItem('shioriblog-entry-from') || '' } catch (_) { return '' } })() })
       })
       if (!response.ok) throw new Error(`Like API returned ${response.status}`)
       render(await response.json())
