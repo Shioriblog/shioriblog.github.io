@@ -538,6 +538,31 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
   overflow-wrap: break-word;
 }
 
+/* 文章开头的小提示（系列文章的说明、前几篇的链接）：用 <div class="post-preface"><p>…</p></div> */
+.article-content .post-preface {
+  margin: 0 0 3rem;
+  padding: 1rem 1.25rem;
+  border-left: 2px solid var(--accent);
+  background: var(--soft);
+  color: var(--body);
+  font-family: var(--sans);
+  font-size: .84rem;
+  line-height: 1.85;
+}
+
+.article-content .post-preface p {
+  margin: 0;
+}
+
+.article-content .post-preface p + p {
+  margin-top: .45rem;
+}
+
+.article-content .post-preface a {
+  color: var(--muted);
+  text-decoration-color: var(--line);
+}
+
 /* 对话里引用的一段文字（比如书里的话） */
 .article-content .conversation-quote {
   display: block;
