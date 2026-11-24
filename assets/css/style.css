@@ -538,6 +538,15 @@ nav a[aria-current="page"] { color: var(--accent); border-bottom: 1px solid var(
   overflow-wrap: break-word;
 }
 
+/* 对话里引用的一段文字（比如书里的话） */
+.article-content .conversation-quote {
+  display: block;
+  padding-left: .9em;
+  border-left: 2px solid var(--line);
+  color: var(--body);
+  line-height: 1.85;
+}
+
 .article-content .conversation-aside,
 .article-content .conversation-note {
   color: var(--muted);
