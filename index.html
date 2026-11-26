@@ -70,10 +70,12 @@ subscription: false
     </section>
 
     {% if latest_zine %}
+      {% comment %} 封面和书名 → 介绍文章；「在线阅读」→ 阅读器 {% endcomment %}
+      {% assign zine_intro = latest_zine.intro_url | default: '/zines/' %}
       {% assign zine_link = latest_zine.reader_url | default: '/zines/' %}
       <section class="side-zine" aria-labelledby="side-zine-title">
         <h2 class="side-title" id="side-zine-title">ZINE</h2>
-        <a href="{{ zine_link | relative_url }}">
+        <a href="{{ zine_intro | relative_url }}">
           {% if latest_zine.cover %}<img src="{{ latest_zine.cover | relative_url }}" alt="《{{ latest_zine.title | escape }}》封面" width="{{ latest_zine.cover_width | default: 521 }}" height="{{ latest_zine.cover_height | default: 753 }}" loading="lazy" decoding="async">{% endif %}
           <span class="side-zine-title">{{ latest_zine.title }}</span>
         </a>
